@@ -1,0 +1,83 @@
+# ==========================================
+# Compilación de Java y Maven
+# ==========================================
+*.class
+*.log
+*.ctxt
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Carpeta de salida de Maven (¡Nunca subir esta carpeta!)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ==========================================
+# Scene Builder y JavaFX (Archivos temporales)
+# ==========================================
+# Scene Builder a veces crea copias de seguridad de archivos .fxml
+*~
+*.bak
+*.tmp
+*.swp
+
+# ==========================================
+# Configuraciones de IDEs (Opcional pero recomendado)
+# ==========================================
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+### Eclipse ###
+.metadata/
+bin/
+tmp/
+.tmp/
+.settings/
+.classpath
+.project
+.factorypath
+*.launch
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbproject/maven-build-cache.properties
+build/
+
+### Visual Studio Code ###
+.vscode/
+
+# ==========================================
+# Archivos del Sistema Operativo
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
