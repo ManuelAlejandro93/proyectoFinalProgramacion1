@@ -27,4 +27,29 @@ public class Empleado extends Persona {
 		this.contraseña = contraseña;
 	}
 
+	// String nombrex
+	// String codigox
+	// LocalDate fechaNacimientox
+	// String telefonox
+	// String correox
+	// int edadx
+	// String usuario
+	// String contraseña
+
+	@Override
+	public String toString() {
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "nombre : " + this.getNombre() + "\n";
+		mensaje += "codigo : " + this.getCodigo() + "\n";
+		mensaje += "fecha de nacimiento : " + this.getFechaNacimiento().toString() + "\n";
+		mensaje += "teléfono : " + this.getTelefono() + "\n";
+		mensaje += "correo : " + this.getCorreo() + "\n";
+		mensaje += "edad : " + this.getEdad() + "\n";
+		mensaje += "usuario : " + this.getUsuario() + "\n";
+		mensaje += "contraseña : " + this.getContraseña() + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
 }
