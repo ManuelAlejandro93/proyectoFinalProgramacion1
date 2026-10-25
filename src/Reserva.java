@@ -64,4 +64,19 @@ public class Reserva {
 		this.canalDeReserva = canalDeReserva;
 	}
 
+	@Override
+	public String toString() {
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "codigo : " + this.getCodigo() + "\n";
+		mensaje += "huespedEncargado : " + this.getHuespedEncargado().getNombre() + "\n";
+		mensaje += "estancia : " + "desde: " + this.getEstancia().getFechaEntrada().toString() + " hasta: "
+				+ this.getEstancia().getFechaSalida().toString() + "\n";
+		mensaje += "estado actual : " + this.getEstadoActual() + "\n";
+		mensaje += "saldo : " + this.getFolio().calcularSaldo() + "\n";
+		mensaje += "canal de reserva : " + this.getCanalDeReserva() + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
 }
