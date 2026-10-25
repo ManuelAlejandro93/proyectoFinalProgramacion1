@@ -114,4 +114,32 @@ public class Apartamento {
 	public void anadirBloqueo(Bloqueo bloqueo) {
 		this.bloqueos.add(bloqueo);
 	}
+
+	// this.codigo=codigox
+	// this.nombre=nombrex
+	// this.dormitorios=dormitoriosx
+	// this.capacidad=capacidadx
+	// this.caracteristicas=caracteristicasx
+	// this.tarifaIndividual=tarifaIndividualx
+	// this.estadoOperativo=estadoOperativox
+	// this.motivoFueraDeServicio=motivoFueraDeServicio
+	// this.novedades=novedades
+	// this.bloqueos=bloqueos;
+
+	@Override
+	public String toString() {
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "nombre : " + this.getNombre() + "\n";
+		mensaje += "codigo : " + this.getCodigo() + "\n";
+		mensaje += "dormitorios : " + this.getDormitorios() + "\n";
+		mensaje += "capacidad : " + this.getCapacidad() + "\n";
+		mensaje += "tarifa individual : " + this.getTarifaIndividual() + "\n";
+		mensaje += "estado operativo : " + this.getEstadoOperativo() + "\n";
+		mensaje += "motivo fuera de servicio : " + this.getMotivoFueraDeServicio() + "\n";
+
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
 }
