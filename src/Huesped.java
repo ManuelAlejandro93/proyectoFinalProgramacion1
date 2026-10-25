@@ -114,4 +114,19 @@ public class Huesped extends Persona {
   public boolean cancelarReservaPorCodigo(String codigoReserva) {
     return false;
   }
+
+  @Override
+  public String toString() {
+
+    String mensaje = "" + "\n";
+    mensaje += "===============" + "\n";
+    mensaje += "codigo : " + this.getCodigo() + "\n";
+    mensaje += "fecha de nacimiento : " + this.getFechaNacimiento() + "\n";
+    mensaje += "telefono : " + this.getTelefono() + "\n";
+    mensaje += "correo : " + this.getCorreo() + "\n";
+    mensaje += "edad : " + this.getEdad() + "\n";
+    mensaje += "===============" + "\n";
+
+    return mensaje;
+  }
 }
