@@ -37,4 +37,16 @@ public class Noche {
 		this.precio = precio;
 	}
 
+	@Override
+	public String toString() {
+
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "fecha : " + this.getFecha().toString() + "\n";
+		mensaje += "temporada : " + this.getTemporada().toString() + "\n";
+		mensaje += "precio : " + this.getPrecio() + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
 }
