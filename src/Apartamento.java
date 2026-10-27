@@ -108,11 +108,23 @@ public class Apartamento {
 	}
 
 	public void anadirNovedad(Novedad novedad) {
-		this.novedades.add(novedad);
+		if (novedad != null) {
+			this.novedades.add(novedad);
+		}
 	}
 
 	public void anadirBloqueo(Bloqueo bloqueo) {
-		this.bloqueos.add(bloqueo);
+		if (bloqueo != null) {
+			this.bloqueos.add(bloqueo);
+		}
+	}
+
+	public boolean eliminarNovedad(Novedad novedad) {
+		return this.novedades.remove(novedad);
+	}
+
+	public boolean eliminarBloqueo(Bloqueo bloqueo) {
+		return this.bloqueos.remove(bloqueo);
 	}
 
 	@Override
@@ -123,9 +135,12 @@ public class Apartamento {
 		mensaje += "codigo : " + this.getCodigo() + "\n";
 		mensaje += "dormitorios : " + this.getDormitorios() + "\n";
 		mensaje += "capacidad : " + this.getCapacidad() + "\n";
+		mensaje += "caracteristicas : " + this.getCaracteristicas() + "\n";
 		mensaje += "tarifa individual : " + this.getTarifaIndividual() + "\n";
 		mensaje += "estado operativo : " + this.getEstadoOperativo() + "\n";
 		mensaje += "motivo fuera de servicio : " + this.getMotivoFueraDeServicio() + "\n";
+		mensaje += "novedades : " + this.getNovedades() + "\n";
+		mensaje += "bloqueos : " + this.getBloqueos() + "\n";
 		mensaje += "===============" + "\n";
 
 		return mensaje;

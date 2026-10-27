@@ -35,4 +35,12 @@ public class Bloqueo {
 		this.fechafinal = fechafinal;
 	}
 
+	@Override
+	public String toString() {
+		String mensaje = "";
+		mensaje += motivo + " (";
+		mensaje += fechaInicio + " a " + fechafinal;
+		mensaje += ")";
+		return mensaje;
+	}
 }
