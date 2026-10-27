@@ -19,7 +19,9 @@ public class Huesped extends Persona {
   }
 
   public void setFoto(String foto) {
-    this.foto = foto;
+    if (foto != null && !foto.trim().isEmpty()) {
+      this.foto = foto;
+    }
   }
 
   // todo: corregir esto.
@@ -80,10 +82,11 @@ public class Huesped extends Persona {
     return false;
   }
 
-  // todo: important todo.
-  // public ArrayList<Reserva> consultarReservas() {
-  // return null;
-  // }
+  // Descomentar este método (IMPORTANTE)
+  public ArrayList<Reserva> consultarReservas() {
+    // TODO: Implementar - retornar lista de reservas del huésped
+    return null;
+  }
 
   // todo: corregir esto.
   /**
