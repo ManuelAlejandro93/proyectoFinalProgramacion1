@@ -17,6 +17,13 @@ public class GestorEmpleados {
 
 	// CREATE - añadir cualquiera.
 	public boolean anadirEmpleado(Empleado empleado) {
+		if (empleado == null || empleado.getCodigo() == null ||
+				empleado.getCodigo().trim().isEmpty()) {
+			return false; // Código inválido
+		}
+		if (buscarEmpleadoPorCodigo(empleado.getCodigo()) != null) {
+			return false; // Código duplicado
+		}
 		empleados.add(empleado);
 		return true;
 	}
@@ -37,6 +44,9 @@ public class GestorEmpleados {
 
 	// READ (buscar por id) devuelve objeto o null
 	public Empleado buscarEmpleadoPorCodigo(String codigo) {
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return null; // Código inválido
+		}
 		Empleado resultado = null;
 		for (int i = 0; i < this.empleados.size(); i++) {
 			if (codigo.equalsIgnoreCase(this.empleados.get(i).getCodigo())) {
@@ -51,6 +61,10 @@ public class GestorEmpleados {
 			String nuevoNombre, String codigo, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
 			int nuevaEdad,
 			String nuevoUsuario, String nuevaContraseña) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
 
 		Empleado empleadoRecuperado = buscarEmpleadoPorCodigo(codigo);
 		if (empleadoRecuperado == null) {
@@ -67,6 +81,9 @@ public class GestorEmpleados {
 
 	// DELETE objeto
 	public boolean eliminarEmpleado(String codigo) {
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
 		Empleado empleadoRecuperado = buscarEmpleadoPorCodigo(codigo);
 		if (empleadoRecuperado == null) {
 			return false;

@@ -17,6 +17,12 @@ public class GestorNoches {
 
 	// CREATE - añadir cualquiera.
 	public boolean anadirNoche(Noche noche) {
+		if (noche == null || noche.getFecha() == null) {
+			return false; // Fecha inválida
+		}
+		if (buscarNochePorFecha(noche.getFecha()) != null) {
+			return false; // Fecha duplicada
+		}
 		noches.add(noche);
 		return true;
 	}
@@ -37,6 +43,9 @@ public class GestorNoches {
 
 	// READ (buscar por id) devuelve objeto o null
 	public Noche buscarNochePorFecha(LocalDate fecha) {
+		if (fecha == null) {
+			return null; // Fecha inválida
+		}
 		Noche resultado = null;
 		for (int i = 0; i < this.noches.size(); i++) {
 			if (fecha.equals(noches.get(i).getFecha())) {
@@ -50,6 +59,16 @@ public class GestorNoches {
 	public boolean actualizarInformacionNoche(
 			LocalDate fecha, Temporada nuevaTemporada, double nuevoPrecio) {
 
+		if (fecha == null) {
+			return false; // Fecha inválida
+		}
+		if (nuevaTemporada == null) {
+			return false; // Temporada inválida
+		}
+		if (nuevoPrecio < 0) {
+			return false; // Precio inválido
+		}
+
 		Noche nocheRecuperada = buscarNochePorFecha(fecha);
 		if (nocheRecuperada == null) {
 			return false;
@@ -62,6 +81,10 @@ public class GestorNoches {
 
 	// DELETE objeto
 	public boolean eliminarNoche(LocalDate fecha) {
+
+		if (fecha == null) {
+			return false; // Fecha inválida
+		}
 		Noche nocheRecuperada = buscarNochePorFecha(fecha);
 		if (nocheRecuperada == null) {
 			return false;

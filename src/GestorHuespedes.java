@@ -17,6 +17,14 @@ public class GestorHuespedes {
 
 	// CREATE - añadir cualquiera.
 	public boolean anadirHuesped(Huesped huesped) {
+		// Validar duplicados y código
+		if (huesped == null || huesped.getCodigo() == null ||
+				huesped.getCodigo().trim().isEmpty()) {
+			return false; // Código inválido
+		}
+		if (buscarHuespedPorCodigo(huesped.getCodigo()) != null) {
+			return false; // Código duplicado
+		}
 		huespedes.add(huesped);
 		return true;
 	}
@@ -37,6 +45,9 @@ public class GestorHuespedes {
 
 	// READ (buscar por id) devuelve objeto o null
 	public Huesped buscarHuespedPorCodigo(String codigo) {
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return null; // Código inválido
+		}
 		Huesped resultado = null;
 		for (int i = 0; i < this.huespedes.size(); i++) {
 			if (codigo.equalsIgnoreCase(this.huespedes.get(i).getCodigo())) {
@@ -50,6 +61,10 @@ public class GestorHuespedes {
 	public boolean actualizarInformacionHuesped(
 			String nuevoNombre, String codigo, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
 			int nuevaEdad) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
 
 		Huesped huespedRecuperado = buscarHuespedPorCodigo(codigo);
 		if (huespedRecuperado == null) {
@@ -66,6 +81,10 @@ public class GestorHuespedes {
 
 	// DELETE objeto
 	public boolean eliminarHuesped(String codigo) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
 		Huesped huespedRecuperado = buscarHuespedPorCodigo(codigo);
 		if (huespedRecuperado == null) {
 			return false;

@@ -1,37 +1,42 @@
 public class PoliticaDeCancelacion {
-	private double politicaDeCancelacion1;
-	private double politicaDeCancelacion2;
-	private double politicaDeCancelacion3;
+	private double devolucionCompleta; // 100% - se devuelve todo
+	private double devolucionParcial; // 50% - se devuelve la mitad
+	private double sinDevolucion; // 0% - No se devuelve nada
 
-	public PoliticaDeCancelacion(double politicaDeCancelacion1, double politicaDeCancelacion2,
-			double politicaDeCancelacion3) {
-		this.politicaDeCancelacion1 = politicaDeCancelacion1;
-		this.politicaDeCancelacion2 = politicaDeCancelacion2;
-		this.politicaDeCancelacion3 = politicaDeCancelacion3;
+	public PoliticaDeCancelacion(double devolucionCompleta, double devolucionParcial,
+			double sinDevolucion) {
+		this.devolucionCompleta = devolucionCompleta;
+		this.devolucionParcial = devolucionParcial;
+		this.sinDevolucion = sinDevolucion;
 	}
 
-	public double getPoliticaDeCancelacion1() {
-		return politicaDeCancelacion1;
+	public double getDevolucionCompleta() {
+		return devolucionCompleta;
 	}
 
-	public void setPoliticaDeCancelacion1(double politicaDeCancelacion1) {
-		this.politicaDeCancelacion1 = politicaDeCancelacion1;
+	public void setDevolucionCompleta(double devolucionCompleta) {
+		if (devolucionCompleta >= 0 && devolucionCompleta <= 1) {
+			this.devolucionCompleta = devolucionCompleta;
+		}
 	}
 
-	public double getPoliticaDeCancelacion2() {
-		return politicaDeCancelacion2;
+	public double getDevolucionParcial() {
+		return devolucionParcial;
 	}
 
-	public void setPoliticaDeCancelacion2(double politicaDeCancelacion2) {
-		this.politicaDeCancelacion2 = politicaDeCancelacion2;
+	public void setDevolucionParcial(double devolucionParcial) {
+		if (devolucionParcial >= 0 && devolucionParcial <= 1) {
+			this.devolucionParcial = devolucionParcial;
+		}
 	}
 
-	public double getPoliticaDeCancelacion3() {
-		return politicaDeCancelacion3;
+	public double getSinDevolucion() {
+		return sinDevolucion;
 	}
 
-	public void setPoliticaDeCancelacion3(double politicaDeCancelacion3) {
-		this.politicaDeCancelacion3 = politicaDeCancelacion3;
+	public void setSinDevolucion(double sinDevolucion) {
+		if (sinDevolucion >= 0 && sinDevolucion <= 1) {
+			this.sinDevolucion = sinDevolucion;
+		}
 	}
-
 }
