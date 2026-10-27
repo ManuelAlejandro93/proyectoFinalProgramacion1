@@ -20,7 +20,15 @@ public class Cargo {
 	}
 
 	public void setPrecio(double precio) {
-		this.precio = precio;
+		if (precio >= 0) {
+			this.precio = precio;
+		}
 	}
 
+	@Override
+	public String toString() {
+		String mensaje = "";
+		mensaje += nombre + " : $" + precio;
+		return mensaje;
+	}
 }

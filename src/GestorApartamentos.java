@@ -16,6 +16,13 @@ public class GestorApartamentos {
 
 	// CREATE - añadir cualquiera.
 	public boolean anadirApartamento(Apartamento apartamento) {
+		if (apartamento == null || apartamento.getCodigo() == null ||
+				apartamento.getCodigo().trim().isEmpty()) {
+			return false; // Código inválido
+		}
+		if (buscarApartamentoPorCodigo(apartamento.getCodigo()) != null) {
+			return false; // Código duplicado
+		}
 		apartamentos.add(apartamento);
 		return true;
 	}
@@ -36,6 +43,9 @@ public class GestorApartamentos {
 
 	// READ (buscar por id) devuelve objeto o null
 	public Apartamento buscarApartamentoPorCodigo(String codigo) {
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return null; // Código inválido
+		}
 		Apartamento resultado = null;
 		for (int i = 0; i < this.apartamentos.size(); i++) {
 			if (codigo.equalsIgnoreCase(this.apartamentos.get(i).getCodigo())) {
@@ -52,6 +62,10 @@ public class GestorApartamentos {
 			int nuevaTarifaIndividual, EstadoOperativo nuevoEstadoOperativo, String nuevoMotivoFueraDeServicio,
 			ArrayList<Novedad> nuevoNovedades,
 			ArrayList<Bloqueo> nuevoBloqueos) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
 
 		Apartamento apartamentoRecuperado = buscarApartamentoPorCodigo(codigo);
 		if (apartamentoRecuperado == null) {
@@ -71,6 +85,9 @@ public class GestorApartamentos {
 
 	// DELETE objeto
 	public boolean eliminarApartamento(String codigo) {
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
 		Apartamento apartamentoRecuperado = buscarApartamentoPorCodigo(codigo);
 		if (apartamentoRecuperado == null) {
 			return false;

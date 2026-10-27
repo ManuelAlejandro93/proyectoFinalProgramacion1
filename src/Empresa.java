@@ -3,7 +3,9 @@ public class Empresa {
 	private String nit;
 	private GestorGeneral gestorGeneral = new GestorGeneral();
 
-	public Empresa() {
+	public Empresa(String nombre, String nit) {
+		this.nombre = nombre;
+		this.nit = nit;
 	}
 
 	public String getNombre() {
