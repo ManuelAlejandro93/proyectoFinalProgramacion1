@@ -18,6 +18,9 @@ public class Noche {
 	}
 
 	public void setFecha(LocalDate fecha) {
+		if (fecha != null) {
+			this.fecha = fecha;
+		}
 		this.fecha = fecha;
 	}
 
@@ -26,7 +29,9 @@ public class Noche {
 	}
 
 	public void setTemporada(Temporada temporada) {
-		this.temporada = temporada;
+		if (temporada != null) {
+			this.temporada = temporada;
+		}
 	}
 
 	public double getPrecio() {
@@ -34,7 +39,9 @@ public class Noche {
 	}
 
 	public void setPrecio(double precio) {
-		this.precio = precio;
+		if (precio >= 0) {
+			this.precio = precio;
+		}
 	}
 
 	@Override

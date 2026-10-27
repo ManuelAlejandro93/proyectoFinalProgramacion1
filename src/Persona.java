@@ -23,7 +23,9 @@ public abstract class Persona {
 	}
 
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		if (nombre != null && !nombre.trim().isEmpty()) {
+			this.nombre = nombre;
+		}
 	}
 
 	public String getCodigo() {
@@ -31,7 +33,9 @@ public abstract class Persona {
 	}
 
 	public void setCodigo(String codigo) {
-		this.codigo = codigo;
+		if (codigo != null && !codigo.trim().isEmpty()) {
+			this.codigo = codigo;
+		}
 	}
 
 	public LocalDate getFechaNacimiento() {
@@ -39,7 +43,10 @@ public abstract class Persona {
 	}
 
 	public void setFechaNacimiento(LocalDate fechaNacimiento) {
-		this.fechaNacimiento = fechaNacimiento;
+		if (fechaNacimiento != null && !fechaNacimiento.isAfter(LocalDate.now())) {
+			this.fechaNacimiento = fechaNacimiento;
+			this.calcularEdad();
+		}
 	}
 
 	public String getTelefono() {
@@ -47,7 +54,9 @@ public abstract class Persona {
 	}
 
 	public void setTelefono(String telefono) {
-		this.telefono = telefono;
+		if (telefono != null && !telefono.trim().isEmpty()) {
+			this.telefono = telefono;
+		}
 	}
 
 	public String getCorreo() {
@@ -55,7 +64,9 @@ public abstract class Persona {
 	}
 
 	public void setCorreo(String correo) {
-		this.correo = correo;
+		if (correo != null && !correo.trim().isEmpty() && correo.contains("@")) {
+			this.correo = correo;
+		}
 	}
 
 	public int getEdad() {
@@ -63,7 +74,9 @@ public abstract class Persona {
 	}
 
 	public void setEdad(int edad) {
-		this.edad = edad;
+		if (edad >= 0) {
+			this.edad = edad;
+		}
 	}
 
 	// funciónque sirve para calcular la edad a partir de la fecha de nacimiento.

@@ -10,7 +10,9 @@ public class Novedad {
 	}
 
 	public void setNombre(String nombre) {
-		this.nombre = nombre;
+		if (nombre != null && !nombre.trim().isEmpty()) {
+			this.nombre = nombre;
+		}
 	}
 
 	@Override

@@ -1,22 +1,24 @@
 import java.time.LocalDate;
 
 public class Pago {
-	private long monto;
+	private double monto;
 	private MedioDePago medioDePago;
 	private LocalDate fecha;
 
-	public Pago(long monto, MedioDePago medioDePago, LocalDate fecha) {
+	public Pago(double monto, MedioDePago medioDePago, LocalDate fecha) {
 		this.monto = monto;
 		this.medioDePago = medioDePago;
 		this.fecha = fecha;
 	}
 
-	public long getMonto() {
+	public double getMonto() {
 		return monto;
 	}
 
-	public void setMonto(long monto) {
-		this.monto = monto;
+	public void setMonto(double monto) {
+		if (monto > 0) {
+			this.monto = monto;
+		}
 	}
 
 	public MedioDePago getMedioDePago() {
@@ -24,7 +26,9 @@ public class Pago {
 	}
 
 	public void setMedioDePago(MedioDePago medioDePago) {
-		this.medioDePago = medioDePago;
+		if (medioDePago != null) {
+			this.medioDePago = medioDePago;
+		}
 	}
 
 	public LocalDate getFecha() {
@@ -32,7 +36,20 @@ public class Pago {
 	}
 
 	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
+		if (fecha != null && !fecha.isAfter(LocalDate.now())) {
+			this.fecha = fecha;
+		}
 	}
 
+	@Override
+	public String toString() {
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "monto : " + this.getMonto() + "\n";
+		mensaje += "medio de pago : " + this.getMedioDePago() + "\n";
+		mensaje += "fecha : " + this.getFecha() + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
 }
