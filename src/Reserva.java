@@ -21,7 +21,9 @@ public class Reserva {
 	}
 
 	public void setCodigo(String codigo) {
-		this.codigo = codigo;
+		if (codigo != null && !codigo.trim().isEmpty()) {
+			this.codigo = codigo;
+		}
 	}
 
 	public Huesped getHuespedEncargado() {
@@ -29,7 +31,9 @@ public class Reserva {
 	}
 
 	public void setHuespedEncargado(Huesped huespedEncargado) {
-		this.huespedEncargado = huespedEncargado;
+		if (huespedEncargado != null) {
+			this.huespedEncargado = huespedEncargado;
+		}
 	}
 
 	public Estancia getEstancia() {
@@ -37,7 +41,9 @@ public class Reserva {
 	}
 
 	public void setEstancia(Estancia estancia) {
-		this.estancia = estancia;
+		if (estancia != null) {
+			this.estancia = estancia;
+		}
 	}
 
 	public EstadoActual getEstadoActual() {
@@ -45,7 +51,9 @@ public class Reserva {
 	}
 
 	public void setEstadoActual(EstadoActual estadoActual) {
-		this.estadoActual = estadoActual;
+		if (estadoActual != null) {
+			this.estadoActual = estadoActual;
+		}
 	}
 
 	public Folio getFolio() {
@@ -53,7 +61,9 @@ public class Reserva {
 	}
 
 	public void setFolio(Folio folio) {
-		this.folio = folio;
+		if (folio != null) {
+			this.folio = folio;
+		}
 	}
 
 	public CanalDeReserva getCanalDeReserva() {
@@ -61,20 +71,29 @@ public class Reserva {
 	}
 
 	public void setCanalDeReserva(CanalDeReserva canalDeReserva) {
-		this.canalDeReserva = canalDeReserva;
+		if (canalDeReserva != null) {
+			this.canalDeReserva = canalDeReserva;
+		}
 	}
 
 	@Override
 	public String toString() {
 		String mensaje = "" + "\n";
 		mensaje += "===============" + "\n";
-		mensaje += "codigo : " + this.getCodigo() + "\n";
-		mensaje += "huespedEncargado : " + this.getHuespedEncargado().getNombre() + "\n";
-		mensaje += "estancia : " + "desde: " + this.getEstancia().getFechaEntrada().toString() + " hasta: "
-				+ this.getEstancia().getFechaSalida().toString() + "\n";
-		mensaje += "estado actual : " + this.getEstadoActual() + "\n";
-		mensaje += "saldo : " + this.getFolio().calcularSaldo() + "\n";
-		mensaje += "canal de reserva : " + this.getCanalDeReserva() + "\n";
+		mensaje += "codigo : " + (this.getCodigo() != null ? this.getCodigo() : "N/A") + "\n";
+		mensaje += "huespedEncargado : "
+				+ (this.getHuespedEncargado() != null ? this.getHuespedEncargado().getNombre() : "N/A") + "\n";
+
+		if (this.getEstancia() != null) {
+			mensaje += "estancia : desde: " + this.getEstancia().getFechaEntrada() + " hasta: "
+					+ this.getEstancia().getFechaSalida() + "\n";
+		} else {
+			mensaje += "estancia : N/A" + "\n";
+		}
+
+		mensaje += "estado actual : " + (this.getEstadoActual() != null ? this.getEstadoActual() : "N/A") + "\n";
+		mensaje += "saldo : " + (this.getFolio() != null ? this.getFolio().calcularSaldo() : "N/A") + "\n";
+		mensaje += "canal de reserva : " + (this.getCanalDeReserva() != null ? this.getCanalDeReserva() : "N/A") + "\n";
 		mensaje += "===============" + "\n";
 
 		return mensaje;
