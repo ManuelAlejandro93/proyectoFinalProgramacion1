@@ -16,6 +16,15 @@ public class GestorReservas {
 
 	// CREATE - añadir cualquiera.
 	public boolean anadirReserva(Reserva reserva) {
+
+		if (reserva == null || reserva.getCodigo() == null ||
+				reserva.getCodigo().trim().isEmpty()) {
+			return false; // Código inválido
+		}
+		if (buscarReservaPorCodigo(reserva.getCodigo()) != null) {
+			return false; // Código duplicado
+		}
+
 		reservas.add(reserva);
 		return true;
 	}
@@ -36,6 +45,11 @@ public class GestorReservas {
 
 	// READ (buscar por id) devuelve objeto o null
 	public Reserva buscarReservaPorCodigo(String codigo) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return null; // Código inválido
+		}
+
 		Reserva resultado = null;
 		for (int i = 0; i < this.reservas.size(); i++) {
 			if (codigo.equalsIgnoreCase(this.reservas.get(i).getCodigo())) {
@@ -50,6 +64,16 @@ public class GestorReservas {
 			String codigo, Huesped nuevoHuespedEncargado, Estancia nuevaEstancia, EstadoActual nuevoEstadoActual,
 			Folio nuevoFolio,
 			CanalDeReserva nuevoCanalDeReserva) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
+
+		if (nuevoHuespedEncargado == null || nuevaEstancia == null ||
+				nuevoEstadoActual == null || nuevoFolio == null ||
+				nuevoCanalDeReserva == null) {
+			return false; // Parámetros inválidos
+		}
 
 		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
 		if (reservaRecuperada == null) {
@@ -66,6 +90,11 @@ public class GestorReservas {
 
 	// DELETE objeto
 	public boolean eliminarReserva(String codigo) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
+
 		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
 		if (reservaRecuperada == null) {
 			return false;
