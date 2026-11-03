@@ -21,8 +21,9 @@ public class Apartamento {
 	private Estancia theEstancia;
 
 	public Apartamento(String codigo, String nombre, int dormitorios, int capacidad, ArrayList<String> caracteristicas,
-					   double tarifaIndividual, EstadoOperativo estadoOperativo, String motivoFueraDeServicio, ArrayList<Novedad> listNovedades,
-					   ArrayList<Bloqueo> listBloqueos, ArrayList<Reserva> listReservas, Estancia theEstancia) {
+			double tarifaIndividual, EstadoOperativo estadoOperativo, String motivoFueraDeServicio,
+			ArrayList<Novedad> listNovedades,
+			ArrayList<Bloqueo> listBloqueos, ArrayList<Reserva> listReservas, Estancia theEstancia) {
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.dormitorios = dormitorios;
