@@ -70,11 +70,11 @@ public class GestorApartamentos {
 
 	// UPDATE - actualiza objeto
 	public boolean actualizarInformacionApartamento(
-            String codigo, String nuevoNombre, int nuevosDormitorios, int nuevaCapacidad,
-            ArrayList<String> nuevasCaracteristicas,
-            int nuevaTarifaIndividual, EstadoOperativo nuevoEstadoOperativo, String nuevoMotivoFueraDeServicio,
-            ArrayList<Novedad> nuevoNovedades,
-            ArrayList<Bloqueo> nuevoBloqueos) {
+			String codigo, String nuevoNombre, int nuevosDormitorios, int nuevaCapacidad,
+			ArrayList<String> nuevasCaracteristicas,
+			double nuevaTarifaIndividual, EstadoOperativo nuevoEstadoOperativo, String nuevoMotivoFueraDeServicio,
+			ArrayList<Novedad> nuevoNovedades,
+			ArrayList<Bloqueo> nuevoBloqueos) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido

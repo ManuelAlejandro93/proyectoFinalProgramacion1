@@ -8,7 +8,6 @@ import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
 import java.util.ArrayList;
 
-
 public class GestorReservas {
 	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
 
@@ -49,7 +48,7 @@ public class GestorReservas {
 	public String mostrarTodasReservas() {
 		String resultado = "";
 		if (listReservas == null || listReservas.isEmpty()) {
-			return "No hay reservas registrados.";
+			return "No hay reservas registradas.";
 		}
 
 		for (int i = 0; i < listReservas.size(); i++) {
@@ -76,9 +75,9 @@ public class GestorReservas {
 
 	// UPDATE - actualiza objeto
 	public boolean actualizarInformacionReserva(
-            String codigo, Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
-            Folio nuevoFolio,
-            CanalReserva nuevoCanalReserva) {
+			String codigo, Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
+			Folio nuevoFolio,
+			CanalReserva nuevoCanalReserva) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido

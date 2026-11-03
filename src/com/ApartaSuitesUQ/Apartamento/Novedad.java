@@ -28,7 +28,9 @@ public class Novedad {
 	}
 
 	public void setTheApartamento(Apartamento theApartamento) {
-		this.theApartamento = theApartamento;
+		if (theApartamento != null) {
+			this.theApartamento = theApartamento;
+		}
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //

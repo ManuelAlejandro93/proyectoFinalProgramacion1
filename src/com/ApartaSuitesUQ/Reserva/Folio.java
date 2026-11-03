@@ -8,11 +8,11 @@ public class Folio {
 	private ArrayList<Pago> listPagos;
 	private ArrayList<Cargo> listCargos;
 
-//	public Folio(ArrayList<Pago> pagos, ArrayList<Cargo> cargos) {
-//		this.listPagos = pagos;
-//		this.listCargos = cargos;
-//		calcularSaldo();
-//	}
+	// public Folio(ArrayList<Pago> pagos, ArrayList<Cargo> cargos) {
+	// this.listPagos = pagos;
+	// this.listCargos = cargos;
+	// calcularSaldo();
+	// }
 
 	public Folio(ArrayList<Pago> listPagos, ArrayList<Cargo> listCargos, double saldo) {
 		this.listPagos = listPagos;

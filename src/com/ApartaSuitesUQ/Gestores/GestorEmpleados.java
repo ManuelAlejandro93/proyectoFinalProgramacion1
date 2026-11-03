@@ -69,7 +69,6 @@ public class GestorEmpleados {
 	// UPDATE - actualiza objeto
 	public boolean actualizarInformacionEmpleado(
 			String nuevoNombre, String codigo, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
-			int nuevaEdad,
 			String nuevoUsuario, String nuevaContrasenia) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {

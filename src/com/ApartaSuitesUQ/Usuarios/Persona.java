@@ -48,7 +48,7 @@ public abstract class Persona {
 	public void setFechaNacimiento(LocalDate fechaNacimiento) {
 		if (fechaNacimiento != null && !fechaNacimiento.isAfter(LocalDate.now())) {
 			this.fechaNacimiento = fechaNacimiento;
-			this.calcularEdad();
+			this.edad = this.calcularEdad();
 		}
 	}
 

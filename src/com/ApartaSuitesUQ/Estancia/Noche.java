@@ -29,7 +29,6 @@ public class Noche {
 		if (fecha != null) {
 			this.fecha = fecha;
 		}
-		this.fecha = fecha;
 	}
 
 	public Temporada getTemporada() {
