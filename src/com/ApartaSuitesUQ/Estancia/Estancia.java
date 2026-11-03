@@ -13,7 +13,8 @@ public class Estancia {
 	private ArrayList<Noche> listNoches;
 	private Apartamento theApartamento;
 
-	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches , Apartamento theApartamento) {
+	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
+			Apartamento theApartamento) {
 		this.fechaEntrada = fechaEntrada;
 		this.fechaSalida = fechaSalida;
 
