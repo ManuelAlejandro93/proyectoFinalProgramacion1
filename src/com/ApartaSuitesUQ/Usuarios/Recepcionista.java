@@ -6,7 +6,8 @@ import java.time.LocalDate;
 
 public class Recepcionista extends Empleado {
 
-	public Recepcionista(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
+	public Recepcionista(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
+			String usuario, String contrasenia) {
 		super(nombre, codigo, fechaNacimiento, telefono, correo, usuario, contrasenia);
 	}
 
