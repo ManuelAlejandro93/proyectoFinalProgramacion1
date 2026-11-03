@@ -4,9 +4,9 @@ public class Empleado extends Persona {
 	private String usuario;
 	private String contraseña;
 
-	public Empleado(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, int edad,
+	public Empleado(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
 			String usuario, String contraseña) {
-		super(nombre, codigo, fechaNacimiento, telefono, correo, edad);
+		super(nombre, codigo, fechaNacimiento, telefono, correo);
 		this.usuario = usuario;
 		this.contraseña = contraseña;
 	}

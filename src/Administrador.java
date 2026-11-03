@@ -4,7 +4,7 @@ public class Administrador extends Empleado {
 
 	public Administrador(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
 			int edad, String usuario, String contraseña) {
-		super(nombre, codigo, fechaNacimiento, telefono, correo, edad, usuario, contraseña);
+		super(nombre, codigo, fechaNacimiento, telefono, correo, usuario, contraseña);
 	}
 
 	// todo: corregir esto.

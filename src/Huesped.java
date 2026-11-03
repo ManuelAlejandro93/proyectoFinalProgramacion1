@@ -4,14 +4,8 @@ import java.util.ArrayList;
 public class Huesped extends Persona {
   private String foto = "Foto no ingresada";
 
-  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, int edad) {
-    super(nombre, codigo, fechaNacimiento, telefono, correo, edad);
-  }
-
-  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, int edad,
-      String foto) {
-    super(nombre, codigo, fechaNacimiento, telefono, correo, edad);
-    this.foto = foto;
+  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo) {
+    super(nombre, codigo, fechaNacimiento, telefono, correo);
   }
 
   public String getFoto() {

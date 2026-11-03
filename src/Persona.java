@@ -8,13 +8,12 @@ public abstract class Persona {
 	private String correo;
 	private int edad;
 
-	public Persona(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, int edad) {
+	public Persona(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo) {
 		this.nombre = nombre;
 		this.codigo = codigo;
 		this.fechaNacimiento = fechaNacimiento;
 		this.telefono = telefono;
 		this.correo = correo;
-		this.edad = edad;
 		this.calcularEdad();
 	}
 
