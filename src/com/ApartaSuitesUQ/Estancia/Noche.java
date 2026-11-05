@@ -6,14 +6,15 @@ public class Noche {
 	private LocalDate fecha;
 	private Temporada temporada;
 	private double precio;
+	private double precioPorTemporada;
 
 	private Estancia theEstancia;
 
-	// cada noche debe crearse con todas las especificaciones para evitar
+	// Cada noche debe crearse con todas las especificaciones para evitar
 	// confusiones con otras noches.
 	public Noche(LocalDate fecha, Temporada temporada, double precio, Estancia theEstancia) {
 		this.fecha = fecha;
-		this.temporada = temporada;
+		this.setTemporada(temporada);
 		this.precio = precio;
 
 		this.theEstancia = theEstancia;
@@ -22,7 +23,7 @@ public class Noche {
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public LocalDate getFecha() {
-		return fecha;
+		return this.fecha;
 	}
 
 	public void setFecha(LocalDate fecha) {
@@ -32,17 +33,29 @@ public class Noche {
 	}
 
 	public Temporada getTemporada() {
-		return temporada;
+		return this.temporada;
 	}
 
 	public void setTemporada(Temporada temporada) {
 		if (temporada != null) {
 			this.temporada = temporada;
+
+			switch (temporada) {
+				case BAJA:
+					this.setPrecioPorTemporada(1.0);
+					break;
+				case MEDIA:
+					this.setPrecioPorTemporada(1.5);
+					break;
+				case ALTA:
+					this.setPrecioPorTemporada(2.0);
+					break;
+			}
 		}
 	}
 
 	public double getPrecio() {
-		return precio;
+		return this.precio;
 	}
 
 	public void setPrecio(double precio) {
@@ -51,8 +64,20 @@ public class Noche {
 		}
 	}
 
+	public double getPrecioPorTemporada() {
+		return this.precioPorTemporada;
+	}
+
+	public void setPrecioPorTemporada(double precioPorTemporada) {
+		if ((this.temporada == Temporada.BAJA && precioPorTemporada == 1.0) ||
+				(this.temporada == Temporada.MEDIA && precioPorTemporada == 1.5) ||
+				(this.temporada == Temporada.ALTA && precioPorTemporada == 2.0)) {
+			this.precioPorTemporada = precioPorTemporada;
+		}
+	}
+
 	public Estancia getTheEstancia() {
-		return theEstancia;
+		return this.theEstancia;
 	}
 
 	public void setTheEstancia(Estancia theEstancia) {
@@ -63,7 +88,6 @@ public class Noche {
 
 	@Override
 	public String toString() {
-
 		String mensaje = "" + "\n";
 		mensaje += "===============" + "\n";
 		mensaje += "fecha : " + this.getFecha().toString() + "\n";

@@ -2,7 +2,6 @@ package com.ApartaSuitesUQ.Reserva;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
-import com.ApartaSuitesUQ.Estancia.Estancia;
 
 public class Reserva {
 	private String codigo;
