@@ -126,36 +126,46 @@ public class GestorReservas {
 		return true;
 	}
 
-	// Valida que el rango [entrada, salida) no se cruce con ningún bloqueo
-	// del apartamento. Bloqueo se interpreta como [fechaInicio, fechafinal]
-	// inclusive.
-	public boolean validarBloqueos(Apartamento apartamento, LocalDate entrada, LocalDate salida) {
-		if (apartamento == null || entrada == null || salida == null || !entrada.isBefore(salida)) {
+	// Valida que el rango solicitado no se cruce con ningún bloqueo del
+	// apartamento.
+	// La reserva ocupa [fechaEntrada, fechaSalida): el día de salida ya no se
+	// ocupa.
+	// El bloqueo ocupa [inicioBloqueo, finBloqueo]: su último día sí está
+	// bloqueado.
+	public boolean validarBloqueos(Apartamento apartamento, LocalDate fechaEntrada, LocalDate fechaSalida) {
+		if (apartamento == null || fechaEntrada == null || fechaSalida == null
+				|| !fechaEntrada.isBefore(fechaSalida)) {
 			return false;
 		}
 
-		ArrayList<Bloqueo> bloqueos = apartamento.getListBloqueos();
-		if (bloqueos == null || bloqueos.isEmpty()) {
+		ArrayList<Bloqueo> bloqueosDelApartamento = apartamento.getListBloqueos();
+
+		if (bloqueosDelApartamento == null || bloqueosDelApartamento.isEmpty()) {
 			return true;
 		}
 
-		for (Bloqueo bloqueo : bloqueos) {
+		for (Bloqueo bloqueo : bloqueosDelApartamento) {
 			if (bloqueo == null) {
 				continue;
 			}
-			LocalDate inicio = bloqueo.getFechaInicio();
-			LocalDate fin = bloqueo.getFechafinal();
-			if (inicio == null || fin == null || fin.isBefore(inicio)) {
+
+			LocalDate inicioBloqueo = bloqueo.getFechaInicio();
+			LocalDate finBloqueo = bloqueo.getFechafinal();
+
+			if (inicioBloqueo == null || finBloqueo == null || finBloqueo.isBefore(inicioBloqueo)) {
 				continue;
 			}
 
-			// No hay cruce si la reserva termina antes o justo cuando inicia el bloqueo,
-			// o si empieza después de que termina el bloqueo.
-			boolean terminaAntesDeBloqueo = !salida.isAfter(inicio); // salida <= inicio
-			boolean empiezaDespuesDeBloqueo = entrada.isAfter(fin); // entrada > fin
+			boolean reservaSaleAntesOElDiaQueEmpiezaElBloqueo = fechaSalida.isBefore(inicioBloqueo)
+					|| fechaSalida.isEqual(inicioBloqueo);
 
-			if (!terminaAntesDeBloqueo && !empiezaDespuesDeBloqueo) {
-				return false; // hay bloqueo
+			boolean reservaEntraDespuesDeQueTerminaElBloqueo = fechaEntrada.isAfter(finBloqueo);
+
+			boolean hayCruceConElBloqueo = !reservaSaleAntesOElDiaQueEmpiezaElBloqueo
+					&& !reservaEntraDespuesDeQueTerminaElBloqueo;
+
+			if (hayCruceConElBloqueo) {
+				return false;
 			}
 		}
 
