@@ -23,6 +23,35 @@ public class Reserva {
 		this.theApartamento = theApartamento;
 	}
 
+	// Valida si el estado actual permite pasar al nuevo estado.
+	public boolean puedePasarA(EstadoActual nuevoEstado) {
+		if (this.estadoActual == null || nuevoEstado == null) {
+			return false;
+		}
+
+		switch (this.estadoActual) {
+			case PENDIENTE:
+				return nuevoEstado == EstadoActual.CONFIRMADA
+						|| nuevoEstado == EstadoActual.CANCELADA;
+
+			case CONFIRMADA:
+				return nuevoEstado == EstadoActual.EN_CURSO
+						|| nuevoEstado == EstadoActual.CANCELADA
+						|| nuevoEstado == EstadoActual.NO_SHOWN;
+
+			case EN_CURSO:
+				return nuevoEstado == EstadoActual.FINALIZADA;
+
+			case FINALIZADA:
+			case CANCELADA:
+			case NO_SHOWN:
+				return false;
+
+			default:
+				return false;
+		}
+	}
+
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public String getCodigo() {
