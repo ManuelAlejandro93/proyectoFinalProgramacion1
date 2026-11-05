@@ -1,5 +1,6 @@
 package com.ApartaSuitesUQ.Reserva;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Folio {
@@ -69,6 +70,20 @@ public class Folio {
 
 		this.listCargos.add(cargo);
 		return true;
+	}
+
+	// Registra una devolución como movimiento para el cálculo del saldo.
+	public boolean registrarDevolicion(double monto) {
+		if (monto < 0) {
+			return false;
+		}
+
+		if (monto == 0) {
+			return true;
+		}
+
+		Pago devolucion = new Pago(monto, MedioDePago.TRANSFERENCIA, LocalDate.now(), this);
+		return this.anadirPago(devolucion);
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //
