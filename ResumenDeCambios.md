@@ -23,3 +23,5 @@
 - En **tu última versión**, dejaste un solo constructor, con asignaciones línea por línea, y el método `Reserva.calcularDevolucion()` delega el cálculo al gestor.
 
 **Pendiente que dejamos para después:** revisar `GestorReservas.actualizarInformacionReserva()`, porque aún no utiliza el resultado booleano de `setEstadoActual()`. 
+
+### hasta la tarea 4.1 todo hecho.
