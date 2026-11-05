@@ -1,11 +1,14 @@
 package com.ApartaSuitesUQ.Gestores;
 
+import com.ApartaSuitesUQ.Apartamento.Apartamento;
+import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Reserva.Reserva;
 import com.ApartaSuitesUQ.Reserva.Folio;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
 import com.ApartaSuitesUQ.Reserva.EstadoActual;
 import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GestorReservas {
@@ -26,6 +29,69 @@ public class GestorReservas {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// Valida que una reserva no comparta noches con otra reserva activa
+	// del mismo apartamento.
+	public boolean validarSinDobleVenta(Apartamento apartamento, LocalDate entrada,
+			LocalDate salida, String codigoReservaExcluir) {
+		if (apartamento == null || apartamento.getCodigo() == null ||
+				apartamento.getCodigo().trim().isEmpty() ||
+				entrada == null || salida == null || !entrada.isBefore(salida)) {
+			return false;
+		}
+
+		if (this.listReservas == null) {
+			return true;
+		}
+
+		for (Reserva reserva : this.listReservas) {
+			if (reserva == null) {
+				continue;
+			}
+
+			if (codigoReservaExcluir != null &&
+					codigoReservaExcluir.equalsIgnoreCase(reserva.getCodigo())) {
+				continue;
+			}
+
+			EstadoActual estado = reserva.getEstadoActual();
+
+			if (estado != EstadoActual.PENDIENTE &&
+					estado != EstadoActual.CONFIRMADA &&
+					estado != EstadoActual.EN_CURSO) {
+				continue;
+			}
+
+			Apartamento apartamentoReserva = reserva.getTheApartamento();
+
+			if (apartamentoReserva == null ||
+					!apartamento.getCodigo().equalsIgnoreCase(apartamentoReserva.getCodigo())) {
+				continue;
+			}
+
+			Estancia estancia = reserva.getTheEstancia();
+
+			// Si faltan fechas de una reserva activa del mismo apartamento,
+			// no se puede garantizar que esté disponible.
+			if (estancia == null || estancia.getFechaEntrada() == null ||
+					estancia.getFechaSalida() == null) {
+				return false;
+			}
+
+			LocalDate entradaReserva = estancia.getFechaEntrada();
+			LocalDate salidaReserva = estancia.getFechaSalida();
+
+			if (!entradaReserva.isBefore(salidaReserva)) {
+				return false;
+			}
+
+			if (entrada.isBefore(salidaReserva) && entradaReserva.isBefore(salida)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añadir cualquiera.
@@ -35,11 +101,11 @@ public class GestorReservas {
 				reserva.getCodigo().trim().isEmpty()) {
 			return false; // Código inválido
 		}
-		if (buscarReservaPorCodigo(reserva.getCodigo()) != null) {
+		if (this.buscarReservaPorCodigo(reserva.getCodigo()) != null) {
 			return false; // Código duplicado
 		}
 
-		listReservas.add(reserva);
+		this.listReservas.add(reserva);
 		return true;
 	}
 
@@ -47,12 +113,12 @@ public class GestorReservas {
 	// Leer
 	public String mostrarTodasReservas() {
 		String resultado = "";
-		if (listReservas == null || listReservas.isEmpty()) {
+		if (this.listReservas == null || this.listReservas.isEmpty()) {
 			return "No hay reservas registradas.";
 		}
 
-		for (int i = 0; i < listReservas.size(); i++) {
-			resultado = resultado + listReservas.get(i).toString() + "\n";
+		for (int i = 0; i < this.listReservas.size(); i++) {
+			resultado = resultado + this.listReservas.get(i).toString() + "\n";
 		}
 		return resultado;
 	}
@@ -89,7 +155,7 @@ public class GestorReservas {
 			return false; // Parámetros inválidos
 		}
 
-		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
+		Reserva reservaRecuperada = this.buscarReservaPorCodigo(codigo);
 		if (reservaRecuperada == null) {
 			return false;
 		}
@@ -108,7 +174,7 @@ public class GestorReservas {
 			return false; // Código inválido
 		}
 
-		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
+		Reserva reservaRecuperada = this.buscarReservaPorCodigo(codigo);
 		if (reservaRecuperada == null) {
 			return false;
 		} else {
