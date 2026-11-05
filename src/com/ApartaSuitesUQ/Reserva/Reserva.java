@@ -1,7 +1,11 @@
 package com.ApartaSuitesUQ.Reserva;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
+import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Gestores.GestorPoliticaCancelacion;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
+
+import java.time.LocalDate;
 
 public class Reserva {
 	private String codigo;
@@ -11,9 +15,14 @@ public class Reserva {
 	private Folio theFolio;
 	private CanalReserva theCanalReserva;
 	private Apartamento theApartamento;
+	private Estancia theEstancia;
+	private GestorPoliticaCancelacion gestorPoliticaCancelacion;
 
+	// Permite crear la reserva con su estancia y el gestor de política de
+	// cancelación.
 	public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
-			CanalReserva canalReserva, Apartamento theApartamento) {
+			CanalReserva canalReserva, Apartamento theApartamento, Estancia theEstancia,
+			GestorPoliticaCancelacion gestorPoliticaCancelacion) {
 		this.codigo = codigo;
 		this.estadoActual = estadoActual;
 
@@ -21,6 +30,8 @@ public class Reserva {
 		this.theFolio = theFolio;
 		this.theCanalReserva = canalReserva;
 		this.theApartamento = theApartamento;
+		this.theEstancia = theEstancia;
+		this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
 	}
 
 	// Valida si el estado actual permite pasar al nuevo estado.
@@ -50,6 +61,19 @@ public class Reserva {
 			default:
 				return false;
 		}
+	}
+
+	// Calcula la devolución según el valor de la estancia y la política de
+	// cancelación.
+	public double calcularDevolucion() {
+		if (this.theEstancia == null || this.gestorPoliticaCancelacion == null) {
+			return 0.0;
+		}
+
+		LocalDate fechaEntrada = this.theEstancia.getFechaEntrada();
+		double valorTotal = this.theEstancia.calcularPrecioEstadia();
+
+		return this.gestorPoliticaCancelacion.calcularDevolicion(valorTotal, fechaEntrada);
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //
@@ -112,6 +136,22 @@ public class Reserva {
 
 	public void setTheApartamento(Apartamento theApartamento) {
 		this.theApartamento = theApartamento;
+	}
+
+	public Estancia getTheEstancia() {
+		return this.theEstancia;
+	}
+
+	public void setTheEstancia(Estancia theEstancia) {
+		this.theEstancia = theEstancia;
+	}
+
+	public GestorPoliticaCancelacion getGestorPoliticaCancelacion() {
+		return this.gestorPoliticaCancelacion;
+	}
+
+	public void setGestorPoliticaCancelacion(GestorPoliticaCancelacion gestorPoliticaCancelacion) {
+		this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
