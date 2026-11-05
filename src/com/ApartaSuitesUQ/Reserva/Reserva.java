@@ -68,10 +68,12 @@ public class Reserva {
 		return estadoActual;
 	}
 
-	public void setEstadoActual(EstadoActual estadoActual) {
-		if (estadoActual != null) {
+	public boolean setEstadoActual(EstadoActual estadoActual) {
+		if (this.puedePasarA(estadoActual)) {
 			this.estadoActual = estadoActual;
+			return true;
 		}
+		return false;
 	}
 
 	public Huesped getTheHuesped() {
