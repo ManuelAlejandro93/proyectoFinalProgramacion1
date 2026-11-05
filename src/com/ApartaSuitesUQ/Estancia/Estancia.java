@@ -23,10 +23,30 @@ public class Estancia {
 		this.asignarNoches();
 	}
 
-	// todo: hacer esto.
-	// asignar las noches respecto a las noches generales de la empresa.
+	// Crea una noche por cada fecha de la estancia, sin incluir la fecha de salida.
 	public void asignarNoches() {
+		if (this.fechaEntrada == null || this.fechaSalida == null ||
+				!this.fechaEntrada.isBefore(this.fechaSalida)) {
+			return;
+		}
 
+		if (this.listNoches == null) {
+			this.listNoches = new ArrayList<Noche>();
+		} else if (!this.listNoches.isEmpty()) {
+			this.listNoches.clear();
+		}
+
+		int nocheCount = 0;
+		LocalDate fechaActual = this.fechaEntrada;
+
+		while (fechaActual.isBefore(this.fechaSalida)) {
+			Noche noche = new Noche(fechaActual, Temporada.BAJA, 0.0, this);
+			this.listNoches.add(noche);
+			nocheCount++;
+			fechaActual = fechaActual.plusDays(1);
+		}
+
+		this.noches = nocheCount;
 	}
 
 	// todo: hacer esto.
@@ -37,7 +57,7 @@ public class Estancia {
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public LocalDate getFechaEntrada() {
-		return fechaEntrada;
+		return this.fechaEntrada;
 	}
 
 	public void setFechaEntrada(LocalDate fechaEntrada) {
@@ -45,7 +65,7 @@ public class Estancia {
 	}
 
 	public LocalDate getFechaSalida() {
-		return fechaSalida;
+		return this.fechaSalida;
 	}
 
 	public void setFechaSalida(LocalDate fechaSalida) {
@@ -53,7 +73,7 @@ public class Estancia {
 	}
 
 	public Apartamento getTheApartamento() {
-		return theApartamento;
+		return this.theApartamento;
 	}
 
 	public void setTheApartamento(Apartamento theApartamento) {
@@ -61,7 +81,7 @@ public class Estancia {
 	}
 
 	public ArrayList<Noche> getListNoches() {
-		return listNoches;
+		return this.listNoches;
 	}
 
 	public void setListNoches(ArrayList<Noche> listNoches) {
