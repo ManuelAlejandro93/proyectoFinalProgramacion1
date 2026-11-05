@@ -29,6 +29,19 @@ public class GestorReservas {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// Valida que todos los ocupantes, incluidos los menores de 6 años,
+	// no superen la capacidad máxima del apartamento.
+	public boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes) {
+		if (apartamento == null || ocupantes == null) {
+			return false;
+		}
+
+		int totalOcupantes = ocupantes.size();
+		int capacidadMaxima = apartamento.getCapacidad();
+
+		return totalOcupantes <= capacidadMaxima;
+	}
+
 	// Valida que una reserva no comparta noches con otra reserva activa
 	// del mismo apartamento.
 	public boolean validarSinDobleVenta(Apartamento apartamento, LocalDate entrada,
