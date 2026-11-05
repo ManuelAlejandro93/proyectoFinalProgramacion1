@@ -8,21 +8,30 @@ public class Folio {
 	private ArrayList<Pago> listPagos;
 	private ArrayList<Cargo> listCargos;
 
-	// public Folio(ArrayList<Pago> pagos, ArrayList<Cargo> cargos) {
-	// this.listPagos = pagos;
-	// this.listCargos = cargos;
-	// calcularSaldo();
-	// }
-
 	public Folio(ArrayList<Pago> listPagos, ArrayList<Cargo> listCargos, double saldo) {
 		this.listPagos = listPagos;
 		this.listCargos = listCargos;
 		this.saldo = saldo;
 	}
 
-	// todo: arreglar esto después, entender bien qué hay que hacer.
 	public double calcularSaldo() {
-		return 0.0;
+		double sumaCargos = 0;
+		double sumaPagos = 0;
+
+		if (listCargos != null) {
+			for (Cargo cargo : listCargos) {
+				sumaCargos += cargo.getPrecio();
+			}
+		}
+
+		if (listPagos != null) {
+			for (Pago pago : listPagos) {
+				sumaPagos += pago.getMonto();
+			}
+		}
+
+		this.saldo = sumaCargos - sumaPagos;
+		return saldo;
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //

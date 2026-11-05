@@ -2,7 +2,6 @@ package com.ApartaSuitesUQ.Reserva;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
-import com.ApartaSuitesUQ.Estancia.Estancia;
 
 public class Reserva {
 	private String codigo;
@@ -14,7 +13,7 @@ public class Reserva {
 	private Apartamento theApartamento;
 
 	public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
-                   CanalReserva canalReserva, Apartamento theApartamento) {
+			CanalReserva canalReserva, Apartamento theApartamento) {
 		this.codigo = codigo;
 		this.estadoActual = estadoActual;
 
