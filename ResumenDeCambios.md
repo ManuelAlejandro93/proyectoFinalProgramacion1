@@ -1,18 +1,25 @@
-Hasta ahora hemos modificado **tres clases**:
+### 1 revisar.
 
-### `Folio.java`
-- `calcularSaldo()` suma los cargos, resta los pagos, guarda el resultado en `saldo` y lo retorna. Admite listas `null`.
-- `anadirPago()` agrega pagos con monto positivo, medio de pago y fecha; inicializa la lista si hace falta.
-- `anadirCargo()` agrega cargos con nombre y precio no negativo; permite cargos de valor `0`.
-- `registrarDevolicion()` rechaza montos negativos, acepta `0` sin registrar nada y, para montos positivos, crea un `Pago` asociado al folio mediante `this`. Conservamos ese nombre de método tal como venía en la tarea.
+### 2. `Folio`
+- `calcularSaldo()` calcula **suma de cargos − suma de pagos** y actualiza `saldo`.
+- `anadirPago()` valida el pago antes de agregarlo.
+- `anadirCargo()` admite cargos de valor cero, pero no negativos.
+- `registrarDevolicion()` registra una devolución positiva como un `Pago` asociado al folio con `this`; si el monto es cero, no registra nada.
 
-### `Estancia.java`
-- `asignarNoches()` crea una noche por cada fecha desde la entrada **hasta el día anterior a la salida**, y actualiza el contador `noches`.
-- Añadimos `listHuespedes` y un constructor que la recibe, conservando el constructor anterior.
-- `calcularPrecioEstadia()` ahora devuelve `double`. Cuenta como pagantes a los huéspedes de **6 años o más** y suma el costo noche por noche.
+### 3. `Estancia` y `Noche`
+- `asignarNoches()` crea una noche por cada fecha desde la entrada **hasta el día anterior a la salida**. Confirmamos que se cobra la última noche de esa lista, pero **no el día de salida**.
+- `Estancia` tiene una lista de huéspedes y `calcularPrecioEstadia()` devuelve el total. Cuentan como pagantes los huéspedes de **6 años o más**.
+- `Noche` tiene `precioPorTemporada` como **multiplicador**: BAJA `1.0`, MEDIA `1.5` y ALTA `2.0`. Se actualiza según su temporada.
+- El precio se calcula noche por noche: **tarifa individual del apartamento × ocupantes pagantes × multiplicador de la noche**. La tarifa base del apartamento no cambia.
 
-### `Noche.java`
-- Añadimos `precioPorTemporada` como multiplicador: **BAJA `1.0`**, **MEDIA `1.5`**, **ALTA `2.0`**.
-- El multiplicador se establece según la temporada y se actualiza si esta cambia; no se recibe como parámetro del constructor.
+### 4. Política de cancelación
+- Añadimos `GestorPoliticaCancelacion.calcularDevolicion()`: aplica el porcentaje de la política según los días de antelación a la fecha de entrada.
+- Acordamos manejar la política desde el gestor, **sin guardar una copia de sus valores en cada reserva**.
 
-**Regla de precio actual:** por cada noche, `Estancia` calcula `tarifaIndividual del apartamento × huéspedes pagantes × multiplicador de la noche`. La tarifa guardada en `Apartamento` no cambia, y **no se cobra el día de salida**.
+### 5. `Reserva`
+- `puedePasarA()` valida las transiciones del ciclo de vida de la reserva.
+- Tú cambiaste `setEstadoActual()` para que use esa validación y devuelva `true` o `false`.
+- Añadimos las referencias a `Estancia` y `GestorPoliticaCancelacion`, sin hacer que `Reserva` dependa de `Empresa`.
+- En **tu última versión**, dejaste un solo constructor, con asignaciones línea por línea, y el método `Reserva.calcularDevolucion()` delega el cálculo al gestor.
+
+**Pendiente que dejamos para después:** revisar `GestorReservas.actualizarInformacionReserva()`, porque aún no utiliza el resultado booleano de `setEstadoActual()`. 
