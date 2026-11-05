@@ -13,12 +13,11 @@ public class Estancia {
 	private ArrayList<Noche> listNoches;
 	private Apartamento theApartamento;
 
-	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
+	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida,
 			Apartamento theApartamento) {
 		this.fechaEntrada = fechaEntrada;
 		this.fechaSalida = fechaSalida;
 
-		this.listNoches = listNoches;
 		this.theApartamento = theApartamento;
 		this.asignarNoches();
 	}
@@ -31,7 +30,8 @@ public class Estancia {
 
 	// todo: hacer esto.
 	// método de requisito
-	public void calcularPrecioEstadia() {
+	public double calcularPrecioEstadia() {
+		return 0.0;
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //

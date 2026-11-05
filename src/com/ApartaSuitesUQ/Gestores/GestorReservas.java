@@ -1,15 +1,14 @@
 package com.ApartaSuitesUQ.Gestores;
 
-import com.ApartaSuitesUQ.Reserva.Reserva;
-import com.ApartaSuitesUQ.Reserva.Folio;
+import com.ApartaSuitesUQ.Apartamento.Apartamento;
+import com.ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
-import com.ApartaSuitesUQ.Reserva.EstadoActual;
-import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GestorReservas {
-	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
+	private static ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
 
 	public GestorReservas() {
 	}
@@ -17,11 +16,10 @@ public class GestorReservas {
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public ArrayList<Reserva> getListReservas() {
-		return this.listReservas;
+		return listReservas;
 	}
 
-	public void setListReservas(ArrayList<Reserva> listReservas) {
-		this.listReservas = listReservas;
+	public void setListReservas(ArrayList<Reserva> nuevaListReservas) {	listReservas = nuevaListReservas;
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
@@ -29,7 +27,7 @@ public class GestorReservas {
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añadir cualquiera.
-	public boolean anadirReserva(Reserva reserva) {
+	public static boolean anadirReserva(Reserva reserva) {
 
 		if (reserva == null || reserva.getCodigo() == null ||
 				reserva.getCodigo().trim().isEmpty()) {
@@ -58,16 +56,16 @@ public class GestorReservas {
 	}
 
 	// READ (buscar por id) devuelve objeto o null
-	public Reserva buscarReservaPorCodigo(String codigo) {
+	public static Reserva buscarReservaPorCodigo(String codigo) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return null; // Código inválido
 		}
 
 		Reserva resultado = null;
-		for (int i = 0; i < this.listReservas.size(); i++) {
-			if (codigo.equalsIgnoreCase(this.listReservas.get(i).getCodigo())) {
-				resultado = this.listReservas.get(i);
+		for (int i = 0; i < listReservas.size(); i++) {
+			if (codigo.equalsIgnoreCase(listReservas.get(i).getCodigo())) {
+				resultado = listReservas.get(i);
 			}
 		}
 		return resultado;
@@ -112,10 +110,78 @@ public class GestorReservas {
 		if (reservaRecuperada == null) {
 			return false;
 		} else {
-			this.listReservas.remove(reservaRecuperada);
+			listReservas.remove(reservaRecuperada);
 			return true;
 		}
 	}
 
 	// ========== FIN DE CRUD ========== //
+
+	// ========== INICIO DE FUNCIONES DE VALIDACION ========== //
+	public static boolean validarSinDobleVenta(Apartamento apartamento, LocalDate fechaEntrada, LocalDate fechaSalida){
+
+		return false;
+	}
+
+	public static boolean existeCodigoExterno(String codigoExterno){
+		return false;
+	}
+
+	public static boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes){
+		return false;
+	}
+
+	// ========== FIN DE FUNCIONES DE VALIDACION ========== //
+
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
+	public static String generarCodigoUnico(){
+		return "A";
+	}
+
+	public static boolean confirmarReserva(String codigoReserva){
+		boolean res = false;
+
+		Reserva reserva = buscarReservaPorCodigo(codigoReserva);
+		if (reserva != null){
+			if (reserva.getEstadoActual() == EstadoActual.PENDIENTE){
+				if(reserva.getTheCanalReserva().nombreCanal() == NombreCanal.PORTAL) {
+					double valorTotal = reserva.getTheApartamento().getTheEstancia().calcularPrecioEstadia();
+					double anticipoNecesario = valorTotal * 0.30;
+					double saldoFolio = reserva.getTheFolio().calcularSaldo();
+
+					if (saldoFolio >= anticipoNecesario){
+						if (reserva.puedePasarA(EstadoActual.CONFIRMADA)){
+							reserva.setEstadoActual(EstadoActual.CONFIRMADA);
+							res = true;
+						}
+					}
+				}
+			}
+		}
+
+		return res;
+	}
+
+	public static boolean cancelarReserva(String codigoReserva){
+		boolean res = false;
+		Reserva reserva = buscarReservaPorCodigo(codigoReserva);
+
+		if (reserva.getEstadoActual() == EstadoActual.PENDIENTE || reserva.getEstadoActual() == EstadoActual.CONFIRMADA ){
+			if(reserva.puedePasarA(EstadoActual.CANCELADA)){
+				double montoDevolucion = reserva.calcularDevolucion();
+				boolean resDevolucion = reserva.getTheFolio().registrarDevolucion(montoDevolucion);
+
+				if (resDevolucion){
+					reserva.setEstadoActual(EstadoActual.CANCELADA);
+					res = true;
+				}
+			}
+		}
+
+		return res;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
+
 }

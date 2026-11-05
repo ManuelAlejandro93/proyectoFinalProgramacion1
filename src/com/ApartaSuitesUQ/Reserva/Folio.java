@@ -14,15 +14,8 @@ public class Folio {
 	// calcularSaldo();
 	// }
 
-	public Folio(ArrayList<Pago> listPagos, ArrayList<Cargo> listCargos, double saldo) {
-		this.listPagos = listPagos;
-		this.listCargos = listCargos;
+	public Folio(double saldo) {
 		this.saldo = saldo;
-	}
-
-	// todo: arreglar esto después, entender bien qué hay que hacer.
-	public double calcularSaldo() {
-		return 0.0;
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //
@@ -52,4 +45,18 @@ public class Folio {
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
+
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
+
+	// todo: arreglar esto después, entender bien qué hay que hacer.
+	public double calcularSaldo() {
+		return 0.0;
+	}
+
+	public boolean registrarDevolucion(double montoDevolucion){
+		return false;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }

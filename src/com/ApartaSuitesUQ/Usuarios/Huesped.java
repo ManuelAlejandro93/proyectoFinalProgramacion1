@@ -1,8 +1,8 @@
 package com.ApartaSuitesUQ.Usuarios;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
-import com.ApartaSuitesUQ.Reserva.Pago;
-import com.ApartaSuitesUQ.Reserva.Reserva;
+import com.ApartaSuitesUQ.Gestores.GestorReservas;
+import com.ApartaSuitesUQ.Reserva.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -82,7 +82,28 @@ public class Huesped extends Persona {
    * @return
    *         devuelve falso o verdadero si se pudo hacer o no la reserva
    */
-  public boolean crearReservaEnPortal(ArrayList<Huesped> huespedes) {
+  public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate
+                                       fechaEntrada, LocalDate fechaSalida) {
+    if(GestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)){
+      if(GestorReservas.validarCapacidadMaxima(apartamento, ocupantes)){
+        String codigoReserva = GestorReservas.generarCodigoUnico();
+
+//                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
+        Folio nuevoFolio = new Folio(0);
+        CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "");
+
+        Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio, canalExterno, apartamento, fechaEntrada, fechaSalida);
+
+        boolean res = GestorReservas.anadirReserva(nuevaReserva);
+
+        if (res){
+          // Operacion Exitosa
+        }else{
+          //Operacion Fallida
+        }
+      }
+    }
+
     return false;
   }
 
