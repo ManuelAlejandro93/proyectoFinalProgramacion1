@@ -97,6 +97,7 @@ public class GestorReservas {
 				return false;
 			}
 
+			// Comprueba si los periodos se solapan.
 			if (entrada.isBefore(salidaReserva) && entradaReserva.isBefore(salida)) {
 				return false;
 			}
@@ -107,25 +108,44 @@ public class GestorReservas {
 
 	// ========== INICIO DE CRUD ========== //
 
-	// CREATE - añadir cualquiera.
+	// CREATE - añade una reserva si cumple las validaciones.
 	public boolean anadirReserva(Reserva reserva) {
-
 		if (reserva == null || reserva.getCodigo() == null ||
 				reserva.getCodigo().trim().isEmpty()) {
 			return false; // Código inválido
 		}
+
 		if (this.buscarReservaPorCodigo(reserva.getCodigo()) != null) {
 			return false; // Código duplicado
+		}
+
+		Estancia estancia = reserva.getTheEstancia();
+		Apartamento apartamento = reserva.getTheApartamento();
+
+		// Valida capacidad y disponibilidad cuando la reserva tiene
+		// apartamento y estancia asociados.
+		if (estancia != null && apartamento != null) {
+			if (!validarCapacidadMaxima(apartamento, estancia.getListHuespedes())) {
+				return false; // Excede la capacidad o faltan datos de ocupantes
+			}
+
+			if (!validarSinDobleVenta(
+					apartamento,
+					estancia.getFechaEntrada(),
+					estancia.getFechaSalida(),
+					null)) {
+				return false; // El apartamento no está disponible en esas fechas
+			}
 		}
 
 		this.listReservas.add(reserva);
 		return true;
 	}
 
-	// READ (listar todas como texto, para mostrar en JOptionPane)
-	// Leer
+	// READ: lista todas las reservas como texto.
 	public String mostrarTodasReservas() {
 		String resultado = "";
+
 		if (this.listReservas == null || this.listReservas.isEmpty()) {
 			return "No hay reservas registradas.";
 		}
@@ -133,30 +153,31 @@ public class GestorReservas {
 		for (int i = 0; i < this.listReservas.size(); i++) {
 			resultado = resultado + this.listReservas.get(i).toString() + "\n";
 		}
+
 		return resultado;
 	}
 
-	// READ (buscar por id) devuelve objeto o null
+	// READ: busca una reserva por código.
 	public Reserva buscarReservaPorCodigo(String codigo) {
-
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return null; // Código inválido
 		}
 
 		Reserva resultado = null;
+
 		for (int i = 0; i < this.listReservas.size(); i++) {
 			if (codigo.equalsIgnoreCase(this.listReservas.get(i).getCodigo())) {
 				resultado = this.listReservas.get(i);
 			}
 		}
+
 		return resultado;
 	}
 
-	// UPDATE - actualiza objeto
+	// UPDATE: actualiza la información de una reserva.
 	public boolean actualizarInformacionReserva(
 			String codigo, Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
-			Folio nuevoFolio,
-			CanalReserva nuevoCanalReserva) {
+			Folio nuevoFolio, CanalReserva nuevoCanalReserva) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
@@ -169,9 +190,11 @@ public class GestorReservas {
 		}
 
 		Reserva reservaRecuperada = this.buscarReservaPorCodigo(codigo);
+
 		if (reservaRecuperada == null) {
 			return false;
 		}
+
 		reservaRecuperada.setTheHuesped(nuevoHuespedEncargado);
 		reservaRecuperada.setEstadoActual(nuevoEstadoActual);
 		reservaRecuperada.setTheFolio(nuevoFolio);
@@ -180,20 +203,20 @@ public class GestorReservas {
 		return true;
 	}
 
-	// DELETE objeto
+	// DELETE: elimina una reserva por código.
 	public boolean eliminarReserva(String codigo) {
-
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
 
 		Reserva reservaRecuperada = this.buscarReservaPorCodigo(codigo);
+
 		if (reservaRecuperada == null) {
 			return false;
-		} else {
-			this.listReservas.remove(reservaRecuperada);
-			return true;
 		}
+
+		this.listReservas.remove(reservaRecuperada);
+		return true;
 	}
 
 	// ========== FIN DE CRUD ========== //
