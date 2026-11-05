@@ -34,6 +34,23 @@ public class Folio {
 		return saldo;
 	}
 
+	public boolean anadirPago(Pago pago) {
+		if (pago == null || pago.getMonto() <= 0) {
+			return false;
+		}
+
+		if (pago.getMedioDePago() == null || pago.getFecha() == null) {
+			return false;
+		}
+
+		if (listPagos == null) {
+			listPagos = new ArrayList<Pago>();
+		}
+
+		listPagos.add(pago);
+		return true;
+	}
+
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public ArrayList<Pago> getListPagos() {
