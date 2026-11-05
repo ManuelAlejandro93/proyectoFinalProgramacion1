@@ -1,6 +1,8 @@
 package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
+import com.ApartaSuitesUQ.Apartamento.Bloqueo;
+import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
 import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Reserva.Reserva;
 import com.ApartaSuitesUQ.Reserva.Folio;
@@ -13,8 +15,13 @@ import java.util.ArrayList;
 
 public class GestorReservas {
 	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
+	private GestorApartamentos theGestorApartamentos;
 
 	public GestorReservas() {
+	}
+
+	public GestorReservas(GestorApartamentos theGestorApartamentos) {
+		this.theGestorApartamentos = theGestorApartamentos;
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //
@@ -27,6 +34,14 @@ public class GestorReservas {
 		this.listReservas = listReservas;
 	}
 
+	public GestorApartamentos getTheGestorApartamentos() {
+		return this.theGestorApartamentos;
+	}
+
+	public void setTheGestorApartamentos(GestorApartamentos theGestorApartamentos) {
+		this.theGestorApartamentos = theGestorApartamentos;
+	}
+
 	// ========== FIN DE GETS Y SETS ========== //
 
 	// Valida que todos los ocupantes, incluidos los menores de 6 años,
@@ -35,11 +50,16 @@ public class GestorReservas {
 		if (apartamento == null || ocupantes == null) {
 			return false;
 		}
+		return validarCapacidadMaxima(apartamento, ocupantes.size());
+	}
 
-		int totalOcupantes = ocupantes.size();
-		int capacidadMaxima = apartamento.getCapacidad();
-
-		return totalOcupantes <= capacidadMaxima;
+	// Sobrecarga para validar por número de personas, sin necesidad de crear la
+	// lista.
+	public boolean validarCapacidadMaxima(Apartamento apartamento, int totalOcupantes) {
+		if (apartamento == null || totalOcupantes < 0) {
+			return false;
+		}
+		return totalOcupantes <= apartamento.getCapacidad();
 	}
 
 	// Valida que una reserva no comparta noches con otra reserva activa
@@ -106,6 +126,91 @@ public class GestorReservas {
 		return true;
 	}
 
+	// Valida que el rango [entrada, salida) no se cruce con ningún bloqueo
+	// del apartamento. Bloqueo se interpreta como [fechaInicio, fechafinal]
+	// inclusive.
+	public boolean validarBloqueos(Apartamento apartamento, LocalDate entrada, LocalDate salida) {
+		if (apartamento == null || entrada == null || salida == null || !entrada.isBefore(salida)) {
+			return false;
+		}
+
+		ArrayList<Bloqueo> bloqueos = apartamento.getListBloqueos();
+		if (bloqueos == null || bloqueos.isEmpty()) {
+			return true;
+		}
+
+		for (Bloqueo bloqueo : bloqueos) {
+			if (bloqueo == null) {
+				continue;
+			}
+			LocalDate inicio = bloqueo.getFechaInicio();
+			LocalDate fin = bloqueo.getFechafinal();
+			if (inicio == null || fin == null || fin.isBefore(inicio)) {
+				continue;
+			}
+
+			// No hay cruce si la reserva termina antes o justo cuando inicia el bloqueo,
+			// o si empieza después de que termina el bloqueo.
+			boolean terminaAntesDeBloqueo = !salida.isAfter(inicio); // salida <= inicio
+			boolean empiezaDespuesDeBloqueo = entrada.isAfter(fin); // entrada > fin
+
+			if (!terminaAntesDeBloqueo && !empiezaDespuesDeBloqueo) {
+				return false; // hay bloqueo
+			}
+		}
+
+		return true;
+	}
+
+	// Retorna apartamentos con capacidad suficiente, sin doble venta,
+	// sin bloqueos y que no estén fuera de servicio.
+	public ArrayList<Apartamento> consultarApartamentosDisponibles(LocalDate entrada, LocalDate salida,
+			int capacidadMinima) {
+		if (this.theGestorApartamentos == null || this.theGestorApartamentos.getListApartamentos() == null) {
+			return new ArrayList<Apartamento>();
+		}
+		return consultarApartamentosDisponibles(entrada, salida, capacidadMinima,
+				this.theGestorApartamentos.getListApartamentos());
+	}
+
+	// Sobrecarga que recibe la lista para no depender de la inyección.
+	public ArrayList<Apartamento> consultarApartamentosDisponibles(LocalDate entrada, LocalDate salida,
+			int capacidadMinima, ArrayList<Apartamento> todos) {
+		ArrayList<Apartamento> disponibles = new ArrayList<Apartamento>();
+
+		if (entrada == null || salida == null || !entrada.isBefore(salida)) {
+			return disponibles;
+		}
+		if (capacidadMinima <= 0 || todos == null) {
+			return disponibles;
+		}
+
+		for (Apartamento apartamento : todos) {
+			if (apartamento == null) {
+				continue;
+			}
+			// 1. Capacidad mínima
+			if (!validarCapacidadMaxima(apartamento, capacidadMinima)) {
+				continue;
+			}
+			// 2. No debe estar fuera de servicio
+			if (apartamento.getEstadoOperativo() == EstadoOperativo.FUERA_DE_SERVICIO) {
+				continue;
+			}
+			// 3. Sin doble venta
+			if (!validarSinDobleVenta(apartamento, entrada, salida, null)) {
+				continue;
+			}
+			// 4. Sin bloqueos
+			if (!validarBloqueos(apartamento, entrada, salida)) {
+				continue;
+			}
+			disponibles.add(apartamento);
+		}
+
+		return disponibles;
+	}
+
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añade una reserva si cumple las validaciones.
@@ -122,19 +227,19 @@ public class GestorReservas {
 		Estancia estancia = reserva.getTheEstancia();
 		Apartamento apartamento = reserva.getTheApartamento();
 
-		// Valida capacidad y disponibilidad cuando la reserva tiene
-		// apartamento y estancia asociados.
+		// Valida capacidad, disponibilidad y bloqueos cuando hay datos suficientes.
 		if (estancia != null && apartamento != null) {
+			if (apartamento.getEstadoOperativo() == EstadoOperativo.FUERA_DE_SERVICIO) {
+				return false;
+			}
 			if (!validarCapacidadMaxima(apartamento, estancia.getListHuespedes())) {
 				return false; // Excede la capacidad o faltan datos de ocupantes
 			}
-
-			if (!validarSinDobleVenta(
-					apartamento,
-					estancia.getFechaEntrada(),
-					estancia.getFechaSalida(),
-					null)) {
-				return false; // El apartamento no está disponible en esas fechas
+			if (!validarSinDobleVenta(apartamento, estancia.getFechaEntrada(), estancia.getFechaSalida(), null)) {
+				return false; // No disponible en esas fechas
+			}
+			if (!validarBloqueos(apartamento, estancia.getFechaEntrada(), estancia.getFechaSalida())) {
+				return false; // Hay bloqueo en esas fechas
 			}
 		}
 
