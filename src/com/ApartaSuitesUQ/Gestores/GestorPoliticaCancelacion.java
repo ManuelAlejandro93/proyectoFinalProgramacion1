@@ -2,6 +2,9 @@ package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.PoliticaDeCancelacion;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 public class GestorPoliticaCancelacion {
 	private PoliticaDeCancelacion politicaDeCancelacion = new PoliticaDeCancelacion(1.0, 0.5, 0.0);
 	// Política de cancelación:
@@ -12,46 +15,10 @@ public class GestorPoliticaCancelacion {
 	public GestorPoliticaCancelacion() {
 	}
 
-	public boolean actualizarDevolucionCompleta(double nuevaDevolucionCompleta) {
-		if (nuevaDevolucionCompleta >= 0 && nuevaDevolucionCompleta <= 1) {
-			politicaDeCancelacion.setDevolucionCompleta(nuevaDevolucionCompleta);
-			return true;
-		}
-		return false;
-	}
-
-	public boolean actualizarDevolucionParcial(double nuevaDevolucionParcial) {
-		if (nuevaDevolucionParcial >= 0 && nuevaDevolucionParcial <= 1) {
-			politicaDeCancelacion.setDevolucionParcial(nuevaDevolucionParcial);
-			return true;
-		}
-		return false;
-	}
-
-	public boolean actualizarSinDevolucion(double nuevoSinDevolucion) {
-		if (nuevoSinDevolucion >= 0 && nuevoSinDevolucion <= 1) {
-			politicaDeCancelacion.setSinDevolucion(nuevoSinDevolucion);
-			return true;
-		}
-		return false;
-	}
-
-	public double obtenerDevolucionCompleta() {
-		return politicaDeCancelacion.getDevolucionCompleta();
-	}
-
-	public double obtenerDevolucionParcial() {
-		return politicaDeCancelacion.getDevolucionParcial();
-	}
-
-	public double obtenerSinDevolucion() {
-		return politicaDeCancelacion.getSinDevolucion();
-	}
-
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public PoliticaDeCancelacion getPoliticaDeCancelacion() {
-		return politicaDeCancelacion;
+		return this.politicaDeCancelacion;
 	}
 
 	public void setPoliticaDeCancelacion(PoliticaDeCancelacion politicaDeCancelacion) {
@@ -59,4 +26,62 @@ public class GestorPoliticaCancelacion {
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
+
+	public boolean actualizarDevolucionCompleta(double nuevaDevolucionCompleta) {
+		if (nuevaDevolucionCompleta >= 0 && nuevaDevolucionCompleta <= 1) {
+			this.politicaDeCancelacion.setDevolucionCompleta(nuevaDevolucionCompleta);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean actualizarDevolucionParcial(double nuevaDevolucionParcial) {
+		if (nuevaDevolucionParcial >= 0 && nuevaDevolucionParcial <= 1) {
+			this.politicaDeCancelacion.setDevolucionParcial(nuevaDevolucionParcial);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean actualizarSinDevolucion(double nuevoSinDevolucion) {
+		if (nuevoSinDevolucion >= 0 && nuevoSinDevolucion <= 1) {
+			this.politicaDeCancelacion.setSinDevolucion(nuevoSinDevolucion);
+			return true;
+		}
+		return false;
+	}
+
+	public double obtenerDevolucionCompleta() {
+		return this.politicaDeCancelacion.getDevolucionCompleta();
+	}
+
+	public double obtenerDevolucionParcial() {
+		return this.politicaDeCancelacion.getDevolucionParcial();
+	}
+
+	public double obtenerSinDevolucion() {
+		return this.politicaDeCancelacion.getSinDevolucion();
+	}
+
+	// Calcula el monto de devolución según los días de antelación.
+	public double calcularDevolicion(double valorOriginal, LocalDate fechaEntrada) {
+		if (fechaEntrada == null) {
+			return 0.0;
+		}
+
+		LocalDate hoy = LocalDate.now();
+		long diasAntelacion = ChronoUnit.DAYS.between(hoy, fechaEntrada);
+		double porcentajeDevolucion = 0.0;
+
+		if (diasAntelacion > 7) {
+			porcentajeDevolucion = this.obtenerDevolucionCompleta();
+		} else if (diasAntelacion >= 2) {
+			porcentajeDevolucion = this.obtenerDevolucionParcial();
+		} else {
+			porcentajeDevolucion = this.obtenerSinDevolucion();
+		}
+
+		double montoDevolucion = valorOriginal * porcentajeDevolucion;
+		return montoDevolucion;
+	}
 }

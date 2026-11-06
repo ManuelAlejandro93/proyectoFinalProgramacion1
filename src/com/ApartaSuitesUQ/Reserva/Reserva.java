@@ -3,6 +3,10 @@ package com.ApartaSuitesUQ.Reserva;
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
 import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Gestores.GestorPoliticaCancelacion;
+import com.ApartaSuitesUQ.Usuarios.Huesped;
+
+import java.time.LocalDate;
 
 import java.time.LocalDate;
 
@@ -12,11 +16,20 @@ public class Reserva {
     private LocalDate fechaEntrada;
     private LocalDate fechaSalida;
 
-    private Huesped theHuesped;
-    private Folio theFolio;
-    private CanalReserva theCanalReserva;
-    private Apartamento theApartamento;
+	private Huesped theHuesped;
+	private Folio theFolio;
+	private CanalReserva theCanalReserva;
+	private Apartamento theApartamento;
+	private Estancia theEstancia;
+	private GestorPoliticaCancelacion gestorPoliticaCancelacion;
 
+	// Permite crear la reserva con su estancia y el gestor de política de
+	// cancelación.
+	public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
+			CanalReserva canalReserva, Apartamento theApartamento, Estancia theEstancia,
+			GestorPoliticaCancelacion gestorPoliticaCancelacion) {
+		this.codigo = codigo;
+		this.estadoActual = estadoActual;
     public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
                    CanalReserva canalReserva, Apartamento theApartamento, LocalDate fechaEntrada, LocalDate fechaSalida) {
         this.codigo = codigo;
@@ -29,6 +42,55 @@ public class Reserva {
         this.theCanalReserva = canalReserva;
         this.theApartamento = theApartamento;
     }
+		this.theHuesped = theHuesped;
+		this.theFolio = theFolio;
+		this.theCanalReserva = canalReserva;
+		this.theApartamento = theApartamento;
+		this.theEstancia = theEstancia;
+		this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
+	}
+
+	// Valida si el estado actual permite pasar al nuevo estado.
+	public boolean puedePasarA(EstadoActual nuevoEstado) {
+		if (this.estadoActual == null || nuevoEstado == null) {
+			return false;
+		}
+
+		switch (this.estadoActual) {
+			case PENDIENTE:
+				return nuevoEstado == EstadoActual.CONFIRMADA
+						|| nuevoEstado == EstadoActual.CANCELADA;
+
+			case CONFIRMADA:
+				return nuevoEstado == EstadoActual.EN_CURSO
+						|| nuevoEstado == EstadoActual.CANCELADA
+						|| nuevoEstado == EstadoActual.NO_SHOWN;
+
+			case EN_CURSO:
+				return nuevoEstado == EstadoActual.FINALIZADA;
+
+			case FINALIZADA:
+			case CANCELADA:
+			case NO_SHOWN:
+				return false;
+
+			default:
+				return false;
+		}
+	}
+
+	// Calcula la devolución según el valor de la estancia y la política de
+	// cancelación.
+	public double calcularDevolucion() {
+		if (this.theEstancia == null || this.gestorPoliticaCancelacion == null) {
+			return 0.0;
+		}
+
+		LocalDate fechaEntrada = this.theEstancia.getFechaEntrada();
+		double valorTotal = this.theEstancia.calcularPrecioEstadia();
+
+		return this.gestorPoliticaCancelacion.calcularDevolicion(valorTotal, fechaEntrada);
+	}
 
     // ========== INICIO DE GETS Y SETS ========== //
 
@@ -46,11 +108,13 @@ public class Reserva {
         return estadoActual;
     }
 
-    public void setEstadoActual(EstadoActual estadoActual) {
-        if (estadoActual != null) {
-            this.estadoActual = estadoActual;
-        }
-    }
+	public boolean setEstadoActual(EstadoActual estadoActual) {
+		if (this.puedePasarA(estadoActual)) {
+			this.estadoActual = estadoActual;
+			return true;
+		}
+		return false;
+	}
 
     public Huesped getTheHuesped() {
         return theHuesped;
@@ -90,23 +154,23 @@ public class Reserva {
         this.theApartamento = theApartamento;
     }
 
-    public LocalDate getFechaEntrada() {
-        return fechaEntrada;
-    }
+	public Estancia getTheEstancia() {
+		return this.theEstancia;
+	}
 
-    public void setFechaEntrada(LocalDate fechaEntrada) {
-        this.fechaEntrada = fechaEntrada;
-    }
+	public void setTheEstancia(Estancia theEstancia) {
+		this.theEstancia = theEstancia;
+	}
 
-    public LocalDate getFechaSalida() {
-        return fechaSalida;
-    }
+	public GestorPoliticaCancelacion getGestorPoliticaCancelacion() {
+		return this.gestorPoliticaCancelacion;
+	}
 
-    public void setFechaSalida(LocalDate fechaSalida) {
-        this.fechaSalida = fechaSalida;
-    }
+	public void setGestorPoliticaCancelacion(GestorPoliticaCancelacion gestorPoliticaCancelacion) {
+		this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
+	}
 
-    // ========== FIN DE GETS Y SETS ========== //
+	// ========== FIN DE GETS Y SETS ========== //
 
     // ========== INICIO DE FUNCIONES DE VALIDACION ========== //
 
