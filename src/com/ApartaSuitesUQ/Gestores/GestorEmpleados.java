@@ -5,33 +5,22 @@ import com.ApartaSuitesUQ.Usuarios.Empleado;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class GestorEmpleados {
+public class GestorEmpleados implements IGestor<Empleado, String> {
 	private ArrayList<Empleado> listEmpleados = new ArrayList<Empleado>();
 
 	public GestorEmpleados() {
 	}
 
-	// ========== INICIO DE GETS Y SETS ========== //
-
-	public ArrayList<Empleado> getListEmpleados() {
-		return this.listEmpleados;
-	}
-
-	public void setListEmpleados(ArrayList<Empleado> listEmpleados) {
-		this.listEmpleados = listEmpleados;
-	}
-
-	// ========== FIN DE GETS Y SETS ========== //
-
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añadir cualquiera.
-	public boolean anadirEmpleado(Empleado empleado) {
+	@Override
+	public boolean crear(Empleado empleado) {
 		if (empleado == null || empleado.getCodigo() == null ||
 				empleado.getCodigo().trim().isEmpty()) {
 			return false; // Código inválido
 		}
-		if (buscarEmpleadoPorCodigo(empleado.getCodigo()) != null) {
+		if (consultar(empleado.getCodigo()) != null) {
 			return false; // Código duplicado
 		}
 		listEmpleados.add(empleado);
@@ -39,8 +28,8 @@ public class GestorEmpleados {
 	}
 
 	// READ (listar todas como texto, para mostrar en JOptionPane)
-	// Leer
-	public String mostrarTodosEmpleados() {
+	@Override
+	public String consultarTodos() {
 		String resultado = "";
 		if (listEmpleados == null || listEmpleados.isEmpty()) {
 			return "No hay empleados registradas.";
@@ -53,7 +42,8 @@ public class GestorEmpleados {
 	}
 
 	// READ (buscar por id) devuelve objeto o null
-	public Empleado buscarEmpleadoPorCodigo(String codigo) {
+	@Override
+	public Empleado consultar(String codigo) {
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return null; // Código inválido
 		}
@@ -67,33 +57,37 @@ public class GestorEmpleados {
 	}
 
 	// UPDATE - actualiza objeto
-	public boolean actualizarInformacionEmpleado(
-			String nuevoNombre, String codigo, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
-			String nuevoUsuario, String nuevaContrasenia) {
+	@Override
+	public boolean actualizar(
+			String codigo, Empleado empleado) {
+
+//		String nuevoNombre, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
+//				String nuevoUsuario, String nuevaContrasenia
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
 
-		Empleado empleadoRecuperado = buscarEmpleadoPorCodigo(codigo);
+		Empleado empleadoRecuperado = consultar(codigo);
 		if (empleadoRecuperado == null) {
 			return false;
 		}
-		empleadoRecuperado.setNombre(nuevoNombre);
-		empleadoRecuperado.setFechaNacimiento(nuevaFechaNacimiento);
-		empleadoRecuperado.setTelefono(nuevoTelefono);
-		empleadoRecuperado.setCorreo(nuevoCorreo);
-		empleadoRecuperado.setUsuario(nuevoUsuario);
-		empleadoRecuperado.setContrasenia(nuevaContrasenia);
+		empleadoRecuperado.setNombre(empleado.getNombre());
+		empleadoRecuperado.setFechaNacimiento(empleado.getFechaNacimiento());
+		empleadoRecuperado.setTelefono(empleado.getTelefono());
+		empleadoRecuperado.setCorreo(empleado.getCorreo());
+		empleadoRecuperado.setUsuario(empleado.getUsuario());
+		empleadoRecuperado.setContrasenia(empleado.getContrasenia());
 		return true;
 	}
 
 	// DELETE objeto
-	public boolean eliminarEmpleado(String codigo) {
+	@Override
+	public boolean borrar(String codigo) {
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
-		Empleado empleadoRecuperado = buscarEmpleadoPorCodigo(codigo);
+		Empleado empleadoRecuperado = consultar(codigo);
 		if (empleadoRecuperado == null) {
 			return false;
 		} else {
@@ -103,4 +97,16 @@ public class GestorEmpleados {
 	}
 
 	// ========== FIN DE CRUD ========== //
+
+	// ========== INICIO DE GETS Y SETS ========== //
+
+	public ArrayList<Empleado> getListEmpleados() {
+		return this.listEmpleados;
+	}
+
+	public void setListEmpleados(ArrayList<Empleado> listEmpleados) {
+		this.listEmpleados = listEmpleados;
+	}
+
+	// ========== FIN DE GETS Y SETS ========== //
 }

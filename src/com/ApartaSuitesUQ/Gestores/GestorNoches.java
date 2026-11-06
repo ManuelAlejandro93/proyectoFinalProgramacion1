@@ -2,36 +2,26 @@ package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Estancia.Noche;
 import com.ApartaSuitesUQ.Estancia.Temporada;
+import com.ApartaSuitesUQ.Usuarios.Huesped;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class GestorNoches {
+public class GestorNoches implements IGestor<Noche, String> {
 	private ArrayList<Noche> listNoches = new ArrayList<Noche>();
 
 	public GestorNoches() {
 	}
 
-	// ========== INICIO DE GETS Y SETS ========== //
-
-	public ArrayList<Noche> getListNoches() {
-		return this.listNoches;
-	}
-
-	public void setListNoches(ArrayList<Noche> listNoches) {
-		this.listNoches = listNoches;
-	}
-
-	// ========== FIN DE GETS Y SETS ========== //
-
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añadir cualquiera.
-	public boolean anadirNoche(Noche noche) {
+	@Override
+	public boolean crear(Noche noche) {
 		if (noche == null || noche.getFecha() == null) {
 			return false; // Fecha inválida
 		}
-		if (buscarNochePorFecha(noche.getFecha()) != null) {
+		if (consultarPorFecha(noche.getFecha()) != null) {
 			return false; // Fecha duplicada
 		}
 		listNoches.add(noche);
@@ -39,8 +29,8 @@ public class GestorNoches {
 	}
 
 	// READ (listar todas como texto, para mostrar en JOptionPane)
-	// Leer
-	public String mostrarTodasNoches() {
+	@Override
+	public String consultarTodos() {
 		String resultado = "";
 		if (listNoches == null || listNoches.isEmpty()) {
 			return "No hay noches registradas.";
@@ -53,7 +43,13 @@ public class GestorNoches {
 	}
 
 	// READ (buscar por id) devuelve objeto o null
-	public Noche buscarNochePorFecha(LocalDate fecha) {
+	@Override
+	public Noche consultar(String codigo) {
+		return null;
+	}
+
+	// READ (buscar por fecha) devuelve objeto o null
+	public Noche consultarPorFecha(LocalDate fecha) {
 		if (fecha == null) {
 			return null; // Fecha inválida
 		}
@@ -66,8 +62,14 @@ public class GestorNoches {
 		return resultado;
 	}
 
-	// UPDATE - actualiza objeto
-	public boolean actualizarInformacionNoche(
+	// UPDATE - actualiza objeto por codigo
+	@Override
+	public boolean actualizar(String codigo, Noche noche){
+		return false;
+	}
+
+	// UPDATE - actualiza objeto por fecha
+	public boolean actualizarPorFecha(
             LocalDate fecha, Temporada nuevaTemporada, double nuevoPrecio) {
 
 		if (fecha == null) {
@@ -80,7 +82,7 @@ public class GestorNoches {
 			return false; // Precio inválido
 		}
 
-		Noche nocheRecuperada = buscarNochePorFecha(fecha);
+		Noche nocheRecuperada = consultarPorFecha(fecha);
 		if (nocheRecuperada == null) {
 			return false;
 		}
@@ -90,13 +92,19 @@ public class GestorNoches {
 		return true;
 	}
 
-	// DELETE objeto
-	public boolean eliminarNoche(LocalDate fecha) {
+	// DELETE objeto por id
+	@Override
+	public boolean borrar(String codigo){
+		return false;
+	}
+
+	// DELETE objeto por fecha
+	public boolean borrarPorFecha(LocalDate fecha) {
 
 		if (fecha == null) {
 			return false; // Fecha inválida
 		}
-		Noche nocheRecuperada = buscarNochePorFecha(fecha);
+		Noche nocheRecuperada = consultarPorFecha(fecha);
 		if (nocheRecuperada == null) {
 			return false;
 		} else {
@@ -106,4 +114,16 @@ public class GestorNoches {
 	}
 
 	// ========== FIN DE CRUD ========== //
+
+	// ========== INICIO DE GETS Y SETS ========== //
+
+	public ArrayList<Noche> getListNoches() {
+		return this.listNoches;
+	}
+
+	public void setListNoches(ArrayList<Noche> listNoches) {
+		this.listNoches = listNoches;
+	}
+
+	// ========== FIN DE GETS Y SETS ========== //
 }

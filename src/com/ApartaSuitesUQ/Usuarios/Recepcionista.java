@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 public class Recepcionista extends Empleado {
 
+    //Gestores
+    GestorReservas gestorReservas = new GestorReservas();
+
     public Recepcionista(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, String usuario, String contrasenia) {
         super(nombre, codigo, fechaNacimiento, telefono, correo, usuario, contrasenia);
     }
@@ -19,8 +22,8 @@ public class Recepcionista extends Empleado {
     public void registrarReservasPorCanalDirecto(Huesped huespedTitular,
                                                  ArrayList<Huesped> ocupantes, Apartamento apartamento,
                                                  LocalDate fechaEntrada, LocalDate fechaSalida) {
-        if (GestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)) {
-            String codigoReserva = GestorReservas.generarCodigoUnico();
+        if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)) {
+            String codigoReserva = gestorReservas.generarCodigoUnico();
 
 //            Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
             Folio nuevoFolio = new Folio(0);
@@ -28,7 +31,7 @@ public class Recepcionista extends Empleado {
 
             Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio, canalDirecto, apartamento, fechaEntrada, fechaSalida);
 
-            boolean res = GestorReservas.anadirReserva(nuevaReserva);
+            boolean res = gestorReservas.crear(nuevaReserva);
 
             if (res) {
                 //Operacion Exitosa
@@ -43,10 +46,10 @@ public class Recepcionista extends Empleado {
                                                ArrayList<Huesped> ocupantes, Apartamento apartamento,
                                                LocalDate fechaEntrada, LocalDate fechaSalida) {
 
-        if (!GestorReservas.existeCodigoExterno(codigoExterno)) {
-            if (GestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)) {
-                if (GestorReservas.validarCapacidadMaxima(apartamento, ocupantes)) {
-                    String codigoReserva = GestorReservas.generarCodigoUnico();
+        if (!gestorReservas.existeCodigoExterno(codigoExterno)) {
+            if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)) {
+                if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes)) {
+                    String codigoReserva = gestorReservas.generarCodigoUnico();
 
 //                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
                     Folio nuevoFolio = new Folio(0);
@@ -54,7 +57,7 @@ public class Recepcionista extends Empleado {
 
                     Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio, canalExterno, apartamento, fechaEntrada, fechaSalida);
 
-                    boolean res = GestorReservas.anadirReserva(nuevaReserva);
+                    boolean res = gestorReservas.crear(nuevaReserva);
 
                     if (res){
                         // Operacion Exitosa

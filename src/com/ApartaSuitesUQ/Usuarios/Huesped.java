@@ -13,6 +13,9 @@ public class Huesped extends Persona {
 
   private ArrayList<Reserva> listReservas;
 
+  //Gestores
+  GestorReservas gestorReservas = new GestorReservas();
+
   public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
       ArrayList<Reserva> listReservas) {
     super(nombre, codigo, fechaNacimiento, telefono, correo);
@@ -84,9 +87,9 @@ public class Huesped extends Persona {
    */
   public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate
                                        fechaEntrada, LocalDate fechaSalida) {
-    if(GestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)){
-      if(GestorReservas.validarCapacidadMaxima(apartamento, ocupantes)){
-        String codigoReserva = GestorReservas.generarCodigoUnico();
+    if(gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)){
+      if(gestorReservas.validarCapacidadMaxima(apartamento, ocupantes)){
+        String codigoReserva = gestorReservas.generarCodigoUnico();
 
 //                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
         Folio nuevoFolio = new Folio(0);
@@ -94,7 +97,7 @@ public class Huesped extends Persona {
 
         Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio, canalExterno, apartamento, fechaEntrada, fechaSalida);
 
-        boolean res = GestorReservas.anadirReserva(nuevaReserva);
+        boolean res = gestorReservas.crear(nuevaReserva);
 
         if (res){
           // Operacion Exitosa

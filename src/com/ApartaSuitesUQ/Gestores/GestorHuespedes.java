@@ -5,34 +5,23 @@ import com.ApartaSuitesUQ.Usuarios.Huesped;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class GestorHuespedes {
+public class GestorHuespedes implements IGestor<Huesped, String> {
     private ArrayList<Huesped> listHuespedes = new ArrayList<Huesped>();
 
     public GestorHuespedes() {
     }
 
-    // ========== INICIO DE GETS Y SETS ========== //
-
-    public ArrayList<Huesped> getListHuespedes() {
-        return this.listHuespedes;
-    }
-
-    public void setListHuespedes(ArrayList<Huesped> listHuespedes) {
-        this.listHuespedes = listHuespedes;
-    }
-
-    // ========== FIN DE GETS Y SETS ========== //
-
     // ========== INICIO DE CRUD ========== //
 
     // CREATE - añadir cualquiera.
-    public boolean anadirHuesped(Huesped huesped) {
+    @Override
+    public boolean crear(Huesped huesped) {
         // Validar duplicados y código
         if (huesped == null || huesped.getCodigo() == null ||
                 huesped.getCodigo().trim().isEmpty()) {
             return false; // Código inválido
         }
-        if (buscarHuespedPorCodigo(huesped.getCodigo()) != null) {
+        if (consultar(huesped.getCodigo()) != null) {
             return false; // Código duplicado
         }
         listHuespedes.add(huesped);
@@ -40,8 +29,8 @@ public class GestorHuespedes {
     }
 
     // READ (listar todas como texto, para mostrar en JOptionPane)
-    // Leer
-    public String mostrarTodosHuespedes() {
+    @Override
+    public String consultarTodos() {
         String resultado = "";
         if (listHuespedes == null || listHuespedes.isEmpty()) {
             return "No hay huespedes registrados.";
@@ -54,7 +43,8 @@ public class GestorHuespedes {
     }
 
     // READ (buscar por id) devuelve objeto o null
-    public Huesped buscarHuespedPorCodigo(String codigo) {
+    @Override
+    public Huesped consultar(String codigo) {
         if (codigo == null || codigo.trim().isEmpty()) {
             return null; // Código inválido
         }
@@ -68,34 +58,38 @@ public class GestorHuespedes {
     }
 
     // UPDATE - actualiza objeto
-    public boolean actualizarInformacionHuesped(
-            String nuevoNombre, String codigo, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
-            int nuevaEdad) {
+    @Override
+    public boolean actualizar(
+            String codigo, Huesped huesped) {
+
+//        String nuevoNombre, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
+//        int nuevaEdad
 
         if (codigo == null || codigo.trim().isEmpty()) {
             return false; // Código inválido
         }
 
-        Huesped huespedRecuperado = buscarHuespedPorCodigo(codigo);
+        Huesped huespedRecuperado = consultar(codigo);
         if (huespedRecuperado == null) {
             return false;
         }
 
-        huespedRecuperado.setNombre(nuevoNombre);
-        huespedRecuperado.setFechaNacimiento(nuevaFechaNacimiento);
-        huespedRecuperado.setTelefono(nuevoTelefono);
-        huespedRecuperado.setCorreo(nuevoCorreo);
-        huespedRecuperado.setEdad(nuevaEdad);
+        huespedRecuperado.setNombre(huesped.getNombre());
+        huespedRecuperado.setFechaNacimiento(huesped.getFechaNacimiento());
+        huespedRecuperado.setTelefono(huesped.getTelefono());
+        huespedRecuperado.setCorreo(huesped.getCorreo());
+        huespedRecuperado.setEdad(huesped.getEdad());
         return true;
     }
 
     // DELETE objeto
-    public boolean eliminarHuesped(String codigo) {
+    @Override
+    public boolean borrar(String codigo) {
 
         if (codigo == null || codigo.trim().isEmpty()) {
             return false; // Código inválido
         }
-        Huesped huespedRecuperado = buscarHuespedPorCodigo(codigo);
+        Huesped huespedRecuperado = consultar(codigo);
         if (huespedRecuperado == null) {
             return false;
         } else {
@@ -105,4 +99,16 @@ public class GestorHuespedes {
 
     }
     // ========== FIN DE CRUD ========== //
+
+    // ========== INICIO DE GETS Y SETS ========== //
+
+    public ArrayList<Huesped> getListHuespedes() {
+        return this.listHuespedes;
+    }
+
+    public void setListHuespedes(ArrayList<Huesped> listHuespedes) {
+        this.listHuespedes = listHuespedes;
+    }
+
+    // ========== FIN DE GETS Y SETS ========== //
 }

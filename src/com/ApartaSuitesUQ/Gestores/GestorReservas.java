@@ -7,33 +7,23 @@ import com.ApartaSuitesUQ.Usuarios.Huesped;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class GestorReservas {
-	private static ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
+public class GestorReservas implements IGestor<Reserva, String>{
+	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
 
 	public GestorReservas() {
 	}
 
-	// ========== INICIO DE GETS Y SETS ========== //
-
-	public ArrayList<Reserva> getListReservas() {
-		return listReservas;
-	}
-
-	public void setListReservas(ArrayList<Reserva> nuevaListReservas) {	listReservas = nuevaListReservas;
-	}
-
-	// ========== FIN DE GETS Y SETS ========== //
-
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añadir cualquiera.
-	public static boolean anadirReserva(Reserva reserva) {
+	@Override
+	public boolean crear(Reserva reserva) {
 
 		if (reserva == null || reserva.getCodigo() == null ||
 				reserva.getCodigo().trim().isEmpty()) {
 			return false; // Código inválido
 		}
-		if (buscarReservaPorCodigo(reserva.getCodigo()) != null) {
+		if (consultar(reserva.getCodigo()) != null) {
 			return false; // Código duplicado
 		}
 
@@ -43,7 +33,8 @@ public class GestorReservas {
 
 	// READ (listar todas como texto, para mostrar en JOptionPane)
 	// Leer
-	public String mostrarTodasReservas() {
+	@Override
+	public String consultarTodos() {
 		String resultado = "";
 		if (listReservas == null || listReservas.isEmpty()) {
 			return "No hay reservas registradas.";
@@ -56,7 +47,8 @@ public class GestorReservas {
 	}
 
 	// READ (buscar por id) devuelve objeto o null
-	public static Reserva buscarReservaPorCodigo(String codigo) {
+	@Override
+	public Reserva consultar(String codigo) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return null; // Código inválido
@@ -72,41 +64,45 @@ public class GestorReservas {
 	}
 
 	// UPDATE - actualiza objeto
-	public boolean actualizarInformacionReserva(
-			String codigo, Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
-			Folio nuevoFolio,
-			CanalReserva nuevoCanalReserva) {
+	@Override
+	public boolean actualizar(
+			String codigo, Reserva reserva) {
+
+//		Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
+//				Folio nuevoFolio,
+//				CanalReserva nuevoCanalReserva
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
 
-		if (nuevoHuespedEncargado == null ||
-				nuevoEstadoActual == null || nuevoFolio == null ||
-				nuevoCanalReserva == null) {
+		if (reserva.getTheHuesped() == null ||
+				reserva.getEstadoActual() == null || reserva.getTheFolio() == null ||
+				reserva.getTheCanalReserva() == null) {
 			return false; // Parámetros inválidos
 		}
 
-		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
+		Reserva reservaRecuperada = consultar(codigo);
 		if (reservaRecuperada == null) {
 			return false;
 		}
-		reservaRecuperada.setTheHuesped(nuevoHuespedEncargado);
-		reservaRecuperada.setEstadoActual(nuevoEstadoActual);
-		reservaRecuperada.setTheFolio(nuevoFolio);
-		reservaRecuperada.setTheCanalReserva(nuevoCanalReserva);
+		reservaRecuperada.setTheHuesped(reserva.getTheHuesped());
+		reservaRecuperada.setEstadoActual(reserva.getEstadoActual());
+		reservaRecuperada.setTheFolio(reserva.getTheFolio());
+		reservaRecuperada.setTheCanalReserva(reserva.getTheCanalReserva());
 
 		return true;
 	}
 
 	// DELETE objeto
-	public boolean eliminarReserva(String codigo) {
+	@Override
+	public boolean borrar(String codigo) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
 
-		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
+		Reserva reservaRecuperada = consultar(codigo);
 		if (reservaRecuperada == null) {
 			return false;
 		} else {
@@ -118,16 +114,15 @@ public class GestorReservas {
 	// ========== FIN DE CRUD ========== //
 
 	// ========== INICIO DE FUNCIONES DE VALIDACION ========== //
-	public static boolean validarSinDobleVenta(Apartamento apartamento, LocalDate fechaEntrada, LocalDate fechaSalida){
-
+	public boolean validarSinDobleVenta(Apartamento apartamento, LocalDate fechaEntrada, LocalDate fechaSalida){
 		return false;
 	}
 
-	public static boolean existeCodigoExterno(String codigoExterno){
+	public boolean existeCodigoExterno(String codigoExterno){
 		return false;
 	}
 
-	public static boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes){
+	public boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes){
 		return false;
 	}
 
@@ -135,14 +130,14 @@ public class GestorReservas {
 
 	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
 
-	public static String generarCodigoUnico(){
+	public String generarCodigoUnico(){
 		return "A";
 	}
 
-	public static boolean confirmarReserva(String codigoReserva){
+	public boolean confirmarReserva(String codigoReserva){
 		boolean res = false;
 
-		Reserva reserva = buscarReservaPorCodigo(codigoReserva);
+		Reserva reserva = consultar(codigoReserva);
 		if (reserva != null){
 			if (reserva.getEstadoActual() == EstadoActual.PENDIENTE){
 				if(reserva.getTheCanalReserva().nombreCanal() == NombreCanal.PORTAL) {
@@ -163,9 +158,9 @@ public class GestorReservas {
 		return res;
 	}
 
-	public static boolean cancelarReserva(String codigoReserva){
+	public boolean cancelarReserva(String codigoReserva){
 		boolean res = false;
-		Reserva reserva = buscarReservaPorCodigo(codigoReserva);
+		Reserva reserva = consultar(codigoReserva);
 
 		if (reserva.getEstadoActual() == EstadoActual.PENDIENTE || reserva.getEstadoActual() == EstadoActual.CONFIRMADA ){
 			if(reserva.puedePasarA(EstadoActual.CANCELADA)){
@@ -183,5 +178,16 @@ public class GestorReservas {
 	}
 
 	// ========== FIN DE FUNCIONES AUXILIARES ========== //
+
+	// ========== INICIO DE GETS Y SETS ========== //
+
+	public ArrayList<Reserva> getListReservas() {
+		return listReservas;
+	}
+
+	public void setListReservas(ArrayList<Reserva> nuevaListReservas) {	listReservas = nuevaListReservas;
+	}
+
+	// ========== FIN DE GETS Y SETS ========== //
 
 }

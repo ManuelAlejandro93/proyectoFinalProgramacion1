@@ -7,33 +7,22 @@ import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 
 import java.util.ArrayList;
 
-public class GestorApartamentos {
+public class GestorApartamentos implements IGestor<Apartamento, String> {
 	private ArrayList<Apartamento> listApartamentos = new ArrayList<Apartamento>();
 
 	public GestorApartamentos() {
 	}
 
-	// ========== INICIO DE GETS Y SETS ========== //
-
-	public ArrayList<Apartamento> getListApartamentos() {
-		return this.listApartamentos;
-	}
-
-	public void setListApartamentos(ArrayList<Apartamento> listApartamentos) {
-		this.listApartamentos = listApartamentos;
-	}
-
-	// ========== FIN DE GETS Y SETS ========== //
-
 	// ========== INICIO DE CRUD ========== //
 
 	// CREATE - añadir cualquiera.
-	public boolean anadirApartamento(Apartamento apartamento) {
+	@Override
+	public boolean crear(Apartamento apartamento) {
 		if (apartamento == null || apartamento.getCodigo() == null ||
 				apartamento.getCodigo().trim().isEmpty()) {
 			return false; // Código inválido
 		}
-		if (buscarApartamentoPorCodigo(apartamento.getCodigo()) != null) {
+		if (consultar(apartamento.getCodigo()) != null) {
 			return false; // Código duplicado
 		}
 		listApartamentos.add(apartamento);
@@ -41,8 +30,8 @@ public class GestorApartamentos {
 	}
 
 	// READ (listar todas como texto, para mostrar en JOptionPane)
-	// Leer
-	public String mostrarTodosApartamentos() {
+	@Override
+	public String consultarTodos() {
 		String resultado = "";
 		if (listApartamentos == null || listApartamentos.isEmpty()) {
 			return "No hay apartamentos registrados.";
@@ -55,7 +44,8 @@ public class GestorApartamentos {
 	}
 
 	// READ (buscar por id) devuelve objeto o null
-	public Apartamento buscarApartamentoPorCodigo(String codigo) {
+	@Override
+	public Apartamento consultar(String codigo) {
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return null; // Código inválido
 		}
@@ -69,39 +59,43 @@ public class GestorApartamentos {
 	}
 
 	// UPDATE - actualiza objeto
-	public boolean actualizarInformacionApartamento(
-			String codigo, String nuevoNombre, int nuevosDormitorios, int nuevaCapacidad,
-			ArrayList<String> nuevasCaracteristicas,
-			double nuevaTarifaIndividual, EstadoOperativo nuevoEstadoOperativo, String nuevoMotivoFueraDeServicio,
-			ArrayList<Novedad> nuevoNovedades,
-			ArrayList<Bloqueo> nuevoBloqueos) {
+	@Override
+	public boolean actualizar(
+			String codigo, Apartamento apartamento) {
+
+//		String nuevoNombre, int nuevosDormitorios, int nuevaCapacidad,
+//		ArrayList<String> nuevasCaracteristicas,
+//		double nuevaTarifaIndividual, EstadoOperativo nuevoEstadoOperativo, String nuevoMotivoFueraDeServicio,
+//				ArrayList<Novedad> nuevoNovedades,
+//				ArrayList<Bloqueo> nuevoBloqueos
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
 
-		Apartamento apartamentoRecuperado = buscarApartamentoPorCodigo(codigo);
+		Apartamento apartamentoRecuperado = consultar(codigo);
 		if (apartamentoRecuperado == null) {
 			return false;
 		}
-		apartamentoRecuperado.setNombre(nuevoNombre);
-		apartamentoRecuperado.setDormitorios(nuevosDormitorios);
-		apartamentoRecuperado.setCapacidad(nuevaCapacidad);
-		apartamentoRecuperado.setCaracteristicas(nuevasCaracteristicas);
-		apartamentoRecuperado.setTarifaIndividual(nuevaTarifaIndividual);
-		apartamentoRecuperado.setEstadoOperativo(nuevoEstadoOperativo);
-		apartamentoRecuperado.setMotivoFueraDeServicio(nuevoMotivoFueraDeServicio);
-		apartamentoRecuperado.setListNovedades(nuevoNovedades);
-		apartamentoRecuperado.setListBloqueos(nuevoBloqueos);
+		apartamentoRecuperado.setNombre(apartamento.getNombre());
+		apartamentoRecuperado.setDormitorios(apartamento.getDormitorios());
+		apartamentoRecuperado.setCapacidad(apartamento.getCapacidad());
+		apartamentoRecuperado.setCaracteristicas(apartamento.getCaracteristicas());
+		apartamentoRecuperado.setTarifaIndividual(apartamento.getTarifaIndividual());
+		apartamentoRecuperado.setEstadoOperativo(apartamento.getEstadoOperativo());
+		apartamentoRecuperado.setMotivoFueraDeServicio(apartamento.getMotivoFueraDeServicio());
+		apartamentoRecuperado.setListNovedades(apartamento.getListNovedades());
+		apartamentoRecuperado.setListBloqueos(apartamento.getListBloqueos());
 		return true;
 	}
 
 	// DELETE objeto
-	public boolean eliminarApartamento(String codigo) {
+	@Override
+	public boolean borrar(String codigo) {
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
-		Apartamento apartamentoRecuperado = buscarApartamentoPorCodigo(codigo);
+		Apartamento apartamentoRecuperado = consultar(codigo);
 		if (apartamentoRecuperado == null) {
 			return false;
 		} else {
@@ -111,4 +105,16 @@ public class GestorApartamentos {
 	}
 
 	// ========== FIN DE CRUD ========== //
+
+	// ========== INICIO DE GETS Y SETS ========== //
+
+	public ArrayList<Apartamento> getListApartamentos() {
+		return this.listApartamentos;
+	}
+
+	public void setListApartamentos(ArrayList<Apartamento> listApartamentos) {
+		this.listApartamentos = listApartamentos;
+	}
+
+	// ========== FIN DE GETS Y SETS ========== //
 }
