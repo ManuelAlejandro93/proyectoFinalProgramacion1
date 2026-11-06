@@ -59,8 +59,7 @@ public class GestorHuespedes implements IGestor<Huesped, String> {
 
     // UPDATE - actualiza objeto
     @Override
-    public boolean actualizar(
-            String codigo, Huesped huesped) {
+    public boolean actualizar(String codigo, Huesped huesped) {
 
 //        String nuevoNombre, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
 //        int nuevaEdad

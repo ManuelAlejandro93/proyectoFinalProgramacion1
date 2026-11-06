@@ -22,20 +22,20 @@ public class Recepcionista extends Empleado {
     public void registrarReservasPorCanalDirecto(Huesped huespedTitular,
                                                  ArrayList<Huesped> ocupantes, Apartamento apartamento,
                                                  LocalDate fechaEntrada, LocalDate fechaSalida) {
-        if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)) {
-            String codigoReserva = gestorReservas.generarCodigoUnico();
+        String codigoReserva = gestorReservas.generarCodigoUnico();
+        if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
 
-//            Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
+            Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
             Folio nuevoFolio = new Folio(0);
             CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
 
-            Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio, canalDirecto, apartamento, fechaEntrada, fechaSalida);
+            Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio, canalDirecto, apartamento, nuevaEstancia);
 
             boolean res = gestorReservas.crear(nuevaReserva);
 
             if (res) {
                 //Operacion Exitosa
-            }else{
+            } else {
                 //Operacion Fallida
             }
         }
@@ -47,21 +47,21 @@ public class Recepcionista extends Empleado {
                                                LocalDate fechaEntrada, LocalDate fechaSalida) {
 
         if (!gestorReservas.existeCodigoExterno(codigoExterno)) {
-            if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida)) {
-                if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes)) {
-                    String codigoReserva = gestorReservas.generarCodigoUnico();
+            if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes.size())) {
+                String codigoReserva = gestorReservas.generarCodigoUnico();
+                if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
 
-//                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
+                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
                     Folio nuevoFolio = new Folio(0);
                     CanalReserva canalExterno = new CanalReserva(NombreCanal.EXTERNA, codigoExterno);
 
-                    Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio, canalExterno, apartamento, fechaEntrada, fechaSalida);
+                    Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio, canalExterno, apartamento, nuevaEstancia);
 
                     boolean res = gestorReservas.crear(nuevaReserva);
 
-                    if (res){
+                    if (res) {
                         // Operacion Exitosa
-                    }else{
+                    } else {
                         //Operacion Fallida
                     }
                 }

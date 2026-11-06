@@ -60,8 +60,7 @@ public class GestorApartamentos implements IGestor<Apartamento, String> {
 
 	// UPDATE - actualiza objeto
 	@Override
-	public boolean actualizar(
-			String codigo, Apartamento apartamento) {
+	public boolean actualizar(String codigo, Apartamento apartamento) {
 
 //		String nuevoNombre, int nuevosDormitorios, int nuevaCapacidad,
 //		ArrayList<String> nuevasCaracteristicas,

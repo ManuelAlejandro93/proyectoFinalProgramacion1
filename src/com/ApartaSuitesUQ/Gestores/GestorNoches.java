@@ -69,8 +69,7 @@ public class GestorNoches implements IGestor<Noche, String> {
 	}
 
 	// UPDATE - actualiza objeto por fecha
-	public boolean actualizarPorFecha(
-            LocalDate fecha, Temporada nuevaTemporada, double nuevoPrecio) {
+	public boolean actualizarPorFecha(LocalDate fecha, Temporada nuevaTemporada, double nuevoPrecio) {
 
 		if (fecha == null) {
 			return false; // Fecha inválida

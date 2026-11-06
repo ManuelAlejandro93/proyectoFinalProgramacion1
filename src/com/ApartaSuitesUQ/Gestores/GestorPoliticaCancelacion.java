@@ -15,18 +15,6 @@ public class GestorPoliticaCancelacion {
 	public GestorPoliticaCancelacion() {
 	}
 
-	// ========== INICIO DE GETS Y SETS ========== //
-
-	public PoliticaDeCancelacion getPoliticaDeCancelacion() {
-		return this.politicaDeCancelacion;
-	}
-
-	public void setPoliticaDeCancelacion(PoliticaDeCancelacion politicaDeCancelacion) {
-		this.politicaDeCancelacion = politicaDeCancelacion;
-	}
-
-	// ========== FIN DE GETS Y SETS ========== //
-
 	public boolean actualizarDevolucionCompleta(double nuevaDevolucionCompleta) {
 		if (nuevaDevolucionCompleta >= 0 && nuevaDevolucionCompleta <= 1) {
 			this.politicaDeCancelacion.setDevolucionCompleta(nuevaDevolucionCompleta);
@@ -84,4 +72,16 @@ public class GestorPoliticaCancelacion {
 		double montoDevolucion = valorOriginal * porcentajeDevolucion;
 		return montoDevolucion;
 	}
+
+	// ========== INICIO DE GETS Y SETS ========== //
+
+	public PoliticaDeCancelacion getPoliticaDeCancelacion() {
+		return this.politicaDeCancelacion;
+	}
+
+	public void setPoliticaDeCancelacion(PoliticaDeCancelacion politicaDeCancelacion) {
+		this.politicaDeCancelacion = politicaDeCancelacion;
+	}
+
+	// ========== FIN DE GETS Y SETS ========== //
 }

@@ -19,27 +19,6 @@ public class Folio {
 		this.saldo = saldo;
 	}
 
-	// Calcula el saldo a partir de los cargos y los pagos del folio.
-	public double calcularSaldo() {
-		double sumaCargos = 0;
-		double sumaPagos = 0;
-
-		if (this.listCargos != null) {
-			for (Cargo cargo : this.listCargos) {
-				sumaCargos += cargo.getPrecio();
-			}
-		}
-
-		if (this.listPagos != null) {
-			for (Pago pago : this.listPagos) {
-				sumaPagos += pago.getMonto();
-			}
-		}
-
-		this.saldo = sumaCargos - sumaPagos;
-		return this.saldo;
-	}
-
 	// Agrega un pago válido al folio.
 	public boolean anadirPago(Pago pago) {
 		if (pago == null || pago.getMonto() <= 0) {
@@ -90,6 +69,35 @@ public class Folio {
 		return this.anadirPago(devolucion);
 	}
 
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
+	// Calcula el saldo a partir de los cargos y los pagos del folio.
+	public double calcularSaldo() {
+		double sumaCargos = 0;
+		double sumaPagos = 0;
+
+		if (this.listCargos != null) {
+			for (Cargo cargo : this.listCargos) {
+				sumaCargos += cargo.getPrecio();
+			}
+		}
+
+		if (this.listPagos != null) {
+			for (Pago pago : this.listPagos) {
+				sumaPagos += pago.getMonto();
+			}
+		}
+
+		this.saldo = sumaCargos - sumaPagos;
+		return this.saldo;
+	}
+
+	public boolean registrarDevolucion(double montoDevolucion){
+		return false;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
+
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public ArrayList<Pago> getListPagos() {
@@ -117,18 +125,4 @@ public class Folio {
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
-
-	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
-
-
-	// todo: arreglar esto después, entender bien qué hay que hacer.
-	public double calcularSaldo() {
-		return 0.0;
-	}
-
-	public boolean registrarDevolucion(double montoDevolucion){
-		return false;
-	}
-
-	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }

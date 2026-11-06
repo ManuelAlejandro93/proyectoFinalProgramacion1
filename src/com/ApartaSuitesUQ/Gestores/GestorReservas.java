@@ -5,54 +5,156 @@ import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
 import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Reserva.Reserva;
-import com.ApartaSuitesUQ.Reserva.Folio;
-import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Reserva.*;
-import com.ApartaSuitesUQ.Usuarios.Huesped;
 import com.ApartaSuitesUQ.Reserva.EstadoActual;
-import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GestorReservas implements IGestor<Reserva, String>{
 	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
-	private GestorApartamentos theGestorApartamentos;
 
 	public GestorReservas() {
 	}
 
-	public GestorReservas(GestorApartamentos theGestorApartamentos) {
-		this.theGestorApartamentos = theGestorApartamentos;
+	// Sobrecarga que recibe la lista para no depender de la inyección.
+	public ArrayList<Apartamento> consultarApartamentosDisponibles(LocalDate entrada, LocalDate salida, int capacidadMinima, ArrayList<Apartamento> todos) {
+		ArrayList<Apartamento> disponibles = new ArrayList<Apartamento>();
+
+		if (entrada == null || salida == null || !entrada.isBefore(salida)) {
+			return disponibles;
+		}
+		if (capacidadMinima <= 0 || todos == null) {
+			return disponibles;
+		}
+
+		for (Apartamento apartamento : todos) {
+			if (apartamento == null) {
+				continue;
+			}
+			// 1. Capacidad mínima
+			if (!validarCapacidadMaxima(apartamento, capacidadMinima)) {
+				continue;
+			}
+			// 2. No debe estar fuera de servicio
+			if (apartamento.getEstadoOperativo() == EstadoOperativo.FUERA_DE_SERVICIO) {
+				continue;
+			}
+			// 3. Sin doble venta
+			if (!validarSinDobleVenta(apartamento, entrada, salida, null)) {
+				continue;
+			}
+			// 4. Sin bloqueos
+			if (!validarBloqueos(apartamento, entrada, salida)) {
+				continue;
+			}
+			disponibles.add(apartamento);
+		}
+
+		return disponibles;
 	}
 
-	// ========== INICIO DE GETS Y SETS ========== //
+	// ========== INICIO DE CRUD ========== //
 
-	public ArrayList<Reserva> getListReservas() {
-		return this.listReservas;
+	// CREATE - añadir cualquiera.
+	@Override
+	public boolean crear(Reserva reserva) {
+		if (reserva == null || reserva.getCodigo() == null ||
+				reserva.getCodigo().trim().isEmpty()) {
+			return false; // Código inválido
+		}
+		if (consultar(reserva.getCodigo()) != null) {
+			return false; // Código duplicado
+		}
+
+		listReservas.add(reserva);
+		return true;
 	}
 
-	public void setListReservas(ArrayList<Reserva> listReservas) {
-		this.listReservas = listReservas;
+	// READ (listar todas como texto, para mostrar en JOptionPane)
+	// Leer
+	@Override
+	public String consultarTodos() {
+		String resultado = "";
+		if (listReservas == null || listReservas.isEmpty()) {
+			return "No hay reservas registradas.";
+		}
+
+		for (int i = 0; i < listReservas.size(); i++) {
+			resultado = resultado + listReservas.get(i).toString() + "\n";
+		}
+		return resultado;
 	}
 
-	public GestorApartamentos getTheGestorApartamentos() {
-		return this.theGestorApartamentos;
+	// READ (buscar por id) devuelve objeto o null
+	@Override
+	public Reserva consultar(String codigo) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return null; // Código inválido
+		}
+
+		Reserva resultado = null;
+		for (int i = 0; i < listReservas.size(); i++) {
+			if (codigo.equalsIgnoreCase(listReservas.get(i).getCodigo())) {
+				resultado = listReservas.get(i);
+			}
+		}
+		return resultado;
 	}
 
-	public void setTheGestorApartamentos(GestorApartamentos theGestorApartamentos) {
-		this.theGestorApartamentos = theGestorApartamentos;
-	}
+	// UPDATE - actualiza objeto
+	@Override
+	public boolean actualizar(String codigo, Reserva reserva) {
 
-	// ========== FIN DE GETS Y SETS ========== //
+//		Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
+//				Folio nuevoFolio,
+//				CanalReserva nuevoCanalReserva
 
-	// Valida que todos los ocupantes, incluidos los menores de 6 años,
-	// no superen la capacidad máxima del apartamento.
-	public boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes) {
-		if (apartamento == null || ocupantes == null) {
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
+
+		if (reserva.getTheHuesped() == null ||
+				reserva.getEstadoActual() == null || reserva.getTheFolio() == null ||
+				reserva.getTheCanalReserva() == null) {
+			return false; // Parámetros inválidos
+		}
+
+		Reserva reservaRecuperada = consultar(codigo);
+		if (reservaRecuperada == null) {
 			return false;
 		}
-		return validarCapacidadMaxima(apartamento, ocupantes.size());
+		reservaRecuperada.setTheHuesped(reserva.getTheHuesped());
+		reservaRecuperada.setEstadoActual(reserva.getEstadoActual());
+		reservaRecuperada.setTheFolio(reserva.getTheFolio());
+		reservaRecuperada.setTheCanalReserva(reserva.getTheCanalReserva());
+
+		return true;
+	}
+
+	// DELETE objeto
+	@Override
+	public boolean borrar(String codigo) {
+
+		if (codigo == null || codigo.trim().isEmpty()) {
+			return false; // Código inválido
+		}
+
+		Reserva reservaRecuperada = consultar(codigo);
+		if (reservaRecuperada == null) {
+			return false;
+		} else {
+			listReservas.remove(reservaRecuperada);
+			return true;
+		}
+	}
+
+	// ========== FIN DE CRUD ========== //
+
+	// ========== INICIO DE FUNCIONES DE VALIDACION ========== //
+	public boolean existeCodigoExterno(String codigoExterno){
+		return false;
 	}
 
 	// Sobrecarga para validar por número de personas, sin necesidad de crear la
@@ -66,8 +168,7 @@ public class GestorReservas implements IGestor<Reserva, String>{
 
 	// Valida que una reserva no comparta noches con otra reserva activa
 	// del mismo apartamento.
-	public boolean validarSinDobleVenta(Apartamento apartamento, LocalDate entrada,
-			LocalDate salida, String codigoReservaExcluir) {
+	public boolean validarSinDobleVenta(Apartamento apartamento, LocalDate entrada, LocalDate salida, String codigoReservaExcluir) {
 		if (apartamento == null || apartamento.getCodigo() == null ||
 				apartamento.getCodigo().trim().isEmpty() ||
 				entrada == null || salida == null || !entrada.isBefore(salida)) {
@@ -174,168 +275,6 @@ public class GestorReservas implements IGestor<Reserva, String>{
 		return true;
 	}
 
-	// Retorna apartamentos con capacidad suficiente, sin doble venta,
-	// sin bloqueos y que no estén fuera de servicio.
-	public ArrayList<Apartamento> consultarApartamentosDisponibles(LocalDate entrada, LocalDate salida,
-			int capacidadMinima) {
-		if (this.theGestorApartamentos == null || this.theGestorApartamentos.getListApartamentos() == null) {
-			return new ArrayList<Apartamento>();
-		}
-		return consultarApartamentosDisponibles(entrada, salida, capacidadMinima,
-				this.theGestorApartamentos.getListApartamentos());
-	}
-
-	// Sobrecarga que recibe la lista para no depender de la inyección.
-	public ArrayList<Apartamento> consultarApartamentosDisponibles(LocalDate entrada, LocalDate salida,
-			int capacidadMinima, ArrayList<Apartamento> todos) {
-		ArrayList<Apartamento> disponibles = new ArrayList<Apartamento>();
-
-		if (entrada == null || salida == null || !entrada.isBefore(salida)) {
-			return disponibles;
-		}
-		if (capacidadMinima <= 0 || todos == null) {
-			return disponibles;
-		}
-
-		for (Apartamento apartamento : todos) {
-			if (apartamento == null) {
-				continue;
-			}
-			// 1. Capacidad mínima
-			if (!validarCapacidadMaxima(apartamento, capacidadMinima)) {
-				continue;
-			}
-			// 2. No debe estar fuera de servicio
-			if (apartamento.getEstadoOperativo() == EstadoOperativo.FUERA_DE_SERVICIO) {
-				continue;
-			}
-			// 3. Sin doble venta
-			if (!validarSinDobleVenta(apartamento, entrada, salida, null)) {
-				continue;
-			}
-			// 4. Sin bloqueos
-			if (!validarBloqueos(apartamento, entrada, salida)) {
-				continue;
-			}
-			disponibles.add(apartamento);
-		}
-
-		return disponibles;
-	}
-
-	// ========== INICIO DE CRUD ========== //
-
-	// CREATE - añadir cualquiera.
-	@Override
-	public boolean crear(Reserva reserva) {
-
-		if (reserva == null || reserva.getCodigo() == null ||
-				reserva.getCodigo().trim().isEmpty()) {
-			return false; // Código inválido
-		}
-		if (buscarReservaPorCodigo(reserva.getCodigo()) != null) {
-			return false; // Código duplicado
-		}
-
-		listReservas.add(reserva);
-		return true;
-	}
-
-	// READ (listar todas como texto, para mostrar en JOptionPane)
-	// Leer
-	@Override
-	public String consultarTodos() {
-		String resultado = "";
-		if (listReservas == null || listReservas.isEmpty()) {
-			return "No hay reservas registradas.";
-		}
-
-		for (int i = 0; i < listReservas.size(); i++) {
-			resultado = resultado + listReservas.get(i).toString() + "\n";
-		}
-		return resultado;
-	}
-
-	// READ (buscar por id) devuelve objeto o null
-	@Override
-	public Reserva consultar(String codigo) {
-
-		if (codigo == null || codigo.trim().isEmpty()) {
-			return null; // Código inválido
-		}
-
-		Reserva resultado = null;
-		for (int i = 0; i < listReservas.size(); i++) {
-			if (codigo.equalsIgnoreCase(listReservas.get(i).getCodigo())) {
-				resultado = listReservas.get(i);
-			}
-		}
-		return resultado;
-	}
-
-	// UPDATE - actualiza objeto
-	@Override
-	public boolean actualizar(
-			String codigo, Reserva reserva) {
-
-//		Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
-//				Folio nuevoFolio,
-//				CanalReserva nuevoCanalReserva
-
-		if (codigo == null || codigo.trim().isEmpty()) {
-			return false; // Código inválido
-		}
-
-		if (reserva.getTheHuesped() == null ||
-				reserva.getEstadoActual() == null || reserva.getTheFolio() == null ||
-				reserva.getTheCanalReserva() == null) {
-			return false; // Parámetros inválidos
-		}
-
-		Reserva reservaRecuperada = buscarReservaPorCodigo(codigo);
-		if (reservaRecuperada == null) {
-			return false;
-		}
-		reservaRecuperada.setTheHuesped(reserva.getTheHuesped());
-		reservaRecuperada.setEstadoActual(reserva.getEstadoActual());
-		reservaRecuperada.setTheFolio(reserva.getTheFolio());
-		reservaRecuperada.setTheCanalReserva(reserva.getTheCanalReserva());
-
-		return true;
-	}
-
-	// DELETE objeto
-	@Override
-	public boolean borrar(String codigo) {
-
-		if (codigo == null || codigo.trim().isEmpty()) {
-			return false; // Código inválido
-		}
-
-		Reserva reservaRecuperada = consultar(codigo);
-		if (reservaRecuperada == null) {
-			return false;
-		} else {
-			listReservas.remove(reservaRecuperada);
-			return true;
-		}
-	}
-
-	// ========== FIN DE CRUD ========== //
-
-	// ========== INICIO DE FUNCIONES DE VALIDACION ========== //
-	public boolean validarSinDobleVenta(Apartamento apartamento, LocalDate fechaEntrada, LocalDate fechaSalida){
-		return false;
-	}
-
-	public boolean existeCodigoExterno(String codigoExterno){
-		return false;
-	}
-
-	public boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes){
-		return false;
-	}
-
 	// ========== FIN DE FUNCIONES DE VALIDACION ========== //
 
 	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
@@ -392,10 +331,11 @@ public class GestorReservas implements IGestor<Reserva, String>{
 	// ========== INICIO DE GETS Y SETS ========== //
 
 	public ArrayList<Reserva> getListReservas() {
-		return listReservas;
+		return this.listReservas;
 	}
 
-	public void setListReservas(ArrayList<Reserva> nuevaListReservas) {	listReservas = nuevaListReservas;
+	public void setListReservas(ArrayList<Reserva> listReservas) {
+		this.listReservas = listReservas;
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
