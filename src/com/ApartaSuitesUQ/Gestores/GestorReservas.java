@@ -4,10 +4,10 @@ import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
 import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Usuarios.Huesped;
+import com.ApartaSuitesUQ.Reserva.NombreCanal;
 import com.ApartaSuitesUQ.Reserva.Reserva;
 import com.ApartaSuitesUQ.Reserva.Folio;
-import com.ApartaSuitesUQ.Reserva.NombreCanal;
-import com.ApartaSuitesUQ.Usuarios.Huesped;
 import com.ApartaSuitesUQ.Reserva.EstadoActual;
 import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
@@ -418,4 +418,48 @@ public class GestorReservas {
 	}
 
 	// ========== FIN DE CRUD ========== //
+	public boolean confirmarReserva(String codigoReserva) {
+		boolean res = false;
+
+		Reserva reserva = buscarReservaPorCodigo(codigoReserva);
+		if (reserva != null) {
+			if (reserva.getEstadoActual() == EstadoActual.PENDIENTE) {
+				if (reserva.getTheCanalReserva().nombreCanal() == NombreCanal.PORTAL) {
+					double valorTotal = reserva.getTheApartamento().getTheEstancia().calcularPrecioEstadia();
+					double anticipoNecesario = valorTotal * 0.30;
+					double saldoFolio = reserva.getTheFolio().calcularSaldo();
+
+					if (saldoFolio >= anticipoNecesario) {
+						if (reserva.puedePasarA(EstadoActual.CONFIRMADA)) {
+							reserva.setEstadoActual(EstadoActual.CONFIRMADA);
+							res = true;
+						}
+					}
+				}
+			}
+		}
+
+		return res;
+	}
+
+	public boolean cancelarReserva(String codigoReserva) {
+		boolean res = false;
+		Reserva reserva = this.buscarReservaPorCodigo(codigoReserva);
+
+		if (reserva.getEstadoActual() == EstadoActual.PENDIENTE || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
+			if (reserva.puedePasarA(EstadoActual.CANCELADA)) {
+				double montoDevolucion = reserva.calcularDevolucion();
+				boolean resDevolucion = reserva.getTheFolio().registrarDevolucion(montoDevolucion);
+
+				if (resDevolucion) {
+					reserva.setEstadoActual(EstadoActual.CANCELADA);
+					res = true;
+				}
+			}
+		}
+
+		return res;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }

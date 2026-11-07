@@ -17,12 +17,14 @@ public class Reserva {
 	private Apartamento theApartamento;
 	private Estancia theEstancia;
 	private GestorPoliticaCancelacion gestorPoliticaCancelacion;
+	private LocalDate fechaEntrada;
+	private LocalDate fechaSalida;
 
 	// Permite crear la reserva con su estancia y el gestor de política de
 	// cancelación.
 	public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
 			CanalReserva canalReserva, Apartamento theApartamento, Estancia theEstancia,
-			GestorPoliticaCancelacion gestorPoliticaCancelacion) {
+			GestorPoliticaCancelacion gestorPoliticaCancelacion, LocalDate fechaEntrada, LocalDate fechaSalida) {
 		this.codigo = codigo;
 		this.estadoActual = estadoActual;
 
@@ -32,6 +34,8 @@ public class Reserva {
 		this.theApartamento = theApartamento;
 		this.theEstancia = theEstancia;
 		this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
+		this.fechaEntrada = fechaEntrada;
+		this.fechaSalida = fechaSalida;
 	}
 
 	// Valida si el estado actual permite pasar al nuevo estado.
@@ -152,6 +156,22 @@ public class Reserva {
 
 	public void setGestorPoliticaCancelacion(GestorPoliticaCancelacion gestorPoliticaCancelacion) {
 		this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
+	}
+
+	public LocalDate getFechaEntrada() {
+		return fechaEntrada;
+	}
+
+	public void setFechaEntrada(LocalDate fechaEntrada) {
+		this.fechaEntrada = fechaEntrada;
+	}
+
+	public LocalDate getFechaSalida() {
+		return fechaSalida;
+	}
+
+	public void setFechaSalida(LocalDate fechaSalida) {
+		this.fechaSalida = fechaSalida;
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //

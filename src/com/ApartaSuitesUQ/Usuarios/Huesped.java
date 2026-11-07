@@ -1,8 +1,11 @@
 package com.ApartaSuitesUQ.Usuarios;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
-import com.ApartaSuitesUQ.Reserva.Pago;
-import com.ApartaSuitesUQ.Reserva.Reserva;
+import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Estancia.Noche;
+import com.ApartaSuitesUQ.Gestores.GestorPoliticaCancelacion;
+import com.ApartaSuitesUQ.Gestores.GestorReservas;
+import com.ApartaSuitesUQ.Reserva.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -82,8 +85,36 @@ public class Huesped extends Persona {
    * @return
    *         devuelve falso o verdadero si se pudo hacer o no la reserva
    */
-  public boolean crearReservaEnPortal(ArrayList<Huesped> huespedes) {
-    return false;
+  public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate fechaEntrada,
+      LocalDate fechaSalida, GestorReservas gestorReservas, ArrayList<Noche> listNoches,
+      GestorPoliticaCancelacion gestorPoliticaCancelacion) {
+    if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, null)) {
+      if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes)) {
+        String codigoReserva = gestorReservas.generarCodigoUnico();
+
+        // Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida,
+        // apartamento);
+        Folio nuevoFolio = new Folio(new ArrayList<Pago>(), new ArrayList<Cargo>(), 0.0);
+        CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "pagina-web-booking.com");
+
+        Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, listNoches, apartamento);
+
+        Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio, canalExterno,
+            apartamento, nuevaEstancia, gestorPoliticaCancelacion, fechaEntrada, fechaSalida);
+
+        boolean res = gestorReservas.anadirReserva(nuevaReserva);
+
+        if (res) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 
   // todo: corregir esto.

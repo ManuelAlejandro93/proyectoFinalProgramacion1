@@ -73,7 +73,7 @@ public class Folio {
 	}
 
 	// Registra una devolución como movimiento para el cálculo del saldo.
-	public boolean registrarDevolicion(double monto) {
+	public boolean registrarDevolucion(double monto) {
 		if (monto < 0) {
 			return false;
 		}
