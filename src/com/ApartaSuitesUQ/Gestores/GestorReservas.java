@@ -6,6 +6,7 @@ import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
 import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Reserva.Reserva;
 import com.ApartaSuitesUQ.Reserva.Folio;
+import com.ApartaSuitesUQ.Reserva.NombreCanal;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
 import com.ApartaSuitesUQ.Reserva.EstadoActual;
 import com.ApartaSuitesUQ.Reserva.CanalReserva;
@@ -60,12 +61,42 @@ public class GestorReservas {
 		}
 	}
 
+	// Retorna true si el código externo ya está siendo utilizado
+	// por una reserva cuyo canal sea EXTERNA.
+	public boolean existeCodigoExterno(String codigoExterno) {
+		if (codigoExterno == null || codigoExterno.trim().isEmpty()
+				|| this.listReservas == null) {
+			return false;
+		}
+
+		for (Reserva reserva : this.listReservas) {
+			if (reserva == null) {
+				continue;
+			}
+
+			CanalReserva canal = reserva.getTheCanalReserva();
+
+			if (canal == null || canal.nombreCanal() != NombreCanal.EXTERNA) {
+				continue;
+			}
+
+			String codigoDelCanal = canal.codigoCanal();
+
+			if (codigoExterno.equals(codigoDelCanal)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	// Valida que todos los ocupantes, incluidos los menores de 6 años,
 	// no superen la capacidad máxima del apartamento.
 	public boolean validarCapacidadMaxima(Apartamento apartamento, ArrayList<Huesped> ocupantes) {
 		if (apartamento == null || ocupantes == null) {
 			return false;
 		}
+
 		return validarCapacidadMaxima(apartamento, ocupantes.size());
 	}
 
@@ -75,6 +106,7 @@ public class GestorReservas {
 		if (apartamento == null || totalOcupantes < 0) {
 			return false;
 		}
+
 		return totalOcupantes <= apartamento.getCapacidad();
 	}
 
@@ -192,10 +224,15 @@ public class GestorReservas {
 	// sin bloqueos y que no estén fuera de servicio.
 	public ArrayList<Apartamento> consultarApartamentosDisponibles(LocalDate entrada, LocalDate salida,
 			int capacidadMinima) {
-		if (this.theGestorApartamentos == null || this.theGestorApartamentos.getListApartamentos() == null) {
+		if (this.theGestorApartamentos == null ||
+				this.theGestorApartamentos.getListApartamentos() == null) {
 			return new ArrayList<Apartamento>();
 		}
-		return consultarApartamentosDisponibles(entrada, salida, capacidadMinima,
+
+		return consultarApartamentosDisponibles(
+				entrada,
+				salida,
+				capacidadMinima,
 				this.theGestorApartamentos.getListApartamentos());
 	}
 
@@ -207,6 +244,7 @@ public class GestorReservas {
 		if (entrada == null || salida == null || !entrada.isBefore(salida)) {
 			return disponibles;
 		}
+
 		if (capacidadMinima <= 0 || todos == null) {
 			return disponibles;
 		}
@@ -215,22 +253,27 @@ public class GestorReservas {
 			if (apartamento == null) {
 				continue;
 			}
-			// 1. Capacidad mínima
+
+			// 1. Capacidad mínima.
 			if (!validarCapacidadMaxima(apartamento, capacidadMinima)) {
 				continue;
 			}
-			// 2. No debe estar fuera de servicio
+
+			// 2. No debe estar fuera de servicio.
 			if (apartamento.getEstadoOperativo() == EstadoOperativo.FUERA_DE_SERVICIO) {
 				continue;
 			}
-			// 3. Sin doble venta
+
+			// 3. Sin doble venta.
 			if (!validarSinDobleVenta(apartamento, entrada, salida, null)) {
 				continue;
 			}
-			// 4. Sin bloqueos
+
+			// 4. Sin bloqueos.
 			if (!validarBloqueos(apartamento, entrada, salida)) {
 				continue;
 			}
+
 			disponibles.add(apartamento);
 		}
 
@@ -247,7 +290,17 @@ public class GestorReservas {
 		}
 
 		if (this.buscarReservaPorCodigo(reserva.getCodigo()) != null) {
-			return false; // Código duplicado
+			return false; // Código interno duplicado
+		}
+
+		CanalReserva canalReserva = reserva.getTheCanalReserva();
+
+		// Si la reserva proviene de un canal externo, su código externo
+		// no puede estar registrado en otra reserva.
+		if (canalReserva != null &&
+				canalReserva.nombreCanal() == NombreCanal.EXTERNA &&
+				this.existeCodigoExterno(canalReserva.codigoCanal())) {
+			return false; // Código externo duplicado
 		}
 
 		Estancia estancia = reserva.getTheEstancia();
@@ -258,13 +311,23 @@ public class GestorReservas {
 			if (apartamento.getEstadoOperativo() == EstadoOperativo.FUERA_DE_SERVICIO) {
 				return false;
 			}
+
 			if (!validarCapacidadMaxima(apartamento, estancia.getListHuespedes())) {
 				return false; // Excede la capacidad o faltan datos de ocupantes
 			}
-			if (!validarSinDobleVenta(apartamento, estancia.getFechaEntrada(), estancia.getFechaSalida(), null)) {
+
+			if (!validarSinDobleVenta(
+					apartamento,
+					estancia.getFechaEntrada(),
+					estancia.getFechaSalida(),
+					null)) {
 				return false; // No disponible en esas fechas
 			}
-			if (!validarBloqueos(apartamento, estancia.getFechaEntrada(), estancia.getFechaSalida())) {
+
+			if (!validarBloqueos(
+					apartamento,
+					estancia.getFechaEntrada(),
+					estancia.getFechaSalida())) {
 				return false; // Hay bloqueo en esas fechas
 			}
 		}
@@ -307,15 +370,19 @@ public class GestorReservas {
 
 	// UPDATE: actualiza la información de una reserva.
 	public boolean actualizarInformacionReserva(
-			String codigo, Huesped nuevoHuespedEncargado, EstadoActual nuevoEstadoActual,
-			Folio nuevoFolio, CanalReserva nuevoCanalReserva) {
+			String codigo,
+			Huesped nuevoHuespedEncargado,
+			EstadoActual nuevoEstadoActual,
+			Folio nuevoFolio,
+			CanalReserva nuevoCanalReserva) {
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
 		}
 
 		if (nuevoHuespedEncargado == null ||
-				nuevoEstadoActual == null || nuevoFolio == null ||
+				nuevoEstadoActual == null ||
+				nuevoFolio == null ||
 				nuevoCanalReserva == null) {
 			return false; // Parámetros inválidos
 		}
