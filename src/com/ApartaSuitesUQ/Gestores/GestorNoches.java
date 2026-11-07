@@ -68,7 +68,7 @@ public class GestorNoches {
 
 	// UPDATE - actualiza objeto
 	public boolean actualizarInformacionNoche(
-            LocalDate fecha, Temporada nuevaTemporada, double nuevoPrecio) {
+			LocalDate fecha, Temporada nuevaTemporada, double nuevoPrecio) {
 
 		if (fecha == null) {
 			return false; // Fecha inválida

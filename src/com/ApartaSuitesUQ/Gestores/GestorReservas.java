@@ -12,10 +12,12 @@ import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GestorReservas {
 	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();
 	private GestorApartamentos theGestorApartamentos;
+	private Random generadorAleatorio = new Random();
 
 	public GestorReservas() {
 	}
@@ -43,6 +45,20 @@ public class GestorReservas {
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
+
+	// Genera un código con formato RES-timestamp-aleatorio que no exista en el
+	// sistema.
+	public String generarCodigoUnico() {
+		while (true) {
+			long marcaDeTiempo = System.currentTimeMillis();
+			int numeroAleatorio = this.generadorAleatorio.nextInt(9000) + 1000;
+			String codigoGenerado = "RES-" + marcaDeTiempo + "-" + numeroAleatorio;
+
+			if (this.buscarReservaPorCodigo(codigoGenerado) == null) {
+				return codigoGenerado;
+			}
+		}
+	}
 
 	// Valida que todos los ocupantes, incluidos los menores de 6 años,
 	// no superen la capacidad máxima del apartamento.
