@@ -9,6 +9,7 @@ import com.ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Reserva.EstadoActual;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class GestorReservas implements IGestor<Reserva, String> {
@@ -236,6 +237,28 @@ public class GestorReservas implements IGestor<Reserva, String> {
         }
 
         return true;
+    }
+
+    public boolean declararNoShow(String codigoReserva){
+        boolean res = false;
+        Reserva reserva = consultar(codigoReserva);
+
+        if (reserva.getEstadoActual() == EstadoActual.CONFIRMADA){
+            LocalDate fechaEntrada = reserva.getTheEstancia().getFechaEntrada();
+            if(LocalDate.now().isEqual(fechaEntrada) || LocalDate.now().isAfter(fechaEntrada)){
+                LocalTime horaActual = LocalTime.now();
+                if(horaActual.isAfter(LocalTime.of(22,0))){
+                    if(reserva.puedePasarA(EstadoActual.NO_SHOWN)){
+                        reserva.setEstadoActual(EstadoActual.NO_SHOWN);
+                        Folio folio = reserva.getTheFolio();
+                        folio.registrarDevolicion(0.0);
+                        res = true;
+                    }
+                }
+            }
+        }
+
+        return res;
     }
 
     // ========== FIN DE FUNCIONES DE VALIDACION ========== //

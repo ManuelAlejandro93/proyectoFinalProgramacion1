@@ -2,6 +2,7 @@ package com.ApartaSuitesUQ.Usuarios;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
 import com.ApartaSuitesUQ.Reserva.*;
 
@@ -9,12 +10,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Huesped extends Persona {
+    //Gestores
+    GestorReservas gestorReservas = new GestorReservas();
+    GestorApartamentos gestorApartamentos = new GestorApartamentos();
     private String foto = "Foto no ingresada";
     private boolean titular = false;
     private ArrayList<Reserva> listReservas;
-
-    //Gestores
-    GestorReservas gestorReservas = new GestorReservas();
 
     public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo) {
         super(nombre, codigo, fechaNacimiento, telefono, correo);
@@ -73,8 +74,21 @@ public class Huesped extends Persona {
      * "El apartamento Villa Juliana tiene un precio de 6000000"
      *
      */
-    public String cotizarApartamentoPorCodigo(String codigoApartamento) {
-        return null;
+    public String cotizarApartamentoPorCodigo(String codigoApartamento, LocalDate fechaEntrada, LocalDate fechaSalida) {
+        String res = null;
+        Apartamento apartamento = gestorApartamentos.consultar(codigoApartamento);
+        if (apartamento != null) {
+            Estancia estancia = apartamento.getTheEstancia();
+            double precioTotal = estancia.calcularPrecioEstadia();
+            res = "Nombre: " + apartamento.getNombre() +
+                    "\n Fecha Entrada: " + estancia.getFechaEntrada() +
+                    "\n Fecha Salida: " + estancia.getFechaSalida() +
+                    "\n Numero Noches: " + estancia.getNoches() +
+                    "\n Precio por Noche: " + estancia.getListNoches().getFirst().getPrecio() +
+                    "\n Precio Total: " + precioTotal;
+        }
+
+        return res;
     }
 
     // todo: corregir esto.
@@ -133,8 +147,14 @@ public class Huesped extends Persona {
 
     // Descomentar este método (IMPORTANTE)
     public ArrayList<Reserva> consultarReservas() {
-        // TODO: Implementar - retornar lista de reservas del huésped
-        return null;
+        for (Reserva reserva : gestorReservas.getListReservas()) {
+            Huesped titular = reserva.getTheHuesped();
+            if (titular == this) {
+                listReservas.add(reserva);
+            }
+        }
+
+        return listReservas;
     }
 
     // todo: corregir esto.
@@ -153,8 +173,21 @@ public class Huesped extends Persona {
      *
      * @return saldo en folios
      */
-    public String consultarSaldoEnFolios() {
-        return null;
+    public double consultarSaldoEnFolios() {
+        double saldoTotal = 0.0;
+        ArrayList<Reserva> misReservas = consultarReservas();
+
+        for (Reserva reserva : misReservas) {
+            if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
+                    || reserva.getEstadoActual() == EstadoActual.CONFIRMADA
+                    || reserva.getEstadoActual() == EstadoActual.EN_CURSO) {
+                Folio folio = reserva.getTheFolio();
+                double saldo = folio.calcularSaldo();
+                saldoTotal += saldo;
+            }
+        }
+
+        return saldoTotal;
     }
 
     // todo: corregir esto.
@@ -165,7 +198,16 @@ public class Huesped extends Persona {
      * @return
      */
     public boolean cancelarReservaPorCodigo(String codigoReserva) {
-        return false;
+        boolean res = false;
+        Reserva reserva = gestorReservas.consultar(codigoReserva);
+        if (reserva.getTheHuesped() == this){
+            if(reserva.getEstadoActual() == EstadoActual.PENDIENTE
+                    || reserva.getEstadoActual() == EstadoActual.CONFIRMADA){
+                res = gestorReservas.cancelarReserva(codigoReserva);
+            }
+        }
+
+        return res;
     }
 
     @Override
