@@ -86,6 +86,8 @@ public class Noche {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
 	@Override
 	public String toString() {
 		String mensaje = "" + "\n";
@@ -97,4 +99,7 @@ public class Noche {
 
 		return mensaje;
 	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
+
 }

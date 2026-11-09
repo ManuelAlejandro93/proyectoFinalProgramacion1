@@ -4,7 +4,7 @@ public class GestorGeneral {
 	private GestorPoliticaCancelacion theGestorPoliticaCancelacion = new GestorPoliticaCancelacion();
 	private GestorEmpleados theGestorEmpleados = new GestorEmpleados();
 	private GestorApartamentos theGestorApartamentos = new GestorApartamentos();
-	private GestorReservas theGestorReservas = new GestorReservas();
+	private GestorReservas theGestorReservas = new GestorReservas(this);
 	private GestorHuespedes theGestorHuespedes = new GestorHuespedes();
 	private GestorNoches theGestorNoches = new GestorNoches();
 

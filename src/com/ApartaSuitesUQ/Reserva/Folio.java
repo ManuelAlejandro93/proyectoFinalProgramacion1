@@ -9,32 +9,13 @@ public class Folio {
 	private ArrayList<Pago> listPagos;
 	private ArrayList<Cargo> listCargos;
 
-	public Folio(ArrayList<Pago> listPagos, ArrayList<Cargo> listCargos, double saldo) {
-		this.listPagos = listPagos;
-		this.listCargos = listCargos;
-		this.saldo = saldo;
-	}
+	 public Folio() {
+	 this.listPagos = new ArrayList<Pago>();
+	 this.listCargos = new ArrayList<Cargo>();
+	 calcularSaldo();
+	 }
 
-	// Calcula el saldo a partir de los cargos y los pagos del folio.
-	public double calcularSaldo() {
-		double sumaCargos = 0;
-		double sumaPagos = 0;
 
-		if (this.listCargos != null) {
-			for (Cargo cargo : this.listCargos) {
-				sumaCargos += cargo.getPrecio();
-			}
-		}
-
-		if (this.listPagos != null) {
-			for (Pago pago : this.listPagos) {
-				sumaPagos += pago.getMonto();
-			}
-		}
-
-		this.saldo = sumaCargos - sumaPagos;
-		return this.saldo;
-	}
 
 	// Agrega un pago válido al folio.
 	public boolean anadirPago(Pago pago) {
@@ -85,6 +66,31 @@ public class Folio {
 		Pago devolucion = new Pago(monto, MedioDePago.TRANSFERENCIA, LocalDate.now(), this);
 		return this.anadirPago(devolucion);
 	}
+
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
+	// Calcula el saldo a partir de los cargos y los pagos del folio.
+	public double calcularSaldo() {
+		double sumaCargos = 0;
+		double sumaPagos = 0;
+
+		if (this.listCargos != null) {
+			for (Cargo cargo : this.listCargos) {
+				sumaCargos += cargo.getPrecio();
+			}
+		}
+
+		if (this.listPagos != null) {
+			for (Pago pago : this.listPagos) {
+				sumaPagos += pago.getMonto();
+			}
+		}
+
+		this.saldo = sumaCargos - sumaPagos;
+		return this.saldo;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 
 	// ========== INICIO DE GETS Y SETS ========== //
 

@@ -33,6 +33,8 @@ public class Empleado extends Persona {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
 	// String nombrex
 	// String codigox
 	// LocalDate fechaNacimientox
@@ -58,4 +60,7 @@ public class Empleado extends Persona {
 
 		return mensaje;
 	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
+
 }

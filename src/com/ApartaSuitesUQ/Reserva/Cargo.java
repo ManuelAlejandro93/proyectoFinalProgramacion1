@@ -43,10 +43,14 @@ public class Cargo {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
 	@Override
 	public String toString() {
 		String mensaje = "";
 		mensaje += nombre + " : $" + precio;
 		return mensaje;
 	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }
