@@ -2,10 +2,10 @@ package com.ApartaSuitesUQ.Gestores;
 
 public class GestorGeneral {
 	private GestorPoliticaCancelacion theGestorPoliticaCancelacion = new GestorPoliticaCancelacion();
-	private GestorEmpleados theGestorEmpleados = new GestorEmpleados();
+	private GestorEmpleados theGestorEmpleados = new GestorEmpleados(this);
 	private GestorApartamentos theGestorApartamentos = new GestorApartamentos();
 	private GestorReservas theGestorReservas = new GestorReservas(this);
-	private GestorHuespedes theGestorHuespedes = new GestorHuespedes();
+	private GestorHuespedes theGestorHuespedes = new GestorHuespedes(this);
 	private GestorNoches theGestorNoches = new GestorNoches();
 
 	public GestorGeneral() {
