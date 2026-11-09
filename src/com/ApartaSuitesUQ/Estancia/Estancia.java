@@ -131,5 +131,13 @@ public class Estancia {
 		this.listHuespedes = listHuespedes;
 	}
 
+	public int getNoches() {
+		return noches;
+	}
+
+	public void setNoches(int noches) {
+		this.noches = noches;
+	}
+
 	// ========== FIN DE GETS Y SETS ========== //
 }
