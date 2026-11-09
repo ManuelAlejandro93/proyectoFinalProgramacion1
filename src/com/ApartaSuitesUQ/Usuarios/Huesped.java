@@ -91,7 +91,7 @@ public class Huesped extends Persona {
             if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
 
                 Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
-                Folio nuevoFolio = new Folio(0);
+                Folio nuevoFolio = new Folio();
                 CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "");
 
                 Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio, canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
