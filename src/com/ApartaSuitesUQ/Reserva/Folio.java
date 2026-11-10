@@ -9,13 +9,11 @@ public class Folio {
 	private ArrayList<Pago> listPagos;
 	private ArrayList<Cargo> listCargos;
 
-	 public Folio() {
-	 this.listPagos = new ArrayList<Pago>();
-	 this.listCargos = new ArrayList<Cargo>();
-	 calcularSaldo();
-	 }
-
-
+	public Folio() {
+		this.listPagos = new ArrayList<Pago>();
+		this.listCargos = new ArrayList<Cargo>();
+		calcularSaldo();
+	}
 
 	// Agrega un pago válido al folio.
 	public boolean anadirPago(Pago pago) {
