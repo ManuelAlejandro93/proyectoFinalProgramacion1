@@ -12,12 +12,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Recepcionista extends Empleado {
-
+  // Gestores
   private GestorEmpleados theGestorEmpleados;
   private GestorGeneral gestorGeneral;
   private GestorReservas gestorReservas;
-
-  // Gestores
 
   public Recepcionista(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
       String usuario, String contrasenia, GestorEmpleados theGestorEmpleados) {
@@ -25,7 +23,6 @@ public class Recepcionista extends Empleado {
     this.theGestorEmpleados = theGestorEmpleados;
     this.gestorGeneral = theGestorEmpleados.getTheGestorGeneral();
     this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
-
   }
 
   // todo: corregir esto.
@@ -66,8 +63,8 @@ public class Recepcionista extends Empleado {
           Folio nuevoFolio = new Folio();
           CanalReserva canalExterno = new CanalReserva(NombreCanal.EXTERNA, codigoExterno);
 
-          Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio,
-              canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
+          Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA,
+              nuevoFolio, canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
 
           boolean res = gestorReservas.crear(nuevaReserva);
 
@@ -108,8 +105,18 @@ public class Recepcionista extends Empleado {
     return folio.anadirPago(pago);
   }
 
-  // todo: corregir esto.
-  public void registrarCargoPorFolioID() {
+  public boolean registrarCargoPorFolioID(String codigoReserva, Cargo cargo) {
+    Reserva reserva = gestorReservas.consultar(codigoReserva);
+    if (reserva == null) {
+      return false;
+    }
+
+    Folio folio = reserva.getTheFolio();
+    if (folio == null) {
+      return false;
+    }
+
+    return folio.anadirCargo(cargo);
   }
 
   // todo: corregir esto.
