@@ -938,7 +938,7 @@ La recepción registra un pago que realiza el huésped (efectivo, tarjeta, trans
 
 ---
 
-### **Tarea 9.2: Recepcionista.registrarCargoPorFolioID()**
+### **Tarea 9.2: Recepcionista.registrarCargoPorFolioID()**✅
 **Archivo:** `com/ApartaSuitesUQ/Usuarios/Recepcionista.java`
 
 **Descripción:**
@@ -966,7 +966,7 @@ La recepción registra un cargo adicional en el folio (servicios extra como desa
 
 ---
 
-### **Tarea 9.3: Recepcionista.anadirNovedadEnApartamento()**
+### **Tarea 9.3: Recepcionista.anadirNovedadEnApartamento()**✅
 **Archivo:** `com/ApartaSuitesUQ/Usuarios/Recepcionista.java`
 
 **Descripción:**
