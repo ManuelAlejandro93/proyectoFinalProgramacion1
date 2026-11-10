@@ -19,22 +19,20 @@ public class Huesped extends Persona {
 
     private GestorHuespedes theGestorHuepedes;
 
-    //Gestores
+    // Gestores
     private GestorGeneral gestorGeneral;
     private GestorReservas gestorReservas;
     private GestorApartamentos gestorApartamentos;
 
-
-
-  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
-      ArrayList<Reserva> listReservas, GestorHuespedes theGestorHuespedes) {
-    super(nombre, codigo, fechaNacimiento, telefono, correo);
-    this.listReservas = listReservas;
-    this.theGestorHuepedes = theGestorHuespedes;
-    this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
-    this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
-    this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
-  }
+    public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
+            ArrayList<Reserva> listReservas, GestorHuespedes theGestorHuespedes) {
+        super(nombre, codigo, fechaNacimiento, telefono, correo);
+        this.listReservas = listReservas;
+        this.theGestorHuepedes = theGestorHuespedes;
+        this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
+        this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
+        this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
+    }
 
     // todo: corregir esto.
 
@@ -46,7 +44,7 @@ public class Huesped extends Persona {
      * @return
      */
     public ArrayList<Apartamento> consultarApartamentos(LocalDate fechaCheckIn, LocalDate fechaCheckOut,
-                                                        int numeroPersonas) {
+            int numeroPersonas) {
 
         return null;
     }
@@ -57,7 +55,7 @@ public class Huesped extends Persona {
      *
      * @param codigoApartamento
      * @return El método debería devolver información como:
-     * "El apartamento Villa Juliana tiene un precio de 6000000"
+     *         "El apartamento Villa Juliana tiene un precio de 6000000"
      *
      */
     public String cotizarApartamentoPorCodigo(String codigoApartamento, LocalDate fechaEntrada, LocalDate fechaSalida) {
@@ -84,8 +82,8 @@ public class Huesped extends Persona {
      * @param huespedes
      * @return devuelve falso o verdadero si se pudo hacer o no la reserva
      */
-    public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate
-            fechaEntrada, LocalDate fechaSalida) {
+    public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate fechaEntrada,
+            LocalDate fechaSalida) {
         if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes.size())) {
             String codigoReserva = gestorReservas.generarCodigoUnico();
             if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
@@ -94,7 +92,8 @@ public class Huesped extends Persona {
                 Folio nuevoFolio = new Folio();
                 CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "");
 
-                Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio, canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
+                Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio,
+                        canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
 
                 boolean res = gestorReservas.crear(nuevaReserva);
 
@@ -102,7 +101,7 @@ public class Huesped extends Persona {
                     // Operacion Exitosa
                     return true;
                 } else {
-                    //Operacion Fallida
+                    // Operacion Fallida
                     return false;
                 }
             }
@@ -188,9 +187,9 @@ public class Huesped extends Persona {
     public boolean cancelarReservaPorCodigo(String codigoReserva) {
         boolean res = false;
         Reserva reserva = gestorReservas.consultar(codigoReserva);
-        if (reserva.getTheHuesped() == this){
-            if(reserva.getEstadoActual() == EstadoActual.PENDIENTE
-                    || reserva.getEstadoActual() == EstadoActual.CONFIRMADA){
+        if (reserva.getTheHuesped() == this) {
+            if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
+                    || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
                 res = gestorReservas.cancelarReserva(codigoReserva);
             }
         }
@@ -198,16 +197,21 @@ public class Huesped extends Persona {
         return res;
     }
 
+    // Muestra los datos personales del huésped, su foto y si es titular.
     @Override
     public String toString() {
 
         String mensaje = "" + "\n";
         mensaje += "===============" + "\n";
-        mensaje += "codigo : " + this.getCodigo() + "\n";
-        mensaje += "fecha de nacimiento : " + this.getFechaNacimiento() + "\n";
-        mensaje += "telefono : " + this.getTelefono() + "\n";
-        mensaje += "correo : " + this.getCorreo() + "\n";
+        mensaje += "nombre : " + (this.getNombre() != null ? this.getNombre() : "N/A") + "\n";
+        mensaje += "codigo : " + (this.getCodigo() != null ? this.getCodigo() : "N/A") + "\n";
+        mensaje += "fecha de nacimiento : " + (this.getFechaNacimiento() != null ? this.getFechaNacimiento() : "N/A")
+                + "\n";
         mensaje += "edad : " + this.getEdad() + "\n";
+        mensaje += "telefono : " + (this.getTelefono() != null ? this.getTelefono() : "N/A") + "\n";
+        mensaje += "correo : " + (this.getCorreo() != null ? this.getCorreo() : "N/A") + "\n";
+        mensaje += "foto : " + (this.getFoto() != null ? this.getFoto() : "Foto no ingresada") + "\n";
+        mensaje += "titular : " + (this.isTitular() ? "Sí" : "No") + "\n";
         mensaje += "===============" + "\n";
 
         return mensaje;

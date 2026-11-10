@@ -53,12 +53,16 @@ public class Bloqueo {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// Muestra el motivo y el rango de fechas del bloqueo.
 	@Override
 	public String toString() {
-		String mensaje = "";
-		mensaje += motivo + " (";
-		mensaje += fechaInicio + " a " + fechafinal;
-		mensaje += ")";
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "motivo : " + (this.getMotivo() != null ? this.getMotivo() : "N/A") + "\n";
+		mensaje += "fecha de inicio : " + (this.getFechaInicio() != null ? this.getFechaInicio() : "N/A") + "\n";
+		mensaje += "fecha final : " + (this.getFechafinal() != null ? this.getFechafinal() : "N/A") + "\n";
+		mensaje += "===============" + "\n";
+
 		return mensaje;
 	}
 }

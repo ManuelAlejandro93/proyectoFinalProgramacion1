@@ -996,7 +996,7 @@ La recepción registra una novedad en un apartamento (daño, faltante, rotura, s
 
 ---
 
-### **Tarea 10.1: Implementar toString() en clases financieras**
+### **Tarea 10.1: Implementar toString() en clases financieras**✅
 **Archivo:** `com/ApartaSuitesUQ/Reserva/Folio.java`, `com/ApartaSuitesUQ/Reserva/Pago.java`, `com/ApartaSuitesUQ/Estancia/Estancia.java`
 
 **Descripción:**
@@ -1037,7 +1037,7 @@ Implementar métodos `toString()` en clases financieras para mostrar informació
 
 ---
 
-### **Tarea 10.2: Implementar toString() en clases de reservas**
+### **Tarea 10.2: Implementar toString() en clases de reservas**✅
 **Archivo:** `com/ApartaSuitesUQ/Reserva/Reserva.java`, `com/ApartaSuitesUQ/Usuarios/Huesped.java`, `com/ApartaSuitesUQ/Apartamento/Bloqueo.java`, `com/ApartaSuitesUQ/Apartamento/Novedad.java`
 
 **Descripción:**
