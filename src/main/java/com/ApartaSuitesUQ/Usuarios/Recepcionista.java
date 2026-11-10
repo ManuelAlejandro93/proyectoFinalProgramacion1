@@ -6,6 +6,7 @@ import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Gestores.GestorEmpleados;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
+import ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Reserva.*;
 
 import java.time.LocalDate;

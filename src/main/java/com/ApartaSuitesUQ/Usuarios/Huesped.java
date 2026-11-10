@@ -5,7 +5,7 @@ import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
-import com.ApartaSuitesUQ.Reserva.*;
+import ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 import com.ApartaSuitesUQ.Reserva.*;
 

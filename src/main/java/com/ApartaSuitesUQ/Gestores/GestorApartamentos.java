@@ -1,9 +1,6 @@
 package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
-import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
-import com.ApartaSuitesUQ.Apartamento.Novedad;
-import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 
 import java.util.ArrayList;
 

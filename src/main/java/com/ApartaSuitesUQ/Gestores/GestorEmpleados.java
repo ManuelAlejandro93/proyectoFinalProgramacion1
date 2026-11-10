@@ -2,7 +2,6 @@ package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Usuarios.Empleado;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GestorEmpleados implements IGestor<Empleado, String> {

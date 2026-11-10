@@ -15,8 +15,6 @@ public class Folio {
 	 calcularSaldo();
 	 }
 
-
-
 	// Agrega un pago válido al folio.
 	public boolean anadirPago(Pago pago) {
 		if (pago == null || pago.getMonto() <= 0) {

@@ -1,10 +1,5 @@
 package com.ApartaSuitesUQ.Gestores;
 
-import com.ApartaSuitesUQ.Apartamento.Apartamento;
-
-import java.time.LocalDate;
-import java.util.List;
-
 public interface IGestor<T, ID> {
 
     boolean crear(T entidad);

@@ -4,12 +4,9 @@ import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
 import com.ApartaSuitesUQ.Estancia.Estancia;
+import ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
-import com.ApartaSuitesUQ.Reserva.NombreCanal;
-import com.ApartaSuitesUQ.Reserva.Reserva;
 import com.ApartaSuitesUQ.Reserva.*;
-import com.ApartaSuitesUQ.Reserva.EstadoActual;
-import com.ApartaSuitesUQ.Reserva.CanalReserva;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
