@@ -910,7 +910,7 @@ El huésped cancela una de sus reservas (que esté en estado Pendiente o Confirm
 
 ---
 
-### **Tarea 9.1: Recepcionista.registrarPagoPorFolioID()**
+### **Tarea 9.1: Recepcionista.registrarPagoPorFolioID()**✅
 **Archivo:** `com/ApartaSuitesUQ/Usuarios/Recepcionista.java`
 
 **Descripción:**
