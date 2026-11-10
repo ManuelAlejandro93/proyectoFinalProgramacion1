@@ -16,17 +16,16 @@ public class Estancia {
 	private Apartamento theApartamento;
 
 	// Conserva el constructor existente para no afectar las llamadas actuales.
-	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
-			Apartamento theApartamento) {
-		this(fechaEntrada, fechaSalida, listNoches, theApartamento, new ArrayList<Huesped>());
-	}
+//	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
+//			Apartamento theApartamento) {
+//		this(fechaEntrada, fechaSalida, listNoches, theApartamento, new ArrayList<Huesped>());
+//	}
 
 	// Permite crear la estancia con sus huéspedes.
-	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
+	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida,
 			Apartamento theApartamento, ArrayList<Huesped> listHuespedes) {
 		this.fechaEntrada = fechaEntrada;
 		this.fechaSalida = fechaSalida;
-		this.listNoches = listNoches;
 		this.theApartamento = theApartamento;
 		this.listHuespedes = listHuespedes;
 		this.asignarNoches();
@@ -130,6 +129,14 @@ public class Estancia {
 
 	public void setListHuespedes(ArrayList<Huesped> listHuespedes) {
 		this.listHuespedes = listHuespedes;
+	}
+
+	public int getNoches() {
+		return noches;
+	}
+
+	public void setNoches(int noches) {
+		this.noches = noches;
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //

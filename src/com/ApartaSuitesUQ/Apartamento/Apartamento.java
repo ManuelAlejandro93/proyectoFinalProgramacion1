@@ -21,9 +21,8 @@ public class Apartamento {
 	private Estancia theEstancia;
 
 	public Apartamento(String codigo, String nombre, int dormitorios, int capacidad, ArrayList<String> caracteristicas,
-			double tarifaIndividual, EstadoOperativo estadoOperativo, String motivoFueraDeServicio,
-			ArrayList<Novedad> listNovedades,
-			ArrayList<Bloqueo> listBloqueos, ArrayList<Reserva> listReservas, Estancia theEstancia) {
+			double tarifaIndividual, EstadoOperativo estadoOperativo, String motivoFueraDeServicio
+			) {
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.dormitorios = dormitorios;
@@ -32,12 +31,6 @@ public class Apartamento {
 		this.tarifaIndividual = tarifaIndividual;
 		this.estadoOperativo = estadoOperativo;
 		this.motivoFueraDeServicio = motivoFueraDeServicio;
-
-		this.listNovedades = listNovedades;
-		this.listBloqueos = listBloqueos;
-		this.listReservas = listReservas;
-
-		this.theEstancia = theEstancia;
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //
@@ -160,6 +153,9 @@ public class Apartamento {
 		return this.listBloqueos.remove(bloqueo);
 	}
 
+
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
 	@Override
 	public String toString() {
 		String mensaje = "" + "\n";
@@ -178,4 +174,6 @@ public class Apartamento {
 
 		return mensaje;
 	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }
