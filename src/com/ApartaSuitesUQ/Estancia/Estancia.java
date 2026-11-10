@@ -15,12 +15,6 @@ public class Estancia {
 	private ArrayList<Huesped> listHuespedes;
 	private Apartamento theApartamento;
 
-	// Conserva el constructor existente para no afectar las llamadas actuales.
-//	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
-//			Apartamento theApartamento) {
-//		this(fechaEntrada, fechaSalida, listNoches, theApartamento, new ArrayList<Huesped>());
-//	}
-
 	// Permite crear la estancia con sus huéspedes.
 	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida,
 			Apartamento theApartamento, ArrayList<Huesped> listHuespedes) {
@@ -140,4 +134,29 @@ public class Estancia {
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
+
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
+	// Muestra las fechas, el número de noches y el nombre del apartamento de la
+	// estancia.
+	@Override
+	public String toString() {
+		String nombreApartamento = "N/A";
+
+		if (this.getTheApartamento() != null && this.getTheApartamento().getNombre() != null) {
+			nombreApartamento = this.getTheApartamento().getNombre();
+		}
+
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "fecha de entrada : " + (this.getFechaEntrada() != null ? this.getFechaEntrada() : "N/A") + "\n";
+		mensaje += "fecha de salida : " + (this.getFechaSalida() != null ? this.getFechaSalida() : "N/A") + "\n";
+		mensaje += "noches : " + this.getNoches() + "\n";
+		mensaje += "apartamento : " + nombreApartamento + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }

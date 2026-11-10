@@ -88,6 +88,38 @@ public class Folio {
 		return this.saldo;
 	}
 
+	// Muestra el resumen del folio: saldo actual, total de cargos y total de pagos.
+	@Override
+	public String toString() {
+		double totalCargos = 0;
+		double totalPagos = 0;
+
+		if (this.listCargos != null) {
+			for (Cargo cargo : this.listCargos) {
+				if (cargo != null) {
+					totalCargos += cargo.getPrecio();
+				}
+			}
+		}
+
+		if (this.listPagos != null) {
+			for (Pago pago : this.listPagos) {
+				if (pago != null) {
+					totalPagos += pago.getMonto();
+				}
+			}
+		}
+
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "saldo actual : $" + String.format("%.2f", this.calcularSaldo()) + "\n";
+		mensaje += "total de cargos : $" + String.format("%.2f", totalCargos) + "\n";
+		mensaje += "total de pagos : $" + String.format("%.2f", totalPagos) + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
+
 	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 
 	// ========== INICIO DE GETS Y SETS ========== //
