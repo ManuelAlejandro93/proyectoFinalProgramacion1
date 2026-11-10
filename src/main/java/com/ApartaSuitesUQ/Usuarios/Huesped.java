@@ -1,13 +1,14 @@
 package com.ApartaSuitesUQ.Usuarios;
 
+import com.ApartaSuitesUQ.Reserva.Reserva;
+import com.ApartaSuitesUQ.*;
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
-import ApartaSuitesUQ.Reserva.*;
-import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 import com.ApartaSuitesUQ.Reserva.*;
+import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

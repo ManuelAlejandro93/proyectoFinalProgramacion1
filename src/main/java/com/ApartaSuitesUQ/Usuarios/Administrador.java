@@ -68,8 +68,8 @@ public class Administrador extends Empleado {
 	 * @return
 	 *         Reservas Incluidas canceladas y No-shown
 	 */
-	// public ArrayList<com.ApartaSuitesUQ.Reserva.com.ApartaSuitesUQ.Reserva>
-	// consultarReservasPorCanal(com.ApartaSuitesUQ.Reserva.NombreCanal nombreCanal)
+	// public ArrayList<Reserva.Reserva.Reserva.Reserva>
+	// consultarReservasPorCanal(Reserva.Reserva.NombreCanal nombreCanal)
 	// {
 	// }
 
