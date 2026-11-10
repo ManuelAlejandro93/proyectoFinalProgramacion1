@@ -15,12 +15,6 @@ public class Estancia {
 	private ArrayList<Huesped> listHuespedes;
 	private Apartamento theApartamento;
 
-	// Conserva el constructor existente para no afectar las llamadas actuales.
-//	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida, ArrayList<Noche> listNoches,
-//			Apartamento theApartamento) {
-//		this(fechaEntrada, fechaSalida, listNoches, theApartamento, new ArrayList<Huesped>());
-//	}
-
 	// Permite crear la estancia con sus huéspedes.
 	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida,
 			Apartamento theApartamento, ArrayList<Huesped> listHuespedes) {

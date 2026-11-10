@@ -108,7 +108,7 @@ public class Reserva {
         LocalDate fechaEntrada = this.theEstancia.getFechaEntrada();
         double valorTotal = this.theEstancia.calcularPrecioEstadia();
 
-        return this.gestorPoliticaCancelacion.calcularDevolicion(valorTotal, fechaEntrada);
+        return this.gestorPoliticaCancelacion.calcularDevolucion(valorTotal, fechaEntrada);
     }
 
 	// ========== INICIO DE GETS Y SETS ========== //

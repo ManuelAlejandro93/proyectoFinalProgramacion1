@@ -1,5 +1,8 @@
 package com.ApartaSuitesUQ;
 
+import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Estancia.Noche;
+import com.ApartaSuitesUQ.Estancia.Temporada;
 import com.ApartaSuitesUQ.Reserva.Cargo;
 import com.ApartaSuitesUQ.Reserva.Folio;
 import com.ApartaSuitesUQ.Reserva.MedioDePago;
