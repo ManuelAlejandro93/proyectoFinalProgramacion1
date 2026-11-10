@@ -3,6 +3,7 @@ package com.ApartaSuitesUQ.Usuarios;
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.Novedad;
 import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 import com.ApartaSuitesUQ.Gestores.GestorEmpleados;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
@@ -12,10 +13,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Recepcionista extends Empleado {
-  // Gestores
+
   private GestorEmpleados theGestorEmpleados;
   private GestorGeneral gestorGeneral;
   private GestorReservas gestorReservas;
+
+  // Gestores
+  private GestorApartamentos gestorApartamentos;
 
   public Recepcionista(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
       String usuario, String contrasenia, GestorEmpleados theGestorEmpleados) {
@@ -23,6 +27,8 @@ public class Recepcionista extends Empleado {
     this.theGestorEmpleados = theGestorEmpleados;
     this.gestorGeneral = theGestorEmpleados.getTheGestorGeneral();
     this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
+    this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
+
   }
 
   // todo: corregir esto.
@@ -63,8 +69,8 @@ public class Recepcionista extends Empleado {
           Folio nuevoFolio = new Folio();
           CanalReserva canalExterno = new CanalReserva(NombreCanal.EXTERNA, codigoExterno);
 
-          Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA,
-              nuevoFolio, canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
+          Reserva nuevaReserva = new Reserva(codigoReserva, huespedTitular, EstadoActual.CONFIRMADA, nuevoFolio,
+              canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
 
           boolean res = gestorReservas.crear(nuevaReserva);
 
@@ -124,7 +130,14 @@ public class Recepcionista extends Empleado {
   }
 
   // todo: corregir esto.
-  public void anadirNovedadEnApartamento(String codigoApartamento, Novedad novedad) {
+  public boolean anadirNovedadEnApartamento(String codigoApartamento, Novedad novedad) {
+    Apartamento apartamento = gestorApartamentos.consultar(codigoApartamento);
+    if (apartamento == null) {
+      return false;
+    }
+
+    apartamento.anadirNovedad(novedad);
+    return true;
   }
 
   // todo: corregir esto.
