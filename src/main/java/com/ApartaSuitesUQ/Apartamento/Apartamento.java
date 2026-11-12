@@ -31,6 +31,10 @@ public class Apartamento {
 		this.tarifaIndividual = tarifaIndividual;
 		this.estadoOperativo = estadoOperativo;
 		this.motivoFueraDeServicio = motivoFueraDeServicio;
+
+		this.listBloqueos = new ArrayList<Bloqueo>();
+		this.listNovedades = new ArrayList<Novedad>();
+		this.listReservas = new ArrayList<Reserva>();
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //

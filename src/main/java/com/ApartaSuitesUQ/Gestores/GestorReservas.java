@@ -320,6 +320,7 @@ public class GestorReservas implements IGestor<Reserva, String> {
 				capacidadMinima,
 				this.gestorApartamentos.getListApartamentos());
 	}
+
     public boolean declararNoShow(String codigoReserva){
         boolean res = false;
         Reserva reserva = consultar(codigoReserva);
