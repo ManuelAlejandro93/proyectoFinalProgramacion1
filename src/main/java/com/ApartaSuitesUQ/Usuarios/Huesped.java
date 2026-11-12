@@ -1,7 +1,6 @@
 package com.ApartaSuitesUQ.Usuarios;
 
 import com.ApartaSuitesUQ.Reserva.Reserva;
-import com.ApartaSuitesUQ.*;
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Estancia.Estancia;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
@@ -27,10 +26,9 @@ public class Huesped extends Persona {
 
 
 
-  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
-      ArrayList<Reserva> listReservas, GestorHuespedes theGestorHuespedes) {
+  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo, GestorHuespedes theGestorHuespedes) {
     super(nombre, codigo, fechaNacimiento, telefono, correo);
-    this.listReservas = listReservas;
+    this.listReservas = new ArrayList<Reserva>();
     this.theGestorHuepedes = theGestorHuespedes;
     this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
     this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
@@ -91,7 +89,8 @@ public class Huesped extends Persona {
             String codigoReserva = gestorReservas.generarCodigoUnico();
             if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
 
-                Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
+                Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
+                nuevaEstancia.setListHuespedes(ocupantes);
                 Folio nuevoFolio = new Folio();
                 CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "");
 

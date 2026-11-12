@@ -17,11 +17,11 @@ public class Estancia {
 
 	// Permite crear la estancia con sus huéspedes.
 	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida,
-			Apartamento theApartamento, ArrayList<Huesped> listHuespedes) {
+			Apartamento theApartamento) {
 		this.fechaEntrada = fechaEntrada;
 		this.fechaSalida = fechaSalida;
 		this.theApartamento = theApartamento;
-		this.listHuespedes = listHuespedes;
+		this.listHuespedes = new ArrayList<Huesped>();
 		this.asignarNoches();
 	}
 

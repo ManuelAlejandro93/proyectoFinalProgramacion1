@@ -2,7 +2,6 @@ package com.ApartaSuitesUQ.Usuarios;
 
 import com.ApartaSuitesUQ.Reserva.Folio;
 import com.ApartaSuitesUQ.Reserva.Reserva;
-import com.ApartaSuitesUQ.*;
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.Novedad;
 import com.ApartaSuitesUQ.Estancia.Estancia;
@@ -38,7 +37,8 @@ public class Recepcionista extends Empleado {
         String codigoReserva = gestorReservas.generarCodigoUnico();
         if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
 
-            Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
+            Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
+            nuevaEstancia.setListHuespedes(ocupantes);
             Folio nuevoFolio = new Folio();
             CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
 
@@ -64,7 +64,8 @@ public class Recepcionista extends Empleado {
                 String codigoReserva = gestorReservas.generarCodigoUnico();
                 if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
 
-                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
+                    Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento);
+                    nuevaEstancia.setListHuespedes(ocupantes);
                     Folio nuevoFolio = new Folio();
                     CanalReserva canalExterno = new CanalReserva(NombreCanal.EXTERNA, codigoExterno);
 

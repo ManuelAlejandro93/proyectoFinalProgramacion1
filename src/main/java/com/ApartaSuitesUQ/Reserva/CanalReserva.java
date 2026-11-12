@@ -1,6 +1,4 @@
-package com.ApartaSuitesUQ;
-
-import com.ApartaSuitesUQ.Reserva.NombreCanal;
+package com.ApartaSuitesUQ.Reserva;
 
 public record CanalReserva(NombreCanal nombreCanal, String codigoCanal) {
 }

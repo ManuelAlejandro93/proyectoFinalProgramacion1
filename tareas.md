@@ -256,7 +256,7 @@ Validar si una reserva puede cambiar de su estado actual a un nuevo estado. Esto
 
 ---
 
-### **Tarea 3.2: Reserva.calcularDevolicion()**
+### **Tarea 3.2: Reserva.calcularDevolucion()**
 **Archivo:** `com/ApartaSuitesUQ/Reserva/Reserva.java`
 
 **Descripción:**

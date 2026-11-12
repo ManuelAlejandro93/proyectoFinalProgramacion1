@@ -1,7 +1,6 @@
 package com.ApartaSuitesUQ.Reserva;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
-import com.ApartaSuitesUQ.CanalReserva;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
@@ -14,38 +13,38 @@ public class Reserva {
     private String codigo;
     private EstadoActual estadoActual;
 
-	private Huesped theHuesped;
-	private Folio theFolio;
-	private CanalReserva theCanalReserva;
-	private Apartamento theApartamento;
-	private Estancia theEstancia;
-	private LocalDate fechaEntrada;
-	private LocalDate fechaSalida;
+    private Huesped theHuesped;
+    private Folio theFolio;
+    private CanalReserva theCanalReserva;
+    private Apartamento theApartamento;
+    private Estancia theEstancia;
+    private LocalDate fechaEntrada;
+    private LocalDate fechaSalida;
 
     private GestorReservas theGestorReservas;
 
     //Gestores
     private GestorPoliticaCancelacion gestorPoliticaCancelacion;
 
-	// Permite crear la reserva con su estancia y el gestor de política de
-	// cancelación.
-	public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
+    // Permite crear la reserva con su estancia y el gestor de política de
+    // cancelación.
+    public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
                    CanalReserva canalReserva, Apartamento theApartamento, Estancia theEstancia, GestorReservas theGestorReservas) {
-		this.codigo = codigo;
-		this.estadoActual = estadoActual;
+        this.codigo = codigo;
+        this.estadoActual = estadoActual;
 
-		this.theHuesped = theHuesped;
-		this.theFolio = theFolio;
-		this.theCanalReserva = canalReserva;
-		this.theApartamento = theApartamento;
-		this.theEstancia = theEstancia;
+        this.theHuesped = theHuesped;
+        this.theFolio = theFolio;
+        this.theCanalReserva = canalReserva;
+        this.theApartamento = theApartamento;
+        this.theEstancia = theEstancia;
         this.fechaEntrada = theEstancia.getFechaEntrada();
         this.fechaSalida = theEstancia.getFechaSalida();
 
         this.theGestorReservas = theGestorReservas;
         GestorGeneral gestorGeneral = theGestorReservas.getTheGestorGeneral();
         this.gestorPoliticaCancelacion = gestorGeneral.getTheGestorPoliticaCancelacion();
-	}
+    }
 
     // ========== INICIO DE FUNCIONES DE VALIDACION ========== //
 
@@ -67,12 +66,6 @@ public class Reserva {
 
             case EN_CURSO:
                 return nuevoEstado == EstadoActual.FINALIZADA;
-
-            case FINALIZADA:
-            case CANCELADA:
-            case NO_SHOWN:
-                return false;
-
             default:
                 return false;
         }
@@ -111,7 +104,7 @@ public class Reserva {
         return this.gestorPoliticaCancelacion.calcularDevolucion(valorTotal, fechaEntrada);
     }
 
-	// ========== INICIO DE GETS Y SETS ========== //
+    // ========== INICIO DE GETS Y SETS ========== //
 
     public String getCodigo() {
         return codigo;
@@ -127,12 +120,8 @@ public class Reserva {
         return estadoActual;
     }
 
-    public boolean setEstadoActual(EstadoActual estadoActual) {
-        if (this.puedePasarA(estadoActual)) {
-            this.estadoActual = estadoActual;
-            return true;
-        }
-        return false;
+    public void setEstadoActual(EstadoActual estadoActual) {
+        this.estadoActual = estadoActual;
     }
 
     public Huesped getTheHuesped() {
@@ -189,21 +178,21 @@ public class Reserva {
         this.gestorPoliticaCancelacion = gestorPoliticaCancelacion;
     }
 
-	public LocalDate getFechaEntrada() {
-		return fechaEntrada;
-	}
+    public LocalDate getFechaEntrada() {
+        return fechaEntrada;
+    }
 
-	public void setFechaEntrada(LocalDate fechaEntrada) {
-		this.fechaEntrada = fechaEntrada;
-	}
+    public void setFechaEntrada(LocalDate fechaEntrada) {
+        this.fechaEntrada = fechaEntrada;
+    }
 
-	public LocalDate getFechaSalida() {
-		return fechaSalida;
-	}
+    public LocalDate getFechaSalida() {
+        return fechaSalida;
+    }
 
-	public void setFechaSalida(LocalDate fechaSalida) {
-		this.fechaSalida = fechaSalida;
-	}
+    public void setFechaSalida(LocalDate fechaSalida) {
+        this.fechaSalida = fechaSalida;
+    }
 
     public GestorReservas getTheGestorReservas() {
         return theGestorReservas;

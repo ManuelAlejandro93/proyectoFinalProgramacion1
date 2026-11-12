@@ -1,7 +1,6 @@
 package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Reserva.Reserva;
-import com.ApartaSuitesUQ.*;
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
@@ -101,6 +100,10 @@ public class GestorReservas implements IGestor<Reserva, String> {
         if (reservaRecuperada == null) {
             return false;
         }
+        if (!reservaRecuperada.puedePasarA(reserva.getEstadoActual())){
+            return false;
+        }
+
         reservaRecuperada.setTheHuesped(reserva.getTheHuesped());
         reservaRecuperada.setEstadoActual(reserva.getEstadoActual());
         reservaRecuperada.setTheFolio(reserva.getTheFolio());
