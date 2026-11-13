@@ -382,11 +382,19 @@ public class GestorReservas implements IGestor<Reserva, String> {
     boolean res = false;
     Reserva reserva = consultar(codigoReserva);
 
-    if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
-        || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
+    if (reserva == null) {
+      return false;
+    }
+
+    if (reserva.getEstadoActual() == EstadoActual.PENDIENTE || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
       if (reserva.puedePasarA(EstadoActual.CANCELADA)) {
+        Folio folio = reserva.getTheFolio();
+        if (folio == null) {
+          return false;
+        }
+
         double montoDevolucion = reserva.calcularDevolucion();
-        boolean resDevolucion = reserva.getTheFolio().registrarDevolucion(montoDevolucion);
+        boolean resDevolucion = folio.registrarDevolucion(montoDevolucion);
 
         if (resDevolucion) {
           reserva.setEstadoActual(EstadoActual.CANCELADA);
