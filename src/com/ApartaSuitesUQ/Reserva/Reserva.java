@@ -40,12 +40,20 @@ public class Reserva {
         this.theCanalReserva = canalReserva;
         this.theApartamento = theApartamento;
         this.theEstancia = theEstancia;
-        this.fechaEntrada = theEstancia.getFechaEntrada();
-        this.fechaSalida = theEstancia.getFechaSalida();
+        // Valida la estancia antes de extraer sus fechas para evitar NPE.
+        if (theEstancia != null) {
+            this.fechaEntrada = theEstancia.getFechaEntrada();
+            this.fechaSalida = theEstancia.getFechaSalida();
+        }
 
         this.theGestorReservas = theGestorReservas;
-        GestorGeneral gestorGeneral = theGestorReservas.getTheGestorGeneral();
-        this.gestorPoliticaCancelacion = gestorGeneral.getTheGestorPoliticaCancelacion();
+        // Valida los gestores antes de obtener la política de cancelación.
+        if (theGestorReservas != null) {
+            GestorGeneral gestorGeneral = theGestorReservas.getTheGestorGeneral();
+            if (gestorGeneral != null) {
+                this.gestorPoliticaCancelacion = gestorGeneral.getTheGestorPoliticaCancelacion();
+            }
+        }
     }
 
     // ========== INICIO DE FUNCIONES DE VALIDACION ========== //
@@ -239,5 +247,5 @@ public class Reserva {
         this.theGestorReservas = theGestorReservas;
     }
 
-    // ========== FIN DE GETS Y SETS ========== //
+    // ========= FIN DE GETS Y SETS ========= //
 }
