@@ -27,11 +27,18 @@ public class Huesped extends Persona {
   public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
       ArrayList<Reserva> listReservas, GestorHuespedes theGestorHuespedes) {
     super(nombre, codigo, fechaNacimiento, telefono, correo);
-    this.listReservas = listReservas;
+    // Si la lista llega null, se inicializa vacía para evitar NPE.
+    this.listReservas = (listReservas != null) ? listReservas : new ArrayList<Reserva>();
     this.theGestorHuepedes = theGestorHuespedes;
-    this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
-    this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
-    this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
+
+    // Solo obtiene los gestores si existen, para evitar NPE al construir.
+    if (theGestorHuespedes != null) {
+      this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
+      if (this.gestorGeneral != null) {
+        this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
+        this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
+      }
+    }
   }
 
   // todo: corregir esto.
@@ -103,6 +110,12 @@ public class Huesped extends Persona {
    */
   public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate fechaEntrada,
       LocalDate fechaSalida) {
+    // Validación defensiva: sin gestor de reservas u ocupantes no se puede
+    // reservar.
+    if (gestorReservas == null || ocupantes == null) {
+      return false;
+    }
+
     if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes.size())) {
       String codigoReserva = gestorReservas.generarCodigoUnico();
       if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
@@ -151,6 +164,7 @@ public class Huesped extends Persona {
     return false;
   }
 
+  // Descomentar este método (IMPORTANTE)
   public ArrayList<Reserva> consultarReservas() {
     // Garantiza que la lista exista y se limpia para no acumular duplicados.
     if (this.listReservas == null) {
