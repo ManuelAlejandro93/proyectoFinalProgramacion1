@@ -107,8 +107,18 @@ public class GestorReservas implements IGestor<Reserva, String> {
     if (reservaRecuperada == null) {
       return false;
     }
+
+    // Si el estado cambió, valida la transición antes de modificar cualquier campo.
+    EstadoActual nuevoEstado = reserva.getEstadoActual();
+    boolean cambioDeEstado = nuevoEstado != reservaRecuperada.getEstadoActual();
+    if (cambioDeEstado && !reservaRecuperada.puedePasarA(nuevoEstado)) {
+      return false;
+    }
+
     reservaRecuperada.setTheHuesped(reserva.getTheHuesped());
-    reservaRecuperada.setEstadoActual(reserva.getEstadoActual());
+    if (cambioDeEstado) {
+      reservaRecuperada.setEstadoActual(nuevoEstado);
+    }
     reservaRecuperada.setTheFolio(reserva.getTheFolio());
     reservaRecuperada.setTheCanalReserva(reserva.getTheCanalReserva());
 
@@ -387,12 +397,23 @@ public class GestorReservas implements IGestor<Reserva, String> {
             // La estancia pertenece a la Reserva, no al Apartamento.
             double valorTotal = estancia.calcularPrecioEstadia();
             double anticipoNecesario = valorTotal * 0.30;
-            double saldoFolio = folio.calcularSaldo();
 
-            if (saldoFolio >= anticipoNecesario) {
+            // Suma los pagos registrados en el folio para verificar el anticipo.
+            double totalPagos = 0.0;
+            ArrayList<Pago> listPagos = folio.getListPagos();
+            if (listPagos != null) {
+              for (Pago pago : listPagos) {
+                if (pago != null) {
+                  totalPagos += pago.getMonto();
+                }
+              }
+            }
+
+            if (totalPagos >= anticipoNecesario) {
               if (reserva.puedePasarA(EstadoActual.CONFIRMADA)) {
-                reserva.setEstadoActual(EstadoActual.CONFIRMADA);
-                res = true;
+                if (reserva.setEstadoActual(EstadoActual.CONFIRMADA)) {
+                  res = true;
+                }
               }
             }
           }
@@ -481,13 +502,21 @@ public class GestorReservas implements IGestor<Reserva, String> {
     Reserva reserva = consultar(codigoReserva);
     if (reserva != null) {
       if (reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
-        LocalDate fechaEntrada = reserva.getTheEstancia().getFechaEntrada();
-        if (LocalDate.now().isAfter(fechaEntrada)) {
-          Apartamento apartamento = reserva.getTheApartamento();
-          if (apartamento.getEstadoOperativo() == EstadoOperativo.PREPARADO) {
-            if (reserva.puedePasarA(EstadoActual.EN_CURSO)) {
-              reserva.setEstadoActual(EstadoActual.EN_CURSO);
-              apartamento.setEstadoOperativo(EstadoOperativo.OCUPADO);
+        // Valida estancia y fecha de entrada para evitar NPE.
+        Estancia estancia = reserva.getTheEstancia();
+        if (estancia != null) {
+          LocalDate fechaEntrada = estancia.getFechaEntrada();
+          // Permite el check-in el mismo día de entrada o en días posteriores.
+          if (fechaEntrada != null && !LocalDate.now().isBefore(fechaEntrada)) {
+            Apartamento apartamento = reserva.getTheApartamento();
+            // Valida que el apartamento exista antes de leer su estado operativo.
+            if (apartamento != null && apartamento.getEstadoOperativo() == EstadoOperativo.PREPARADO) {
+              if (reserva.puedePasarA(EstadoActual.EN_CURSO)) {
+                if (reserva.setEstadoActual(EstadoActual.EN_CURSO)) {
+                  apartamento.setEstadoOperativo(EstadoOperativo.OCUPADO);
+                  res = true;
+                }
+              }
             }
           }
         }
@@ -503,10 +532,13 @@ public class GestorReservas implements IGestor<Reserva, String> {
     Reserva reserva = consultar(codigoReserva);
     if (reserva != null) {
       if (reserva.getEstadoActual() == EstadoActual.EN_CURSO) {
-        if (reserva.puedePasarA(EstadoActual.FINALIZADA)) {
-          Apartamento apartamento = reserva.getTheApartamento();
-          reserva.setEstadoActual(EstadoActual.FINALIZADA);
-          apartamento.setEstadoOperativo(EstadoOperativo.PENDIENTE_DE_PREPARACION);
+        Apartamento apartamento = reserva.getTheApartamento();
+        // Valida que el apartamento exista antes de finalizar la reserva.
+        if (apartamento != null && reserva.puedePasarA(EstadoActual.FINALIZADA)) {
+          if (reserva.setEstadoActual(EstadoActual.FINALIZADA)) {
+            apartamento.setEstadoOperativo(EstadoOperativo.PENDIENTE_DE_PREPARACION);
+            res = true;
+          }
         }
       }
     }
