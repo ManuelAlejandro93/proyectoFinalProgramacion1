@@ -247,5 +247,5 @@ public class Reserva {
         this.theGestorReservas = theGestorReservas;
     }
 
-    // ========= FIN DE GETS Y SETS ========= //
+    // =========== FIN DE GETS Y SETS =========== //
 }
