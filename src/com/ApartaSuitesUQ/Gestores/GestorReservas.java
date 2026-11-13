@@ -92,6 +92,11 @@ public class GestorReservas implements IGestor<Reserva, String> {
       return false; // Código inválido
     }
 
+    // Sin el objeto con los nuevos datos no hay nada que actualizar.
+    if (reserva == null) {
+      return false;
+    }
+
     if (reserva.getTheHuesped() == null ||
         reserva.getEstadoActual() == null || reserva.getTheFolio() == null ||
         reserva.getTheCanalReserva() == null) {
