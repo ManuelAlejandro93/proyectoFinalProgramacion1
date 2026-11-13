@@ -7,7 +7,6 @@ import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
 import com.ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
-import com.ApartaSuitesUQ.Reserva.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -205,7 +204,19 @@ public class Huesped extends Persona {
    */
   public boolean cancelarReservaPorCodigo(String codigoReserva) {
     boolean res = false;
+
+    // Validación defensiva: se necesita el gestor de reservas.
+    if (gestorReservas == null) {
+      return false;
+    }
+
     Reserva reserva = gestorReservas.consultar(codigoReserva);
+
+    // Si la reserva no existe, no se puede cancelar.
+    if (reserva == null) {
+      return false;
+    }
+
     if (reserva.getTheHuesped() == this) {
       if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
           || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
