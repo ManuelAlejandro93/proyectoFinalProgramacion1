@@ -324,14 +324,34 @@ public class GestorReservas implements IGestor<Reserva, String> {
     boolean res = false;
     Reserva reserva = consultar(codigoReserva);
 
+    // Si la reserva no existe, no se puede declarar no-show.
+    if (reserva == null) {
+      return false;
+    }
+
     if (reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
-      LocalDate fechaEntrada = reserva.getTheEstancia().getFechaEntrada();
+      // Valida la estancia antes de leer su fecha de entrada.
+      Estancia estancia = reserva.getTheEstancia();
+      if (estancia == null) {
+        return false;
+      }
+
+      LocalDate fechaEntrada = estancia.getFechaEntrada();
+      if (fechaEntrada == null) {
+        return false;
+      }
+
       if (LocalDate.now().isEqual(fechaEntrada) || LocalDate.now().isAfter(fechaEntrada)) {
         LocalTime horaActual = LocalTime.now();
         if (horaActual.isAfter(LocalTime.of(22, 0))) {
           if (reserva.puedePasarA(EstadoActual.NO_SHOWN)) {
-            reserva.setEstadoActual(EstadoActual.NO_SHOWN);
+            // Valida el folio antes de registrar el movimiento.
             Folio folio = reserva.getTheFolio();
+            if (folio == null) {
+              return false;
+            }
+
+            reserva.setEstadoActual(EstadoActual.NO_SHOWN);
             folio.registrarDevolucion(0.0);
             res = true;
           }
