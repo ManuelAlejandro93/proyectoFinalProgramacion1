@@ -30,6 +30,9 @@ public class Folio {
 		}
 
 		this.listPagos.add(pago);
+
+		// Actualiza el saldo después de agregar el pago.
+		this.calcularSaldo();
 		return true;
 	}
 
@@ -48,6 +51,9 @@ public class Folio {
 		}
 
 		this.listCargos.add(cargo);
+
+		// Actualiza el saldo después de agregar el cargo.
+		this.calcularSaldo();
 		return true;
 	}
 
@@ -74,13 +80,17 @@ public class Folio {
 
 		if (this.listCargos != null) {
 			for (Cargo cargo : this.listCargos) {
-				sumaCargos += cargo.getPrecio();
+				if (cargo != null) {
+					sumaCargos += cargo.getPrecio();
+				}
 			}
 		}
 
 		if (this.listPagos != null) {
 			for (Pago pago : this.listPagos) {
-				sumaPagos += pago.getMonto();
+				if (pago != null) {
+					sumaPagos += pago.getMonto();
+				}
 			}
 		}
 
@@ -141,7 +151,8 @@ public class Folio {
 	}
 
 	public double getSaldo() {
-		return this.saldo;
+		// Recalcula para reflejar cualquier cambio en los cargos o pagos.
+		return this.calcularSaldo();
 	}
 
 	public void setSaldo(double saldo) {
