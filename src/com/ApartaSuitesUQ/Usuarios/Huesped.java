@@ -7,6 +7,7 @@ import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
 import com.ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
+import com.ApartaSuitesUQ.Reserva.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -150,16 +151,30 @@ public class Huesped extends Persona {
     return false;
   }
 
-  // Descomentar este método (IMPORTANTE)
   public ArrayList<Reserva> consultarReservas() {
+    // Garantiza que la lista exista y se limpia para no acumular duplicados.
+    if (this.listReservas == null) {
+      this.listReservas = new ArrayList<Reserva>();
+    }
+    this.listReservas.clear();
+
+    // Si no hay gestor o no tiene reservas, se retorna la lista vacía.
+    if (gestorReservas == null || gestorReservas.getListReservas() == null) {
+      return this.listReservas;
+    }
+
     for (Reserva reserva : gestorReservas.getListReservas()) {
+      if (reserva == null) {
+        continue;
+      }
+
       Huesped titular = reserva.getTheHuesped();
       if (titular == this) {
-        listReservas.add(reserva);
+        this.listReservas.add(reserva);
       }
     }
 
-    return listReservas;
+    return this.listReservas;
   }
 
   // todo: corregir esto.
@@ -187,6 +202,10 @@ public class Huesped extends Persona {
           || reserva.getEstadoActual() == EstadoActual.CONFIRMADA
           || reserva.getEstadoActual() == EstadoActual.EN_CURSO) {
         Folio folio = reserva.getTheFolio();
+        // Si la reserva no tiene folio, no aporta saldo.
+        if (folio == null) {
+          continue;
+        }
         double saldo = folio.calcularSaldo();
         saldoTotal += saldo;
       }
