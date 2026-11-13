@@ -13,236 +13,255 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Huesped extends Persona {
-    private String foto = "Foto no ingresada";
-    private boolean titular = false;
-    private ArrayList<Reserva> listReservas;
+  private String foto = "Foto no ingresada";
+  private boolean titular = false;
+  private ArrayList<Reserva> listReservas;
 
-    private GestorHuespedes theGestorHuepedes;
+  private GestorHuespedes theGestorHuepedes;
 
-    // Gestores
-    private GestorGeneral gestorGeneral;
-    private GestorReservas gestorReservas;
-    private GestorApartamentos gestorApartamentos;
+  // Gestores
+  private GestorGeneral gestorGeneral;
+  private GestorReservas gestorReservas;
+  private GestorApartamentos gestorApartamentos;
 
-    public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
-            ArrayList<Reserva> listReservas, GestorHuespedes theGestorHuespedes) {
-        super(nombre, codigo, fechaNacimiento, telefono, correo);
-        this.listReservas = listReservas;
-        this.theGestorHuepedes = theGestorHuespedes;
-        this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
-        this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
-        this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
+  public Huesped(String nombre, String codigo, LocalDate fechaNacimiento, String telefono, String correo,
+      ArrayList<Reserva> listReservas, GestorHuespedes theGestorHuespedes) {
+    super(nombre, codigo, fechaNacimiento, telefono, correo);
+    this.listReservas = listReservas;
+    this.theGestorHuepedes = theGestorHuespedes;
+    this.gestorGeneral = theGestorHuespedes.getTheGestorGeneral();
+    this.gestorReservas = this.gestorGeneral.getTheGestorReservas();
+    this.gestorApartamentos = this.gestorGeneral.getTheGestorApartamentos();
+  }
+
+  // todo: corregir esto.
+
+  /**
+   *
+   * @param fechaCheckIn
+   * @param fechaCheckOut
+   * @param numeroPersonas
+   * @return
+   */
+  public ArrayList<Apartamento> consultarApartamentos(LocalDate fechaCheckIn, LocalDate fechaCheckOut,
+      int numeroPersonas) {
+
+    return null;
+  }
+
+  // todo: corregir esto.
+
+  /**
+   *
+   * @param codigoApartamento
+   * @return El método debería devolver información como:
+   *         "El apartamento Villa Juliana tiene un precio de 6000000"
+   *
+   */
+  public String cotizarApartamentoPorCodigo(String codigoApartamento, LocalDate fechaEntrada, LocalDate fechaSalida) {
+    String res = null;
+
+    // Validación defensiva: se necesita el gestor de apartamentos.
+    if (gestorApartamentos == null) {
+      return null;
     }
 
-    // todo: corregir esto.
+    Apartamento apartamento = gestorApartamentos.consultar(codigoApartamento);
 
-    /**
-     *
-     * @param fechaCheckIn
-     * @param fechaCheckOut
-     * @param numeroPersonas
-     * @return
-     */
-    public ArrayList<Apartamento> consultarApartamentos(LocalDate fechaCheckIn, LocalDate fechaCheckOut,
-            int numeroPersonas) {
-
-        return null;
+    // Si el apartamento es null o las fechas son inválidas, no se puede cotizar.
+    if (apartamento == null || fechaEntrada == null || fechaSalida == null || !fechaEntrada.isBefore(fechaSalida)) {
+      return null;
     }
 
-    // todo: corregir esto.
+    // Crea una estancia temporal usando los parámetros recibidos.
+    Estancia estancia = new Estancia(fechaEntrada, fechaSalida, apartamento, new ArrayList<Huesped>());
+    double precioTotal = estancia.calcularPrecioEstadia();
 
-    /**
-     *
-     * @param codigoApartamento
-     * @return El método debería devolver información como:
-     *         "El apartamento Villa Juliana tiene un precio de 6000000"
-     *
-     */
-    public String cotizarApartamentoPorCodigo(String codigoApartamento, LocalDate fechaEntrada, LocalDate fechaSalida) {
-        String res = null;
-        Apartamento apartamento = gestorApartamentos.consultar(codigoApartamento);
-        if (apartamento != null) {
-            Estancia estancia = apartamento.getTheEstancia();
-            double precioTotal = estancia.calcularPrecioEstadia();
-            res = "Nombre: " + apartamento.getNombre() +
-                    "\n Fecha Entrada: " + estancia.getFechaEntrada() +
-                    "\n Fecha Salida: " + estancia.getFechaSalida() +
-                    "\n Numero Noches: " + estancia.getNoches() +
-                    "\n Precio por Noche: " + estancia.getListNoches().getFirst().getPrecio() +
-                    "\n Precio Total: " + precioTotal;
+    // Valida que la lista de noches no sea null ni esté vacía antes de acceder a la
+    // primera.
+    String precioPorNoche = "N/A";
+    if (estancia.getListNoches() != null && !estancia.getListNoches().isEmpty()) {
+      precioPorNoche = String.valueOf(estancia.getListNoches().get(0).getPrecio());
+    }
+
+    res = "Nombre: " + apartamento.getNombre() +
+        "\n Fecha Entrada: " + estancia.getFechaEntrada() +
+        "\n Fecha Salida: " + estancia.getFechaSalida() +
+        "\n Numero Noches: " + estancia.getNoches() +
+        "\n Precio por Noche: " + precioPorNoche +
+        "\n Precio Total: " + precioTotal;
+
+    return res;
+  }
+
+  // todo: corregir esto.
+
+  /**
+   *
+   * @param huespedes
+   * @return devuelve falso o verdadero si se pudo hacer o no la reserva
+   */
+  public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate fechaEntrada,
+      LocalDate fechaSalida) {
+    if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes.size())) {
+      String codigoReserva = gestorReservas.generarCodigoUnico();
+      if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
+
+        Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
+        Folio nuevoFolio = new Folio();
+        CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "");
+
+        Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio, canalExterno,
+            apartamento, nuevaEstancia, this.gestorReservas);
+
+        boolean res = gestorReservas.crear(nuevaReserva);
+
+        if (res) {
+          // Operacion Exitosa
+          return true;
+        } else {
+          // Operacion Fallida
+          return false;
         }
-
-        return res;
+      }
     }
 
-    // todo: corregir esto.
+    return false;
+  }
 
-    /**
-     *
-     * @param huespedes
-     * @return devuelve falso o verdadero si se pudo hacer o no la reserva
-     */
-    public boolean crearReservaEnPortal(ArrayList<Huesped> ocupantes, Apartamento apartamento, LocalDate fechaEntrada,
-            LocalDate fechaSalida) {
-        if (gestorReservas.validarCapacidadMaxima(apartamento, ocupantes.size())) {
-            String codigoReserva = gestorReservas.generarCodigoUnico();
-            if (gestorReservas.validarSinDobleVenta(apartamento, fechaEntrada, fechaSalida, codigoReserva)) {
+  // todo: corregir esto.
 
-                Estancia nuevaEstancia = new Estancia(fechaEntrada, fechaSalida, apartamento, ocupantes);
-                Folio nuevoFolio = new Folio();
-                CanalReserva canalExterno = new CanalReserva(NombreCanal.PORTAL, "");
+  /**
+   *
+   * @param pago
+   * @return
+   */
+  public boolean pagarAnticipo(Pago pago) {
+    return false;
+  }
 
-                Reserva nuevaReserva = new Reserva(codigoReserva, this, EstadoActual.PENDIENTE, nuevoFolio,
-                        canalExterno, apartamento, nuevaEstancia, this.gestorReservas);
+  // todo: corregir esto.
 
-                boolean res = gestorReservas.crear(nuevaReserva);
+  /**
+   *
+   * @param pago
+   * @return
+   */
+  public boolean pagarAbono(Pago pago) {
+    return false;
+  }
 
-                if (res) {
-                    // Operacion Exitosa
-                    return true;
-                } else {
-                    // Operacion Fallida
-                    return false;
-                }
-            }
-        }
-
-        return false;
+  // Descomentar este método (IMPORTANTE)
+  public ArrayList<Reserva> consultarReservas() {
+    for (Reserva reserva : gestorReservas.getListReservas()) {
+      Huesped titular = reserva.getTheHuesped();
+      if (titular == this) {
+        listReservas.add(reserva);
+      }
     }
 
-    // todo: corregir esto.
+    return listReservas;
+  }
 
-    /**
-     *
-     * @param pago
-     * @return
-     */
-    public boolean pagarAnticipo(Pago pago) {
-        return false;
+  // todo: corregir esto.
+
+  /**
+   *
+   * @return el estado de la reserva String
+   */
+  public String consultarEstadoReserva() {
+    return null;
+  }
+
+  // todo: corregir esto.
+
+  /**
+   *
+   * @return saldo en folios
+   */
+  public double consultarSaldoEnFolios() {
+    double saldoTotal = 0.0;
+    ArrayList<Reserva> misReservas = consultarReservas();
+
+    for (Reserva reserva : misReservas) {
+      if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
+          || reserva.getEstadoActual() == EstadoActual.CONFIRMADA
+          || reserva.getEstadoActual() == EstadoActual.EN_CURSO) {
+        Folio folio = reserva.getTheFolio();
+        double saldo = folio.calcularSaldo();
+        saldoTotal += saldo;
+      }
     }
 
-    // todo: corregir esto.
+    return saldoTotal;
+  }
 
-    /**
-     *
-     * @param pago
-     * @return
-     */
-    public boolean pagarAbono(Pago pago) {
-        return false;
+  // todo: corregir esto.
+
+  /**
+   *
+   * @param codigoReserva
+   * @return
+   */
+  public boolean cancelarReservaPorCodigo(String codigoReserva) {
+    boolean res = false;
+    Reserva reserva = gestorReservas.consultar(codigoReserva);
+    if (reserva.getTheHuesped() == this) {
+      if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
+          || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
+        res = gestorReservas.cancelarReserva(codigoReserva);
+      }
     }
 
-    // Descomentar este método (IMPORTANTE)
-    public ArrayList<Reserva> consultarReservas() {
-        for (Reserva reserva : gestorReservas.getListReservas()) {
-            Huesped titular = reserva.getTheHuesped();
-            if (titular == this) {
-                listReservas.add(reserva);
-            }
-        }
+    return res;
+  }
 
-        return listReservas;
+  // Muestra los datos personales del huésped, su foto y si es titular.
+  @Override
+  public String toString() {
+
+    String mensaje = "" + "\n";
+    mensaje += "===============" + "\n";
+    mensaje += "nombre : " + (this.getNombre() != null ? this.getNombre() : "N/A") + "\n";
+    mensaje += "codigo : " + (this.getCodigo() != null ? this.getCodigo() : "N/A") + "\n";
+    mensaje += "fecha de nacimiento : " + (this.getFechaNacimiento() != null ? this.getFechaNacimiento() : "N/A")
+        + "\n";
+    mensaje += "edad : " + this.getEdad() + "\n";
+    mensaje += "telefono : " + (this.getTelefono() != null ? this.getTelefono() : "N/A") + "\n";
+    mensaje += "correo : " + (this.getCorreo() != null ? this.getCorreo() : "N/A") + "\n";
+    mensaje += "foto : " + (this.getFoto() != null ? this.getFoto() : "Foto no ingresada") + "\n";
+    mensaje += "titular : " + (this.isTitular() ? "Sí" : "No") + "\n";
+    mensaje += "===============" + "\n";
+
+    return mensaje;
+  }
+
+  // ========== INICIO DE GETS Y SETS ========== //
+  public String getFoto() {
+    return foto;
+  }
+
+  public void setFoto(String foto) {
+    if (foto != null && !foto.trim().isEmpty()) {
+      this.foto = foto;
     }
+  }
 
-    // todo: corregir esto.
+  public boolean isTitular() {
+    return titular;
+  }
 
-    /**
-     *
-     * @return el estado de la reserva String
-     */
-    public String consultarEstadoReserva() {
-        return null;
-    }
+  public void setTitular(boolean titular) {
+    this.titular = titular;
+  }
 
-    // todo: corregir esto.
+  public ArrayList<Reserva> getListReservas() {
+    return listReservas;
+  }
 
-    /**
-     *
-     * @return saldo en folios
-     */
-    public double consultarSaldoEnFolios() {
-        double saldoTotal = 0.0;
-        ArrayList<Reserva> misReservas = consultarReservas();
+  public void setListReservas(ArrayList<Reserva> listReservas) {
+    this.listReservas = listReservas;
+  }
 
-        for (Reserva reserva : misReservas) {
-            if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
-                    || reserva.getEstadoActual() == EstadoActual.CONFIRMADA
-                    || reserva.getEstadoActual() == EstadoActual.EN_CURSO) {
-                Folio folio = reserva.getTheFolio();
-                double saldo = folio.calcularSaldo();
-                saldoTotal += saldo;
-            }
-        }
-
-        return saldoTotal;
-    }
-
-    // todo: corregir esto.
-
-    /**
-     *
-     * @param codigoReserva
-     * @return
-     */
-    public boolean cancelarReservaPorCodigo(String codigoReserva) {
-        boolean res = false;
-        Reserva reserva = gestorReservas.consultar(codigoReserva);
-        if (reserva.getTheHuesped() == this) {
-            if (reserva.getEstadoActual() == EstadoActual.PENDIENTE
-                    || reserva.getEstadoActual() == EstadoActual.CONFIRMADA) {
-                res = gestorReservas.cancelarReserva(codigoReserva);
-            }
-        }
-
-        return res;
-    }
-
-    // Muestra los datos personales del huésped, su foto y si es titular.
-    @Override
-    public String toString() {
-
-        String mensaje = "" + "\n";
-        mensaje += "===============" + "\n";
-        mensaje += "nombre : " + (this.getNombre() != null ? this.getNombre() : "N/A") + "\n";
-        mensaje += "codigo : " + (this.getCodigo() != null ? this.getCodigo() : "N/A") + "\n";
-        mensaje += "fecha de nacimiento : " + (this.getFechaNacimiento() != null ? this.getFechaNacimiento() : "N/A")
-                + "\n";
-        mensaje += "edad : " + this.getEdad() + "\n";
-        mensaje += "telefono : " + (this.getTelefono() != null ? this.getTelefono() : "N/A") + "\n";
-        mensaje += "correo : " + (this.getCorreo() != null ? this.getCorreo() : "N/A") + "\n";
-        mensaje += "foto : " + (this.getFoto() != null ? this.getFoto() : "Foto no ingresada") + "\n";
-        mensaje += "titular : " + (this.isTitular() ? "Sí" : "No") + "\n";
-        mensaje += "===============" + "\n";
-
-        return mensaje;
-    }
-
-    // ========== INICIO DE GETS Y SETS ========== //
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        if (foto != null && !foto.trim().isEmpty()) {
-            this.foto = foto;
-        }
-    }
-
-    public boolean isTitular() {
-        return titular;
-    }
-
-    public void setTitular(boolean titular) {
-        this.titular = titular;
-    }
-
-    public ArrayList<Reserva> getListReservas() {
-        return listReservas;
-    }
-
-    public void setListReservas(ArrayList<Reserva> listReservas) {
-        this.listReservas = listReservas;
-    }
-
-    // ========== FIN DE GETS Y SETS ========== //
+  // ========== FIN DE GETS Y SETS ========== //
 }
