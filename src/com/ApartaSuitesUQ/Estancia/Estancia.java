@@ -27,15 +27,17 @@ public class Estancia {
 
 	// Crea una noche por cada fecha de la estancia, sin incluir la fecha de salida.
 	public void asignarNoches() {
+		// Garantiza que la lista exista aunque las fechas sean inválidas.
+		if (this.listNoches == null) {
+			this.listNoches = new ArrayList<Noche>();
+		} else {
+			this.listNoches.clear();
+		}
+		this.noches = 0;
+
 		if (this.fechaEntrada == null || this.fechaSalida == null ||
 				!this.fechaEntrada.isBefore(this.fechaSalida)) {
 			return;
-		}
-
-		if (this.listNoches == null) {
-			this.listNoches = new ArrayList<Noche>();
-		} else if (!this.listNoches.isEmpty()) {
-			this.listNoches.clear();
 		}
 
 		int nocheCount = 0;
