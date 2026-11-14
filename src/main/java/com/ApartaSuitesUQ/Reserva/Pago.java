@@ -59,15 +59,13 @@ public class Pago {
 
 	// ========== FIN DE GETS Y SETS ========== //
 
+	// Muestra el pago en formato simple: monto, medio de pago y fecha.
 	@Override
 	public String toString() {
-		String mensaje = "" + "\n";
-		mensaje += "===============" + "\n";
-		mensaje += "monto : " + this.getMonto() + "\n";
-		mensaje += "medio de pago : " + this.getMedioDePago() + "\n";
-		mensaje += "fecha : " + this.getFecha() + "\n";
-		mensaje += "===============" + "\n";
-
+		String mensaje = "";
+		mensaje += "$" + String.format("%.2f", this.getMonto());
+		mensaje += " - " + (this.getMedioDePago() != null ? this.getMedioDePago() : "N/A");
+		mensaje += " - " + (this.getFecha() != null ? this.getFecha() : "N/A");
 		return mensaje;
 	}
 }

@@ -1,6 +1,7 @@
 package com.ApartaSuitesUQ.Reserva;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
+import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorReservas;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
@@ -23,13 +24,14 @@ public class Reserva {
 
     private GestorReservas theGestorReservas;
 
-    //Gestores
+    // Gestores
     private GestorPoliticaCancelacion gestorPoliticaCancelacion;
 
     // Permite crear la reserva con su estancia y el gestor de política de
     // cancelación.
     public Reserva(String codigo, Huesped theHuesped, EstadoActual estadoActual, Folio theFolio,
-                   CanalReserva canalReserva, Apartamento theApartamento, Estancia theEstancia, GestorReservas theGestorReservas) {
+            CanalReserva canalReserva, Apartamento theApartamento, Estancia theEstancia,
+            GestorReservas theGestorReservas) {
         this.codigo = codigo;
         this.estadoActual = estadoActual;
 
@@ -38,12 +40,20 @@ public class Reserva {
         this.theCanalReserva = canalReserva;
         this.theApartamento = theApartamento;
         this.theEstancia = theEstancia;
-        this.fechaEntrada = theEstancia.getFechaEntrada();
-        this.fechaSalida = theEstancia.getFechaSalida();
+        // Valida la estancia antes de extraer sus fechas para evitar NPE.
+        if (theEstancia != null) {
+            this.fechaEntrada = theEstancia.getFechaEntrada();
+            this.fechaSalida = theEstancia.getFechaSalida();
+        }
 
         this.theGestorReservas = theGestorReservas;
-        GestorGeneral gestorGeneral = theGestorReservas.getTheGestorGeneral();
-        this.gestorPoliticaCancelacion = gestorGeneral.getTheGestorPoliticaCancelacion();
+        // Valida los gestores antes de obtener la política de cancelación.
+        if (theGestorReservas != null) {
+            GestorGeneral gestorGeneral = theGestorReservas.getTheGestorGeneral();
+            if (gestorGeneral != null) {
+                this.gestorPoliticaCancelacion = gestorGeneral.getTheGestorPoliticaCancelacion();
+            }
+        }
     }
 
     // ========== INICIO DE FUNCIONES DE VALIDACION ========== //
@@ -66,6 +76,12 @@ public class Reserva {
 
             case EN_CURSO:
                 return nuevoEstado == EstadoActual.FINALIZADA;
+
+            case FINALIZADA:
+            case CANCELADA:
+            case NO_SHOWN:
+                return false;
+
             default:
                 return false;
         }
@@ -75,17 +91,42 @@ public class Reserva {
 
     // ========== INICIO DE FUNCIONES AUXILIARES ========== //
 
+    // Muestra código, titular, estado, canal, apartamento y saldo del folio.
     @Override
     public String toString() {
+        String nombreHuesped = "N/A";
+        if (this.getTheHuesped() != null && this.getTheHuesped().getNombre() != null) {
+            nombreHuesped = this.getTheHuesped().getNombre();
+        }
+
+        // Muestra el canal y, si existe, el código externo.
+        String canal = "N/A";
+        if (this.getTheCanalReserva() != null && this.getTheCanalReserva().nombreCanal() != null) {
+            canal = this.getTheCanalReserva().nombreCanal().toString();
+            String codigoCanal = this.getTheCanalReserva().codigoCanal();
+            if (codigoCanal != null && !codigoCanal.trim().isEmpty()) {
+                canal += " (" + codigoCanal + ")";
+            }
+        }
+
+        String nombreApartamento = "N/A";
+        if (this.getTheApartamento() != null && this.getTheApartamento().getNombre() != null) {
+            nombreApartamento = this.getTheApartamento().getNombre();
+        }
+
+        String saldo = "N/A";
+        if (this.getTheFolio() != null) {
+            saldo = "$" + String.format("%.2f", this.getTheFolio().calcularSaldo());
+        }
+
         String mensaje = "" + "\n";
         mensaje += "===============" + "\n";
         mensaje += "codigo : " + (this.getCodigo() != null ? this.getCodigo() : "N/A") + "\n";
-        mensaje += "huespedEncargado : "
-                + (this.getTheHuesped() != null ? this.getTheHuesped().getNombre() : "N/A") + "\n";
-
+        mensaje += "huesped titular : " + nombreHuesped + "\n";
         mensaje += "estado actual : " + (this.getEstadoActual() != null ? this.getEstadoActual() : "N/A") + "\n";
-        mensaje += "saldo : " + (this.getTheFolio() != null ? this.getTheFolio().calcularSaldo() : "N/A") + "\n";
-        mensaje += "canal de reserva : " + (this.getTheCanalReserva() != null ? this.getTheCanalReserva() : "N/A") + "\n";
+        mensaje += "canal de reserva : " + canal + "\n";
+        mensaje += "apartamento : " + nombreApartamento + "\n";
+        mensaje += "saldo : " + saldo + "\n";
         mensaje += "===============" + "\n";
 
         return mensaje;
@@ -101,7 +142,7 @@ public class Reserva {
         LocalDate fechaEntrada = this.theEstancia.getFechaEntrada();
         double valorTotal = this.theEstancia.calcularPrecioEstadia();
 
-        return this.gestorPoliticaCancelacion.calcularDevolucion(valorTotal, fechaEntrada);
+        return this.gestorPoliticaCancelacion.calcularDevolicion(valorTotal, fechaEntrada);
     }
 
     // ========== INICIO DE GETS Y SETS ========== //
@@ -120,8 +161,12 @@ public class Reserva {
         return estadoActual;
     }
 
-    public void setEstadoActual(EstadoActual estadoActual) {
-        this.estadoActual = estadoActual;
+    public boolean setEstadoActual(EstadoActual estadoActual) {
+        if (this.puedePasarA(estadoActual)) {
+            this.estadoActual = estadoActual;
+            return true;
+        }
+        return false;
     }
 
     public Huesped getTheHuesped() {
@@ -202,5 +247,5 @@ public class Reserva {
         this.theGestorReservas = theGestorReservas;
     }
 
-    // ========== FIN DE GETS Y SETS ========== //
+    // =========== FIN DE GETS Y SETS =========== //
 }

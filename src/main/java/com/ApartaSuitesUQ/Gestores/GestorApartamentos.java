@@ -1,6 +1,9 @@
 package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
+import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
+import com.ApartaSuitesUQ.Apartamento.Novedad;
+import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 
 import java.util.ArrayList;
 
@@ -59,14 +62,13 @@ public class GestorApartamentos implements IGestor<Apartamento, String> {
 	@Override
 	public boolean actualizar(String codigo, Apartamento apartamento) {
 
-//		String nuevoNombre, int nuevosDormitorios, int nuevaCapacidad,
-//		ArrayList<String> nuevasCaracteristicas,
-//		double nuevaTarifaIndividual, EstadoOperativo nuevoEstadoOperativo, String nuevoMotivoFueraDeServicio,
-//				ArrayList<Novedad> nuevoNovedades,
-//				ArrayList<Bloqueo> nuevoBloqueos
-
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
+		}
+
+		// Sin el objeto con los nuevos datos no hay nada que actualizar.
+		if (apartamento == null) {
+			return false;
 		}
 
 		Apartamento apartamentoRecuperado = consultar(codigo);

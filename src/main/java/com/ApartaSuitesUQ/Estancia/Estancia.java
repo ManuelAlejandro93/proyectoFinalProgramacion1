@@ -17,25 +17,27 @@ public class Estancia {
 
 	// Permite crear la estancia con sus huéspedes.
 	public Estancia(LocalDate fechaEntrada, LocalDate fechaSalida,
-			Apartamento theApartamento) {
+			Apartamento theApartamento, ArrayList<Huesped> listHuespedes) {
 		this.fechaEntrada = fechaEntrada;
 		this.fechaSalida = fechaSalida;
 		this.theApartamento = theApartamento;
-		this.listHuespedes = new ArrayList<Huesped>();
+		this.listHuespedes = listHuespedes;
 		this.asignarNoches();
 	}
 
 	// Crea una noche por cada fecha de la estancia, sin incluir la fecha de salida.
 	public void asignarNoches() {
+		// Garantiza que la lista exista aunque las fechas sean inválidas.
+		if (this.listNoches == null) {
+			this.listNoches = new ArrayList<Noche>();
+		} else {
+			this.listNoches.clear();
+		}
+		this.noches = 0;
+
 		if (this.fechaEntrada == null || this.fechaSalida == null ||
 				!this.fechaEntrada.isBefore(this.fechaSalida)) {
 			return;
-		}
-
-		if (this.listNoches == null) {
-			this.listNoches = new ArrayList<Noche>();
-		} else if (!this.listNoches.isEmpty()) {
-			this.listNoches.clear();
 		}
 
 		int nocheCount = 0;
@@ -134,4 +136,29 @@ public class Estancia {
 	}
 
 	// ========== FIN DE GETS Y SETS ========== //
+
+	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
+
+	// Muestra las fechas, el número de noches y el nombre del apartamento de la
+	// estancia.
+	@Override
+	public String toString() {
+		String nombreApartamento = "N/A";
+
+		if (this.getTheApartamento() != null && this.getTheApartamento().getNombre() != null) {
+			nombreApartamento = this.getTheApartamento().getNombre();
+		}
+
+		String mensaje = "" + "\n";
+		mensaje += "===============" + "\n";
+		mensaje += "fecha de entrada : " + (this.getFechaEntrada() != null ? this.getFechaEntrada() : "N/A") + "\n";
+		mensaje += "fecha de salida : " + (this.getFechaSalida() != null ? this.getFechaSalida() : "N/A") + "\n";
+		mensaje += "noches : " + this.getNoches() + "\n";
+		mensaje += "apartamento : " + nombreApartamento + "\n";
+		mensaje += "===============" + "\n";
+
+		return mensaje;
+	}
+
+	// ========== FIN DE FUNCIONES AUXILIARES ========== //
 }

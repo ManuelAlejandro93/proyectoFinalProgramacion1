@@ -2,6 +2,7 @@ package com.ApartaSuitesUQ.Gestores;
 
 import com.ApartaSuitesUQ.Usuarios.Empleado;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class GestorEmpleados implements IGestor<Empleado, String> {
@@ -62,11 +63,17 @@ public class GestorEmpleados implements IGestor<Empleado, String> {
 	@Override
 	public boolean actualizar(String codigo, Empleado empleado) {
 
-//		String nuevoNombre, LocalDate nuevaFechaNacimiento, String nuevoTelefono, String nuevoCorreo,
-//				String nuevoUsuario, String nuevaContrasenia
+		// String nuevoNombre, LocalDate nuevaFechaNacimiento, String nuevoTelefono,
+		// String nuevoCorreo,
+		// String nuevoUsuario, String nuevaContrasenia
 
 		if (codigo == null || codigo.trim().isEmpty()) {
 			return false; // Código inválido
+		}
+
+		// Sin el objeto con los nuevos datos no hay nada que actualizar.
+		if (empleado == null) {
+			return false;
 		}
 
 		Empleado empleadoRecuperado = consultar(codigo);

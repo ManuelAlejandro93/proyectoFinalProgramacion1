@@ -86,6 +86,11 @@ public abstract class Persona {
 
 	// funciónque sirve para calcular la edad a partir de la fecha de nacimiento.
 	public int calcularEdad() {
+		// Si no hay fecha de nacimiento registrada, no se puede calcular la edad.
+		if (this.fechaNacimiento == null) {
+			return 0;
+		}
+
 		LocalDate hoy = LocalDate.now();
 		int edadActual;
 		edadActual = hoy.getYear() - this.fechaNacimiento.getYear();

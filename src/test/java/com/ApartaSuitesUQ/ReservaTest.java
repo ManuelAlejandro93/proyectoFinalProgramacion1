@@ -26,19 +26,22 @@ public class ReservaTest {
     @DisplayName("Debe retornar false al intentar cambiar desde FINALIZADA (estado final)")
     void testFinalizadaNoPermiteCambios() {
 
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
         reserva.setEstadoActual(EstadoActual.FINALIZADA);
 
         // Act & Assert
@@ -53,19 +56,22 @@ public class ReservaTest {
     @Test
     @DisplayName("Debe retornar false al intentar cambiar desde CANCELADA (estado final)")
     void testCanceladaNoPermiteCambios() {
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         reserva.setEstadoActual(EstadoActual.CANCELADA);
 
@@ -81,19 +87,22 @@ public class ReservaTest {
     @Test
     @DisplayName("Debe retornar false al intentar cambiar desde NO_SHOWN (estado final)")
     void testNoShowNoPermiteCambios() {
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         reserva.setEstadoActual(EstadoActual.NO_SHOWN);
 
@@ -109,19 +118,22 @@ public class ReservaTest {
     @Test
     @DisplayName("Debe permitir confirmar (CONFIRMADA) únicamente desde PENDIENTE")
     void testSoloSePuedeConfirmarDesdePendiente() {
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         // Act & Assert: Caso válido
         reserva.setEstadoActual(EstadoActual.PENDIENTE);
@@ -147,19 +159,22 @@ public class ReservaTest {
     @Test
     @DisplayName("Debe permitir hacer check-in (EN_CURSO) únicamente desde CONFIRMADA")
     void testSoloSePuedeHacerCheckInDesdeConfirmada() {
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         // Act & Assert: Caso válido
         reserva.setEstadoActual(EstadoActual.CONFIRMADA);
@@ -185,19 +200,22 @@ public class ReservaTest {
     @Test
     @DisplayName("Debe permitir hacer check-out (FINALIZADA) únicamente desde EN_CURSO")
     void testSoloSePuedeHacerCheckOutDesdeEnCurso() {
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         // Act & Assert: Caso válido
         reserva.setEstadoActual(EstadoActual.EN_CURSO);
@@ -223,19 +241,22 @@ public class ReservaTest {
     @Test
     @DisplayName("Debe retornar false cuando el estado actual o el nuevo estado es null")
     void testPuedePasarAConEstadosNulos() {
-        //Gestores
+        // Gestores
         GestorGeneral gestorGeneral = new GestorGeneral();
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com", gestorHuespedes );
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
-        Estancia estancia = new Estancia(LocalDate.of(2026,12,20), LocalDate.of(2026,12,30), apartamento);
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
 
         // Arrange
-        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         reserva.setEstadoActual(EstadoActual.PENDIENTE);
 
@@ -260,10 +281,12 @@ public class ReservaTest {
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", gestorHuespedes);
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
 
         LocalDate entrada = LocalDate.now().plusDays(10); // > 7 días de anticipación
         LocalDate salida = LocalDate.now().plusDays(20);
@@ -274,7 +297,8 @@ public class ReservaTest {
             noche.setPrecioPorTemporada(1.0);
         }
 
-        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         // Act
         double devolucion = reserva.calcularDevolucion();
@@ -291,10 +315,12 @@ public class ReservaTest {
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", gestorHuespedes);
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
 
         LocalDate entrada = LocalDate.now().plusDays(5); // Entre 2 y 7 días de anticipación
         LocalDate salida = LocalDate.now().plusDays(15);
@@ -305,7 +331,8 @@ public class ReservaTest {
             noche.setPrecioPorTemporada(1.0);
         }
 
-        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         // Act
         double devolucion = reserva.calcularDevolucion();
@@ -322,10 +349,12 @@ public class ReservaTest {
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", gestorHuespedes);
+        Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com",
+                gestorHuespedes);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
 
         LocalDate entrada = LocalDate.now().plusDays(1); // < 2 días de anticipación
         LocalDate salida = LocalDate.now().plusDays(5);
@@ -336,7 +365,8 @@ public class ReservaTest {
             noche.setPrecioPorTemporada(1.0);
         }
 
-        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia, gestorReservas);
+        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
 
         // Act
         double devolucion = reserva.calcularDevolucion();
@@ -353,11 +383,14 @@ public class ReservaTest {
         GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
         Folio folio = new Folio();
         CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
-        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
+        Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
+                EstadoOperativo.PREPARADO, "Ninguno");
         Estancia estancia = new Estancia(LocalDate.now().plusDays(10), LocalDate.now().plusDays(20), apartamento);
 
-        // Pasamos la estancia válida al constructor para cumplir con el parámetro non-null
-        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia, gestorReservas);
+        // Pasamos la estancia válida al constructor para cumplir con el parámetro
+        // non-null
+        Reserva reserva = new Reserva("123", null, EstadoActual.CONFIRMADA, folio, canalReserva, apartamento, estancia,
+                gestorReservas);
         reserva.setTheEstancia(null);
 
         // Act

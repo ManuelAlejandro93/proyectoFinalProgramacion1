@@ -15,14 +15,13 @@ public class Apartamento {
 	private EstadoOperativo estadoOperativo;
 	private String motivoFueraDeServicio;
 
-	private ArrayList<Novedad> listNovedades;
-	private ArrayList<Bloqueo> listBloqueos;
-	private ArrayList<Reserva> listReservas;
+	private ArrayList<Novedad> listNovedades = new ArrayList<Novedad>();;
+	private ArrayList<Bloqueo> listBloqueos = new ArrayList<Bloqueo>();;
+	private ArrayList<Reserva> listReservas = new ArrayList<Reserva>();;
 	private Estancia theEstancia;
 
 	public Apartamento(String codigo, String nombre, int dormitorios, int capacidad, ArrayList<String> caracteristicas,
-			double tarifaIndividual, EstadoOperativo estadoOperativo, String motivoFueraDeServicio
-			) {
+			double tarifaIndividual, EstadoOperativo estadoOperativo, String motivoFueraDeServicio) {
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.dormitorios = dormitorios;
@@ -31,10 +30,6 @@ public class Apartamento {
 		this.tarifaIndividual = tarifaIndividual;
 		this.estadoOperativo = estadoOperativo;
 		this.motivoFueraDeServicio = motivoFueraDeServicio;
-
-		this.listBloqueos = new ArrayList<Bloqueo>();
-		this.listNovedades = new ArrayList<Novedad>();
-		this.listReservas = new ArrayList<Reserva>();
 	}
 
 	// ========== INICIO DE GETS Y SETS ========== //
@@ -156,7 +151,6 @@ public class Apartamento {
 	public boolean eliminarBloqueo(Bloqueo bloqueo) {
 		return this.listBloqueos.remove(bloqueo);
 	}
-
 
 	// ========== INICIO DE FUNCIONES AUXILIARES ========== //
 
