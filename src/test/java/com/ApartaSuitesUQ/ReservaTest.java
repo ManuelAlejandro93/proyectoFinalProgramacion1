@@ -121,11 +121,9 @@ public class ReservaTest {
                                 new ArrayList<Huesped>());
 
                 // Arrange
-                Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
+                Reserva reserva = new Reserva("123", null, EstadoActual.NO_SHOWN, folio, canalReserva, apartamento,
                                 estancia,
                                 gestorReservas);
-
-                reserva.setEstadoActual(EstadoActual.NO_SHOWN);
 
                 // Act & Assert
                 assertFalse(reserva.puedePasarA(EstadoActual.PENDIENTE),
@@ -214,12 +212,15 @@ public class ReservaTest {
                 // Act & Assert: Caso válido
                 reserva.setEstadoActual(EstadoActual.CONFIRMADA);
 
-                assertTrue(reserva.puedePasarA(EstadoActual.EN_CURSO), "Debe permitir hacer check-in desde CONFIRMADA");
+                assertTrue(reserva.puedePasarA(EstadoActual.EN_CURSO), "Debe permitir hacer check-in desde CONFIRMADA");// ✅
+
+                // Arrange
+                Reserva reserva2 = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
+                                estancia,
+                                gestorReservas);
 
                 // Act & Assert: Casos inválidos
-                reserva.setEstadoActual(EstadoActual.PENDIENTE);
-                System.out.println(reserva.getEstadoActual());
-                assertFalse(reserva.puedePasarA(EstadoActual.EN_CURSO),
+                assertFalse(reserva2.puedePasarA(EstadoActual.EN_CURSO),
                                 "No debe permitir hacer check-in desde PENDIENTE");
 
                 reserva.setEstadoActual(EstadoActual.EN_CURSO);
@@ -258,12 +259,12 @@ public class ReservaTest {
                                 new ArrayList<Huesped>());
 
                 // Arrange
-                Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
+                Reserva reserva = new Reserva("123", null, EstadoActual.EN_CURSO, folio, canalReserva, apartamento,
                                 estancia,
                                 gestorReservas);
 
                 // Act & Assert: Caso válido
-                reserva.setEstadoActual(EstadoActual.EN_CURSO);
+
                 assertTrue(reserva.puedePasarA(EstadoActual.FINALIZADA),
                                 "Debe permitir hacer check-out desde EN_CURSO");
 
@@ -312,14 +313,14 @@ public class ReservaTest {
                                 estancia,
                                 gestorReservas);
 
-                reserva.setEstadoActual(EstadoActual.PENDIENTE);
-
                 // Act
                 boolean resultadoNuevoNulo = reserva.puedePasarA(null);
 
-                reserva.setEstadoActual(null);
-                boolean resultadoActualNulo = reserva.puedePasarA(EstadoActual.CONFIRMADA);
+                Reserva reserva2 = new Reserva("123", null, null, folio, canalReserva, apartamento,
+                                estancia,
+                                gestorReservas);
 
+                boolean resultadoActualNulo = reserva2.puedePasarA(EstadoActual.CONFIRMADA);
                 // Assert
                 assertFalse(resultadoNuevoNulo, "Debería retornar false si el nuevo estado es null");
                 assertFalse(resultadoActualNulo, "Debería retornar false si el estado actual es null");
