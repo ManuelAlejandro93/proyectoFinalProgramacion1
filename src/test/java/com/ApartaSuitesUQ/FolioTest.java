@@ -31,12 +31,13 @@ class FolioTest {
     void testCalcularSaldoNormal() {
         // Arrange (Organizar)
         ArrayList<Cargo> cargos = new ArrayList<>();
-        cargos.add(new Cargo("Cargo 1" , 150.0, folio)); // Asumiendo que Cargo tiene un constructor o setter con precio
-        cargos.add(new Cargo("Cargo 2" , 50.0, folio));
+        cargos.add(new Cargo("Cargo 1", 150.0, folio)); // Asumiendo que Cargo tiene un constructor o setter con precio
+        cargos.add(new Cargo("Cargo 2", 50.0, folio));
         folio.setListCargos(cargos);
 
         ArrayList<Pago> pagos = new ArrayList<>();
-        pagos.add(new Pago(80.0, MedioDePago.EFECTIVO, LocalDate.now(), folio));    // Asumiendo que Pago tiene un constructor o setter con monto
+        pagos.add(new Pago(80.0, MedioDePago.EFECTIVO, LocalDate.now(), folio)); // Asumiendo que Pago tiene un
+                                                                                 // constructor o setter con monto
         folio.setListPagos(pagos);
 
         // Act (Actuar)
@@ -225,7 +226,8 @@ class FolioTest {
 
         // Act & Assert
         assertFalse(folio.anadirCargo(cargoNombreNull), "Debe retornar false si el nombre del cargo es null");
-        assertFalse(folio.anadirCargo(cargoNombreVacio), "Debe retornar false si el nombre está compuesto por espacios en blanco");
+        assertFalse(folio.anadirCargo(cargoNombreVacio),
+                "Debe retornar false si el nombre está compuesto por espacios en blanco");
     }
 
     @Test
@@ -268,15 +270,19 @@ class FolioTest {
     @Test
     @DisplayName("Debe registrar exitosamente una devolución con monto positivo")
     void testRegistrarDevolucionMontoPositivo() {
-        // Nota: Esta prueba asume que tu método 'anadirPago' inicializa la lista e inserta el pago retornando true
+        // Nota: Esta prueba asume que el método 'registrarDevolucion' inicializa la
+        // lista e
+        // inserta el pago retornando true
         boolean resultado = folio.registrarDevolucion(100.0);
 
-        assertTrue(resultado, "Debería retornar true si anadirPago registra la devolución con éxito");
-        assertNotNull(folio.getListPagos(), "La lista de pagos no debería ser nula tras registrar una devolución");
-        assertEquals(1, folio.getListPagos().size(), "Debería haber exactamente 1 registro en la lista de pagos");
+        assertTrue(resultado, "Debería retornar true si registrarDevolucion registra la devolución con éxito");
+        assertNotNull(folio.getListDevoluciones(),
+                "La lista de devoluciones no debería ser nula tras registrar una devolución");
+        assertEquals(1, folio.getListDevoluciones().size(),
+                "Debería haber exactamente 1 devolucion en la lista de devoluciones");
 
-        Pago pagoRegistrado = folio.getListPagos().get(0);
-        assertEquals(100.0, pagoRegistrado.getMonto(), 0.001);
-        assertEquals(MedioDePago.TRANSFERENCIA, pagoRegistrado.getMedioDePago());
+        Pago devolucionRegistrada = folio.getListDevoluciones().get(0);
+        assertEquals(100.0, devolucionRegistrada.getMonto());
+        assertEquals(MedioDePago.TRANSFERENCIA, devolucionRegistrada.getMedioDePago());
     }
 }
