@@ -32,22 +32,24 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
-                                gestorHuespedes);
+                                new ArrayList<Reserva>(), gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
-                Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
+                Reserva reserva = new Reserva("123", null, EstadoActual.FINALIZADA, folio, canalReserva, apartamento,
                                 estancia,
                                 gestorReservas);
-                reserva.setEstadoActual(EstadoActual.FINALIZADA);
 
+                System.out.println(reserva.getEstadoActual());
                 // Act & Assert
                 assertFalse(reserva.puedePasarA(EstadoActual.PENDIENTE),
                                 "No debe permitir pasar de FINALIZADA a PENDIENTE");
+
                 assertFalse(reserva.puedePasarA(EstadoActual.CONFIRMADA),
                                 "No debe permitir pasar de FINALIZADA a CONFIRMADA");
                 assertFalse(reserva.puedePasarA(EstadoActual.EN_CURSO),
@@ -69,12 +71,14 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
                 Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
@@ -106,13 +110,15 @@ public class ReservaTest {
                 GestorReservas gestorReservas = new GestorReservas(gestorGeneral);
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
-                Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail,.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
                 Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
@@ -145,12 +151,14 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
                 Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
@@ -189,12 +197,14 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
                 Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
@@ -203,10 +213,12 @@ public class ReservaTest {
 
                 // Act & Assert: Caso válido
                 reserva.setEstadoActual(EstadoActual.CONFIRMADA);
+
                 assertTrue(reserva.puedePasarA(EstadoActual.EN_CURSO), "Debe permitir hacer check-in desde CONFIRMADA");
 
                 // Act & Assert: Casos inválidos
                 reserva.setEstadoActual(EstadoActual.PENDIENTE);
+                System.out.println(reserva.getEstadoActual());
                 assertFalse(reserva.puedePasarA(EstadoActual.EN_CURSO),
                                 "No debe permitir hacer check-in desde PENDIENTE");
 
@@ -236,12 +248,14 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
                 Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
@@ -284,12 +298,14 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 05), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
-                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento);
+                Estancia estancia = new Estancia(LocalDate.of(2026, 12, 20), LocalDate.of(2026, 12, 30), apartamento,
+                                new ArrayList<Huesped>());
 
                 // Arrange
                 Reserva reserva = new Reserva("123", null, EstadoActual.PENDIENTE, folio, canalReserva, apartamento,
@@ -320,6 +336,7 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
@@ -328,7 +345,7 @@ public class ReservaTest {
 
                 LocalDate entrada = LocalDate.now().plusDays(10); // > 7 días de anticipación
                 LocalDate salida = LocalDate.now().plusDays(20);
-                Estancia estancia = new Estancia(entrada, salida, apartamento);
+                Estancia estancia = new Estancia(entrada, salida, apartamento, new ArrayList<Huesped>());
 
                 estancia.getListHuespedes().add(huesped);
                 for (Noche noche : estancia.getListNoches()) {
@@ -355,6 +372,7 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
@@ -363,7 +381,7 @@ public class ReservaTest {
 
                 LocalDate entrada = LocalDate.now().plusDays(5); // Entre 2 y 7 días de anticipación
                 LocalDate salida = LocalDate.now().plusDays(15);
-                Estancia estancia = new Estancia(entrada, salida, apartamento);
+                Estancia estancia = new Estancia(entrada, salida, apartamento, new ArrayList<Huesped>());
 
                 estancia.getListHuespedes().add(huesped);
                 for (Noche noche : estancia.getListNoches()) {
@@ -390,6 +408,7 @@ public class ReservaTest {
                 GestorHuespedes gestorHuespedes = new GestorHuespedes(gestorGeneral);
 
                 Huesped huesped = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com",
+                                new ArrayList<Reserva>(),
                                 gestorHuespedes);
                 Folio folio = new Folio();
                 CanalReserva canalReserva = new CanalReserva(NombreCanal.DIRECTA, "");
@@ -398,7 +417,7 @@ public class ReservaTest {
 
                 LocalDate entrada = LocalDate.now().plusDays(1); // < 2 días de anticipación
                 LocalDate salida = LocalDate.now().plusDays(5);
-                Estancia estancia = new Estancia(entrada, salida, apartamento);
+                Estancia estancia = new Estancia(entrada, salida, apartamento, new ArrayList<Huesped>());
 
                 estancia.getListHuespedes().add(huesped);
                 for (Noche noche : estancia.getListNoches()) {
@@ -428,7 +447,7 @@ public class ReservaTest {
                 Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 5, 10, new ArrayList<String>(), 20.0,
                                 EstadoOperativo.PREPARADO, "Ninguno");
                 Estancia estancia = new Estancia(LocalDate.now().plusDays(10), LocalDate.now().plusDays(20),
-                                apartamento);
+                                apartamento, new ArrayList<Huesped>());
 
                 // Pasamos la estancia válida al constructor para cumplir con el parámetro
                 // non-null

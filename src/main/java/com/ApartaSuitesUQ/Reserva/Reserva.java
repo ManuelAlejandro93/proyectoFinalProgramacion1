@@ -60,6 +60,7 @@ public class Reserva {
 
     // Valida si el estado actual permite pasar al nuevo estado.
     public boolean puedePasarA(EstadoActual nuevoEstado) {
+
         if (this.estadoActual == null || nuevoEstado == null) {
             return false;
         }
@@ -68,7 +69,6 @@ public class Reserva {
             case PENDIENTE:
                 return nuevoEstado == EstadoActual.CONFIRMADA
                         || nuevoEstado == EstadoActual.CANCELADA;
-
             case CONFIRMADA:
                 return nuevoEstado == EstadoActual.EN_CURSO
                         || nuevoEstado == EstadoActual.CANCELADA
@@ -78,7 +78,9 @@ public class Reserva {
                 return nuevoEstado == EstadoActual.FINALIZADA;
 
             case FINALIZADA:
+
             case CANCELADA:
+
             case NO_SHOWN:
                 return false;
 
