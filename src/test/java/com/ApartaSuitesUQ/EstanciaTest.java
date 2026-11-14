@@ -7,6 +7,7 @@ import com.ApartaSuitesUQ.Estancia.Noche;
 import com.ApartaSuitesUQ.Estancia.Temporada;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
+import com.ApartaSuitesUQ.Reserva.Reserva;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,12 +24,13 @@ public class EstanciaTest {
     @DisplayName("Debe asignar las noches correctamente para un rango válido de fechas")
     void testAsignarNochesValido() {
         // Arrange
-        Apartamento apto = new Apartamento("APT101", "Suite Premium", 2, 4, null, 150.0, EstadoOperativo.PREPARADO, null);
+        Apartamento apto = new Apartamento("APT101", "Suite Premium", 2, 4, null, 150.0, EstadoOperativo.PREPARADO,
+                null);
         LocalDate entrada = LocalDate.of(2026, 3, 10);
         LocalDate salida = LocalDate.of(2026, 3, 12);
 
         // Act: El constructor ejecuta asignarNoches() automáticamente
-        Estancia estancia = new Estancia(entrada, salida, apto);
+        Estancia estancia = new Estancia(entrada, salida, apto, new ArrayList<Huesped>());
 
         // Assert
         assertNotNull(estancia.getListNoches(), "La lista de noches no debe ser nula");
@@ -50,14 +52,16 @@ public class EstanciaTest {
     @DisplayName("Debe limpiar las noches previas si la lista ya contenía elementos")
     void testAsignarNochesLimpiaListaPrevia() {
         // Arrange
-        Apartamento apto = new Apartamento("APT101", "Suite Premium", 2, 4, null, 150.0, EstadoOperativo.PREPARADO, null);
+        Apartamento apto = new Apartamento("APT101", "Suite Premium", 2, 4, null, 150.0, EstadoOperativo.PREPARADO,
+                null);
         LocalDate entrada = LocalDate.of(2026, 3, 10);
         LocalDate salida = LocalDate.of(2026, 3, 12);
 
         // Instanciamos la estancia (esto crea 2 noches inicialmente)
-        Estancia estancia = new Estancia(entrada, salida, apto);
+        Estancia estancia = new Estancia(entrada, salida, apto, new ArrayList<Huesped>());
 
-        // Simulamos un escenario donde añadimos manualmente noches viejas/ajenas a la lista
+        // Simulamos un escenario donde añadimos manualmente noches viejas/ajenas a la
+        // lista
         ArrayList<Noche> nochesViejas = new ArrayList<>();
         nochesViejas.add(new Noche(LocalDate.of(2026, 1, 1), Temporada.BAJA, 0.0, estancia));
         estancia.setListNoches(nochesViejas);
@@ -66,7 +70,8 @@ public class EstanciaTest {
         estancia.asignarNoches();
 
         // Assert: Debe haber borrado la noche de enero y tener solo las 2 correctas
-        assertEquals(2, estancia.getListNoches().size(), "Debe limpiar los registros previos antes de generar los nuevos");
+        assertEquals(2, estancia.getListNoches().size(),
+                "Debe limpiar los registros previos antes de generar los nuevos");
         assertEquals(LocalDate.of(2026, 3, 10), estancia.getListNoches().get(0).getFecha());
     }
 
@@ -74,12 +79,13 @@ public class EstanciaTest {
     @DisplayName("No debe hacer nada si la fecha de entrada no es menor a la de salida")
     void testAsignarNochesFechasInvalidas() {
         // Arrange: Entrada posterior a la salida
-        Apartamento apto = new Apartamento("APT101", "Suite Premium", 2, 4, null, 150.0, EstadoOperativo.PREPARADO, null);
+        Apartamento apto = new Apartamento("APT101", "Suite Premium", 2, 4, null, 150.0, EstadoOperativo.PREPARADO,
+                null);
         LocalDate entrada = LocalDate.of(2026, 3, 15);
         LocalDate salida = LocalDate.of(2026, 3, 12);
 
         // Act
-        Estancia estancia = new Estancia(entrada, salida, apto);
+        Estancia estancia = new Estancia(entrada, salida, apto, new ArrayList<Huesped>());
 
         // Assert: No debió sumar noches ni inicializar la lista
         assertEquals(0, estancia.getNoches(), "No debe contar noches si el rango es inválido");
@@ -103,15 +109,17 @@ public class EstanciaTest {
 
         // Crear huéspedes: uno de 25 años (paga) y uno de 4 años (no paga)
         // Se usa la fecha actual de 2026 para calcular los nacimientos
-        Huesped adulto = new Huesped("Juan", "123", LocalDate.of(2001, 1, 1), "300", "juan@mail.com", gestor);
-        Huesped nino = new Huesped("Lina", "456", LocalDate.of(2022, 1, 1), "300", "lina@mail.com", gestor);
+        Huesped adulto = new Huesped("Juan", "123", LocalDate.of(2001, 1, 1), "300", "juan@mail.com",
+                new ArrayList<Reserva>(), gestor);
+        Huesped nino = new Huesped("Lina", "456", LocalDate.of(2022, 1, 1), "300", "lina@mail.com",
+                new ArrayList<Reserva>(), gestor);
 
         ArrayList<Huesped> huespedes = new ArrayList<>();
         huespedes.add(adulto);
         huespedes.add(nino);
 
         // Act: Al crear la estancia se autogeneran las 3 noches
-        Estancia estancia = new Estancia(entrada, salida, apto);
+        Estancia estancia = new Estancia(entrada, salida, apto, new ArrayList<Huesped>());
         estancia.setListHuespedes(huespedes);
         double precioCalculado = estancia.calcularPrecioEstadia();
 
@@ -126,7 +134,8 @@ public class EstanciaTest {
         Apartamento apto = new Apartamento("APT101", "Suite", 2, 4, null, 100.0, EstadoOperativo.PREPARADO, null);
 
         // Instancia válida pero forzamos apartamento a nulo
-        Estancia estanciaSinApto = new Estancia(LocalDate.of(2026, 3, 10), LocalDate.of(2026, 3, 12), apto);
+        Estancia estanciaSinApto = new Estancia(LocalDate.of(2026, 3, 10), LocalDate.of(2026, 3, 12), apto,
+                new ArrayList<Huesped>());
         estanciaSinApto.setTheApartamento(null);
 
         // Assert
