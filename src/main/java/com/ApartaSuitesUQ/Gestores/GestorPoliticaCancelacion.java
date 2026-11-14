@@ -52,7 +52,7 @@ public class GestorPoliticaCancelacion {
 	}
 
 	// Calcula el monto de devolución según los días de antelación.
-	public double calcularDevolicion(double valorOriginal, LocalDate fechaEntrada) {
+	public double calcularDevolucion(double valorOriginal, LocalDate fechaEntrada) {
 		if (fechaEntrada == null) {
 			return 0.0;
 		}
