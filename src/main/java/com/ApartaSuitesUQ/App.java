@@ -51,38 +51,74 @@ public class App {
         gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
     }
 
+    // Todas las fechas se calculan a partir de hoy, así la demo funciona cualquier
+    // día.
     private static void cargarDatosDemo() {
         LocalDate hoy = LocalDate.now();
 
-        // Apartamentos
+        cargarApartamentosDemo(hoy);
+        cargarHuespedesDemo(hoy);
+        cargarEmpleadosDemo();
+        cargarReservasDemo(hoy);
+    }
+
+    private static void cargarApartamentosDemo(LocalDate hoy) {
+        // A1: disponible. Lo usan la opción 1, la opción 2 y el escenario de
+        // confirmación.
         Apartamento villaJuliana = new Apartamento("A1", "Villa Juliana", 3, 6,
                 new ArrayList<String>(), 150000.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+        // A2: tiene un bloqueo de hoy+20 a hoy+25. Sirve para demostrar bloqueos.
         Apartamento suitePequena = new Apartamento("A2", "Suite Pequeña", 1, 2,
                 new ArrayList<String>(), 80000.0, EstadoOperativo.PREPARADO, "Ninguno");
+        suitePequena.anadirBloqueo(new Bloqueo("Mantenimiento programado",
+                hoy.plusDays(20), hoy.plusDays(25), suitePequena));
+
+        // B1: disponible. Lo usa el escenario de check-in.
         Apartamento suiteFamiliar = new Apartamento("B1", "Suite Familiar", 2, 4,
                 new ArrayList<String>(), 100000.0, EstadoOperativo.PREPARADO, "Ninguno");
 
-        // A2 queda bloqueado dentro de 10 a 15 días.
-        suitePequena.anadirBloqueo(new Bloqueo("Mantenimiento programado",
-                hoy.plusDays(10), hoy.plusDays(15), suitePequena));
+        // B2: disponible. Lo usan el escenario de confirmación fallida y el de
+        // cancelación.
+        Apartamento suiteDoble = new Apartamento("B2", "Suite Doble", 2, 4,
+                new ArrayList<String>(), 110000.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+        // C1: ocupado por un huésped. Lo usa el escenario de check-out.
+        Apartamento penthouse = new Apartamento("C1", "Penthouse Vista", 3, 4,
+                new ArrayList<String>(), 200000.0, EstadoOperativo.OCUPADO, "Ninguno");
+
+        // C2: pendiente de preparación. Sirve para demostrar el cambio de estado en la
+        // opción 8.
+        Apartamento apartaestudio = new Apartamento("C2", "Apartaestudio", 1, 2,
+                new ArrayList<String>(), 90000.0, EstadoOperativo.PENDIENTE_DE_PREPARACION, "Ninguno");
+
+        // D1: fuera de servicio. Sirve para demostrar que no se puede reservar.
+        Apartamento casaCampestre = new Apartamento("D1", "Casa Campestre", 4, 8,
+                new ArrayList<String>(), 250000.0, EstadoOperativo.FUERA_DE_SERVICIO,
+                "Remodelación de cocina");
 
         gestorApartamentos.crear(villaJuliana);
         gestorApartamentos.crear(suitePequena);
         gestorApartamentos.crear(suiteFamiliar);
+        gestorApartamentos.crear(suiteDoble);
+        gestorApartamentos.crear(penthouse);
+        gestorApartamentos.crear(apartaestudio);
+        gestorApartamentos.crear(casaCampestre);
+    }
 
-        // Huéspedes
-        Huesped kevin = new Huesped("Kevin", "KEV001", LocalDate.of(2000, 5, 10),
-                "3210000000", "kevin@mail.com", new ArrayList<Reserva>(), gestorHuespedes);
-        Huesped laura = new Huesped("Laura", "LAU002", LocalDate.of(1998, 8, 20),
-                "3220000000", "laura@mail.com", new ArrayList<Reserva>(), gestorHuespedes);
-        Huesped mateo = new Huesped("Mateo", "MAT003", hoy.minusYears(4),
-                "3230000000", "mateo@mail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    private static void cargarHuespedesDemo(LocalDate hoy) {
+        gestorHuespedes.crear(new Huesped("Kevin", "KEV001", LocalDate.of(2000, 5, 10),
+                "3210000000", "kevin@mail.com", new ArrayList<Reserva>(), gestorHuespedes));
+        gestorHuespedes.crear(new Huesped("Laura", "LAU002", LocalDate.of(1998, 8, 20),
+                "3220000000", "laura@mail.com", new ArrayList<Reserva>(), gestorHuespedes));
+        // Mateo tiene 4 años: ocupa cupo, pero no paga.
+        gestorHuespedes.crear(new Huesped("Mateo", "MAT003", hoy.minusYears(4),
+                "3230000000", "mateo@mail.com", new ArrayList<Reserva>(), gestorHuespedes));
+        gestorHuespedes.crear(new Huesped("Sofía", "SOF004", LocalDate.of(1992, 3, 15),
+                "3240000000", "sofia@mail.com", new ArrayList<Reserva>(), gestorHuespedes));
+    }
 
-        gestorHuespedes.crear(kevin);
-        gestorHuespedes.crear(laura);
-        gestorHuespedes.crear(mateo);
-
-        // Empleados
+    private static void cargarEmpleadosDemo() {
         recepcionista = new Recepcionista("Ana", "EMP001", LocalDate.of(1995, 1, 1),
                 "3000000000", "ana@mail.com", "ana01", "clave",
                 gestorGeneral.getTheGestorEmpleados());
@@ -91,38 +127,84 @@ public class App {
 
         gestorGeneral.getTheGestorEmpleados().crear(recepcionista);
         gestorGeneral.getTheGestorEmpleados().crear(administrador);
-
-        // Reserva PENDIENTE por portal: sirve para demostrar la confirmación con
-        // anticipo.
-        ArrayList<Huesped> familiaKevin = new ArrayList<Huesped>();
-        familiaKevin.add(kevin);
-        familiaKevin.add(laura);
-        familiaKevin.add(mateo);
-        registrarReservaDemo("R-PEND1", kevin, EstadoActual.PENDIENTE,
-                new CanalReserva(NombreCanal.PORTAL, ""), villaJuliana, familiaKevin,
-                hoy.plusDays(30), hoy.plusDays(35));
-
-        // Reserva CONFIRMADA que entra hoy: sirve para demostrar el check-in.
-        ArrayList<Huesped> soloLaura = new ArrayList<Huesped>();
-        soloLaura.add(laura);
-        registrarReservaDemo("R-CHK01", laura, EstadoActual.CONFIRMADA,
-                new CanalReserva(NombreCanal.DIRECTA, ""), suiteFamiliar, soloLaura,
-                hoy, hoy.plusDays(3));
-
-        // Reserva EXTERNA: sirve para demostrar que no se repite el código externo.
-        ArrayList<Huesped> soloKevin = new ArrayList<Huesped>();
-        soloKevin.add(kevin);
-        registrarReservaDemo("R-EXT01", kevin, EstadoActual.CONFIRMADA,
-                new CanalReserva(NombreCanal.EXTERNA, "BK-998877"), villaJuliana, soloKevin,
-                hoy.plusDays(60), hoy.plusDays(62));
     }
 
+    // Cada reserva es un escenario independiente. Ninguna necesita que el usuario
+    // haga pasos previos para poder demostrarse.
+    private static void cargarReservasDemo(LocalDate hoy) {
+        Huesped kevin = gestorHuespedes.consultar("KEV001");
+        Huesped laura = gestorHuespedes.consultar("LAU002");
+        Huesped mateo = gestorHuespedes.consultar("MAT003");
+        Huesped sofia = gestorHuespedes.consultar("SOF004");
+
+        Apartamento a1 = gestorApartamentos.consultar("A1");
+        Apartamento b1 = gestorApartamentos.consultar("B1");
+        Apartamento b2 = gestorApartamentos.consultar("B2");
+        Apartamento c1 = gestorApartamentos.consultar("C1");
+        Apartamento c2 = gestorApartamentos.consultar("C2");
+
+        // ESCENARIO OPCIÓN 3 (ÉXITO): PENDIENTE de portal, anticipo ya pagado (30%).
+        registrarReservaDemo("R-CONF01", kevin, EstadoActual.PENDIENTE,
+                new CanalReserva(NombreCanal.PORTAL, ""), a1,
+                crearListaOcupantes(kevin, laura),
+                hoy.plusDays(10), hoy.plusDays(13), PORCENTAJE_ANTICIPO);
+
+        // ESCENARIO OPCIÓN 3 (RECHAZO): PENDIENTE de portal, sin ningún pago.
+        registrarReservaDemo("R-PEND01", sofia, EstadoActual.PENDIENTE,
+                new CanalReserva(NombreCanal.PORTAL, ""), b2,
+                crearListaOcupantes(sofia),
+                hoy.plusDays(10), hoy.plusDays(13), 0.0);
+
+        // ESCENARIO OPCIÓN 5 (CHECK-IN): CONFIRMADA, entra hoy, apartamento PREPARADO.
+        registrarReservaDemo("R-CHK01", laura, EstadoActual.CONFIRMADA,
+                new CanalReserva(NombreCanal.DIRECTA, ""), b1,
+                crearListaOcupantes(laura),
+                hoy, hoy.plusDays(3), PORCENTAJE_ANTICIPO);
+
+        // ESCENARIO OPCIÓN 6 (CHECK-OUT): ya está EN_CURSO, con el valor pagado
+        // completo.
+        registrarReservaDemo("R-OUT01", kevin, EstadoActual.EN_CURSO,
+                new CanalReserva(NombreCanal.DIRECTA, ""), c1,
+                crearListaOcupantes(kevin, mateo),
+                hoy.minusDays(2), hoy.plusDays(2), 1.0);
+
+        // ESCENARIO OPCIÓN 7 (CANCELAR): CONFIRMADA con anticipo, usada solo para
+        // cancelar.
+        registrarReservaDemo("R-CAN01", sofia, EstadoActual.CONFIRMADA,
+                new CanalReserva(NombreCanal.DIRECTA, ""), b2,
+                crearListaOcupantes(sofia),
+                hoy.plusDays(30), hoy.plusDays(33), PORCENTAJE_ANTICIPO);
+
+        // ESCENARIO OPCIÓN 4 (FOLIO): CONFIRMADA sin pagos, para registrar pagos y
+        // cargos.
+        registrarReservaDemo("R-FOL01", laura, EstadoActual.CONFIRMADA,
+                new CanalReserva(NombreCanal.DIRECTA, ""), c2,
+                crearListaOcupantes(laura),
+                hoy.plusDays(40), hoy.plusDays(42), 0.0);
+
+        // ESCENARIO OPCIÓN 2 (CÓDIGO EXTERNO DUPLICADO): externa con código BK-998877.
+        registrarReservaDemo("R-EXT01", kevin, EstadoActual.CONFIRMADA,
+                new CanalReserva(NombreCanal.EXTERNA, "BK-998877"), a1,
+                crearListaOcupantes(kevin),
+                hoy.plusDays(60), hoy.plusDays(62), 0.0);
+    }
+
+    // Crea una reserva con su estancia, su folio (cargo de la estadía) y,
+    // si porcentajePagado es mayor que cero, un pago por ese porcentaje del total.
     private static void registrarReservaDemo(String codigo, Huesped titular, EstadoActual estado,
             CanalReserva canal, Apartamento apartamento,
             ArrayList<Huesped> ocupantes,
-            LocalDate entrada, LocalDate salida) {
+            LocalDate entrada, LocalDate salida,
+            double porcentajePagado) {
         Estancia estancia = new Estancia(entrada, salida, apartamento, ocupantes);
         Folio folio = crearFolioConEstadia(estancia);
+
+        if (porcentajePagado > 0) {
+            double montoPagado = estancia.calcularPrecioEstadia() * porcentajePagado;
+            folio.anadirPago(new Pago(montoPagado, MedioDePago.TRANSFERENCIA,
+                    LocalDate.now(), folio));
+        }
+
         gestorReservas.crear(new Reserva(codigo, titular, estado, folio, canal,
                 apartamento, estancia, gestorReservas));
     }
@@ -133,6 +215,14 @@ public class App {
         Folio folio = new Folio();
         folio.anadirCargo(new Cargo("Estadía", estancia.calcularPrecioEstadia(), folio));
         return folio;
+    }
+
+    private static ArrayList<Huesped> crearListaOcupantes(Huesped... huespedes) {
+        ArrayList<Huesped> ocupantes = new ArrayList<Huesped>();
+        for (Huesped huesped : huespedes) {
+            ocupantes.add(huesped);
+        }
+        return ocupantes;
     }
 
     // ========== MENÚ PRINCIPAL ========== //
@@ -149,6 +239,7 @@ public class App {
                 + "8. Gestionar apartamento (bloqueo / novedad / estado)\n"
                 + "9. Ver estado del sistema\n"
                 + "0. Salir\n\n"
+                + "Fecha de hoy: " + LocalDate.now() + "\n"
                 + "Seleccione una opción:";
 
         boolean continuar = true;
@@ -250,13 +341,15 @@ public class App {
     private static ArrayList<Huesped> crearOcupantesCotizacion(int personasPagantes, int menoresDeSeis) {
         ArrayList<Huesped> ocupantes = new ArrayList<Huesped>();
         LocalDate hoy = LocalDate.now();
+        LocalDate nacimientoAdulto = hoy.minusYears(30);
+        LocalDate nacimientoMenor = hoy.minusYears(3);
 
         for (int i = 0; i < personasPagantes; i++) {
-            ocupantes.add(new Huesped("Cotización", "COT-A" + i, hoy.minusYears(30),
+            ocupantes.add(new Huesped("Cotización", "COT-A" + i, nacimientoAdulto,
                     "", "", new ArrayList<Reserva>(), null));
         }
         for (int i = 0; i < menoresDeSeis; i++) {
-            ocupantes.add(new Huesped("Cotización", "COT-M" + i, hoy.minusYears(3),
+            ocupantes.add(new Huesped("Cotización", "COT-M" + i, nacimientoMenor,
                     "", "", new ArrayList<Reserva>(), null));
         }
         return ocupantes;
@@ -278,12 +371,12 @@ public class App {
             }
         }
 
-        Huesped titular = buscarHuesped("Código del huésped titular (KEV001, LAU002, MAT003):");
+        Huesped titular = buscarHuesped("Código del huésped titular (KEV001, LAU002, MAT003, SOF004):");
         if (titular == null) {
             return;
         }
 
-        Apartamento apartamento = buscarApartamento("Código del apartamento (A1, A2, B1):");
+        Apartamento apartamento = buscarApartamento("Código del apartamento (A1, A2, B1, B2, C1, C2, D1):");
         if (apartamento == null) {
             return;
         }
@@ -386,7 +479,7 @@ public class App {
     // ========== OPCIÓN 3: CONFIRMAR RESERVA ========== //
 
     private static void confirmarReservaPendiente() {
-        Reserva reserva = buscarReserva("Código de la reserva pendiente (ej: R-PEND1):");
+        Reserva reserva = buscarReserva("Código de la reserva pendiente (ej: R-CONF01 o R-PEND01):");
         if (reserva == null) {
             return;
         }
@@ -422,7 +515,7 @@ public class App {
     // ========== OPCIÓN 4: FOLIO ========== //
 
     private static void gestionarFolio() {
-        Reserva reserva = buscarReserva("Código de la reserva:");
+        Reserva reserva = buscarReserva("Código de la reserva (ej: R-FOL01):");
         if (reserva == null) {
             return;
         }
@@ -498,7 +591,7 @@ public class App {
     }
 
     private static void realizarCheckOut() {
-        Reserva reserva = buscarReserva("Código de la reserva en curso:");
+        Reserva reserva = buscarReserva("Código de la reserva en curso (ej: R-OUT01):");
         if (reserva == null) {
             return;
         }
@@ -517,7 +610,7 @@ public class App {
     // ========== OPCIÓN 7: CANCELAR ========== //
 
     private static void cancelarReserva() {
-        Reserva reserva = buscarReserva("Código de la reserva a cancelar:");
+        Reserva reserva = buscarReserva("Código de la reserva a cancelar (ej: R-CAN01):");
         if (reserva == null) {
             return;
         }
@@ -544,7 +637,7 @@ public class App {
     // ========== OPCIÓN 8: APARTAMENTOS ========== //
 
     private static void gestionarApartamento() {
-        Apartamento apartamento = buscarApartamento("Código del apartamento (A1, A2, B1):");
+        Apartamento apartamento = buscarApartamento("Código del apartamento (A1, A2, B1, B2, C1, C2, D1):");
         if (apartamento == null) {
             return;
         }
@@ -716,7 +809,8 @@ public class App {
     private static LocalDate leerFecha(String mensaje) {
         while (true) {
             try {
-                return LocalDate.parse(leerTexto(mensaje + "\nEjemplo: " + LocalDate.now().plusDays(7)));
+                return LocalDate.parse(leerTexto(mensaje + "\nEjemplo: "
+                        + LocalDate.now().plusDays(7)));
             } catch (DateTimeParseException e) {
                 mostrarError("Formato de fecha inválido. Use aaaa-mm-dd.");
             }
