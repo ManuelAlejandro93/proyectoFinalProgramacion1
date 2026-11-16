@@ -2,13 +2,10 @@ package com.ApartaSuitesUQ;
 
 import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
-import com.ApartaSuitesUQ.Gestores.GestorEmpleados;
-import com.ApartaSuitesUQ.Gestores.GestorGeneral;
-import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
-import com.ApartaSuitesUQ.Gestores.GestorReservas;
-import com.ApartaSuitesUQ.Reserva.EstadoActual;
-import com.ApartaSuitesUQ.Reserva.NombreCanal;
-import com.ApartaSuitesUQ.Reserva.Reserva;
+import com.ApartaSuitesUQ.Apartamento.Novedad;
+import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Gestores.*;
+import com.ApartaSuitesUQ.Reserva.*;
 import com.ApartaSuitesUQ.Usuarios.Huesped;
 import com.ApartaSuitesUQ.Usuarios.Recepcionista;
 import org.junit.jupiter.api.DisplayName;
@@ -316,5 +313,257 @@ public class RecepcionistaTest {
                 "No debería registrar la reserva externa si existe cruce de fechas en el apartamento");
         assertEquals("AIRBNB-1001", gestorReservas.getListReservas().get(0).getTheCanalReserva().codigoCanal(),
                 "Debe mantenerse únicamente la primera reserva registrada");
+    }
+
+    // ========== PRUEBAS PARA TAREA 9.1: registrarPagoPorFolioID() ========== //
+
+    @Test
+    @DisplayName("Debe retornar true y agregar el pago al folio de la reserva cuando ambos son válidos")
+    void testRegistrarPagoPorFolioIDExitoso() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+        GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+        Apartamento apartamento = new Apartamento("A1", "Suite 101", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+        ArrayList<Huesped> ocupantes = new ArrayList<>();
+        ocupantes.add(titular);
+
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, ocupantes);
+        Folio folio = new Folio();
+        folio.getListCargos().add(new Cargo("Alojamiento", 200.0, folio));
+
+        CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+        Reserva reserva = new Reserva("RES-1101", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+        gestorReservas.crear(reserva);
+
+        Pago pago = new Pago(80.0, MedioDePago.EFECTIVO, LocalDate.now(), folio);
+
+        // Act
+        boolean registrado = recepcionista.registrarPagoPorFolioID("RES-1101", pago);
+
+        // Assert
+        assertTrue(registrado, "Debe retornar true cuando se registra un pago válido en una reserva existente");
+        assertEquals(1, folio.getListPagos().size(), "El folio debe contener exactamente 1 pago registrado");
+        assertTrue(folio.getListPagos().contains(pago), "El pago agregado debe encontrarse en la lista de pagos del folio");
+        assertEquals(120.0, folio.calcularSaldo(), 0.001, "El saldo del folio debe actualizarse restando el pago (200.0 - 80.0 = 120.0)");
+    }
+
+    @Test
+    @DisplayName("Debe retornar false cuando el código de reserva no existe o es null")
+    void testRegistrarPagoPorFolioIDReservaInexistente() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Folio folio = new Folio();
+        Pago pago = new Pago(100.0, MedioDePago.TARJETA, LocalDate.now(), folio);
+
+        // Act & Assert
+        assertFalse(recepcionista.registrarPagoPorFolioID("CODIGO-INEXISTENTE", pago),
+                "Debe retornar false si el código de reserva no existe");
+        assertFalse(recepcionista.registrarPagoPorFolioID(null, pago),
+                "Debe retornar false si el código de reserva es null");
+    }
+
+    @Test
+    @DisplayName("Debe retornar false cuando el folio de la reserva es null o el objeto pago es null")
+    void testRegistrarPagoPorFolioIDFolioOPagoNulo() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+        GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+        Apartamento apartamento = new Apartamento("A1", "Suite 101", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+        ArrayList<Huesped> ocupantes = new ArrayList<>();
+        ocupantes.add(titular);
+
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, ocupantes);
+        Folio folioValido = new Folio();
+        CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+        // Reserva con folio válido para probar pago null
+        Reserva reservaConFolio = new Reserva("RES-1102", titular, EstadoActual.CONFIRMADA, folioValido, canalDirecto, apartamento, estancia, gestorReservas);
+        gestorReservas.crear(reservaConFolio);
+
+        // Reserva con folio null
+        Reserva reservaSinFolio = new Reserva("RES-1103", titular, EstadoActual.CONFIRMADA, null, canalDirecto, apartamento, estancia, gestorReservas);
+        gestorReservas.crear(reservaSinFolio);
+
+        Pago pagoValido = new Pago(50.0, MedioDePago.TRANSFERENCIA, LocalDate.now(), folioValido);
+
+        // Act & Assert
+        assertFalse(recepcionista.registrarPagoPorFolioID("RES-1102", null),
+                "Debe retornar false si el objeto Pago enviado es null");
+        assertTrue(folioValido.getListPagos().isEmpty(),
+                "No debe agregarse ningún elemento null a la lista de pagos del folio");
+        assertFalse(recepcionista.registrarPagoPorFolioID("RES-1103", pagoValido),
+                "Debe retornar false si la reserva no tiene folio asociado (folio == null)");
+    }
+
+    // ========== PRUEBAS PARA TAREA 9.2: registrarCargoPorFolioID() ========== //
+
+    @Test
+    @DisplayName("Debe retornar true y agregar el cargo al folio de la reserva cuando ambos son válidos")
+    void testRegistrarCargoPorFolioIDExitoso() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+        GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+        Apartamento apartamento = new Apartamento("A1", "Suite 101", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.OCUPADO, "Ninguno");
+
+        ArrayList<Huesped> ocupantes = new ArrayList<>();
+        ocupantes.add(titular);
+
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, ocupantes);
+        Folio folio = new Folio();
+        folio.getListCargos().add(new Cargo("Alojamiento", 200.0, folio));
+
+        CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+        Reserva reserva = new Reserva("RES-1201", titular, EstadoActual.EN_CURSO, folio, canalDirecto, apartamento, estancia, gestorReservas);
+        gestorReservas.crear(reserva);
+
+        Cargo cargoExtra = new Cargo("Desayuno y Minibar", 45.0, folio);
+
+        // Act
+        boolean registrado = recepcionista.registrarCargoPorFolioID("RES-1201", cargoExtra);
+
+        // Assert
+        assertTrue(registrado, "Debe retornar true cuando se registra un cargo válido en una reserva existente");
+        assertEquals(2, folio.getListCargos().size(), "El folio debe contener los 2 cargos registrados");
+        assertTrue(folio.getListCargos().contains(cargoExtra), "El cargo adicional debe encontrarse en la lista de cargos del folio");
+        assertEquals(245.0, folio.calcularSaldo(), 0.001, "El saldo del folio debe incrementarse con el nuevo cargo (200.0 + 45.0 = 245.0)");
+    }
+
+    @Test
+    @DisplayName("Debe retornar false cuando el código de reserva no existe o es null")
+    void testRegistrarCargoPorFolioIDReservaInexistente() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Folio folio = new Folio();
+        Cargo cargoExtra = new Cargo("Lavandería", 30.0, folio);
+
+        // Act & Assert
+        assertFalse(recepcionista.registrarCargoPorFolioID("CODIGO-INEXISTENTE", cargoExtra),
+                "Debe retornar false si el código de reserva no existe");
+        assertFalse(recepcionista.registrarCargoPorFolioID(null, cargoExtra),
+                "Debe retornar false si el código de reserva es null");
+    }
+
+    @Test
+    @DisplayName("Debe retornar false cuando el folio de la reserva es null o el objeto cargo es null")
+    void testRegistrarCargoPorFolioIDFolioOCargoNulo() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+        GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+        Apartamento apartamento = new Apartamento("A1", "Suite 101", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.OCUPADO, "Ninguno");
+
+        ArrayList<Huesped> ocupantes = new ArrayList<>();
+        ocupantes.add(titular);
+
+        Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, ocupantes);
+        Folio folioValido = new Folio();
+        CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+        // Reserva con folio válido para probar cargo null
+        Reserva reservaConFolio = new Reserva("RES-1202", titular, EstadoActual.EN_CURSO, folioValido, canalDirecto, apartamento, estancia, gestorReservas);
+        gestorReservas.crear(reservaConFolio);
+
+        // Reserva con folio null
+        Reserva reservaSinFolio = new Reserva("RES-1203", titular, EstadoActual.EN_CURSO, null, canalDirecto, apartamento, estancia, gestorReservas);
+        gestorReservas.crear(reservaSinFolio);
+
+        Cargo cargoValido = new Cargo("Minibar", 25.0, folioValido);
+
+        // Act & Assert
+        assertFalse(recepcionista.registrarCargoPorFolioID("RES-1202", null),
+                "Debe retornar false si el objeto Cargo enviado es null");
+        assertTrue(folioValido.getListCargos().isEmpty(),
+                "No debe agregarse ningún elemento null a la lista de cargos del folio");
+        assertFalse(recepcionista.registrarCargoPorFolioID("RES-1203", cargoValido),
+                "Debe retornar false si la reserva no tiene folio asociado (folio == null)");
+    }
+
+    // ========== PRUEBAS PARA TAREA 9.3: anadirNovedadEnApartamento() ========== //
+
+    @Test
+    @DisplayName("Debe retornar true y agregar la novedad a la lista del apartamento cuando este existe")
+    void testAnadirNovedadEnApartamentoExitoso() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorApartamentos gestorApartamentos = gestorGeneral.getTheGestorApartamentos();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Apartamento apartamento = new Apartamento("A1", "Suite 101", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+        gestorApartamentos.crear(apartamento);
+
+        Novedad novedad = new Novedad("Lámpara de mesa rota en la habitación principal", apartamento);
+
+        // Act
+        boolean agregada = recepcionista.anadirNovedadEnApartamento("A1", novedad);
+
+        // Assert
+        assertTrue(agregada, "Debe retornar true al registrar la novedad en un apartamento existente");
+        assertEquals(1, apartamento.getListNovedades().size(), "El apartamento debe tener exactamente 1 novedad registrada");
+        assertTrue(apartamento.getListNovedades().contains(novedad), "La novedad debe encontrarse en la lista de novedades del apartamento");
+    }
+
+    @Test
+    @DisplayName("Debe retornar false cuando el código del apartamento no existe o es null")
+    void testAnadirNovedadEnApartamentoInexistente() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Novedad novedad = new Novedad("Fuga de agua en el baño", null);
+
+        // Act & Assert
+        assertFalse(recepcionista.anadirNovedadEnApartamento("CODIGO-INEXISTENTE", novedad),
+                "Debe retornar false si el apartamento no existe en el gestor");
+        assertFalse(recepcionista.anadirNovedadEnApartamento(null, novedad),
+                "Debe retornar false si el código del apartamento es null");
+    }
+
+    @Test
+    @DisplayName("No debe agregar elementos nulos a la lista de novedades del apartamento cuando la novedad es null")
+    void testAnadirNovedadEnApartamentoConNovedadNula() {
+        // Arrange
+        GestorGeneral gestorGeneral = new GestorGeneral();
+        GestorApartamentos gestorApartamentos = gestorGeneral.getTheGestorApartamentos();
+        GestorEmpleados gestorEmpleados = gestorGeneral.getTheGestorEmpleados();
+
+        Recepcionista recepcionista = new Recepcionista("Ana", "999", LocalDate.of(1995, 4, 12), "3001234567", "ana@apartasuites.com", "insano", "123", gestorEmpleados);
+        Apartamento apartamento = new Apartamento("A1", "Suite 101", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+        gestorApartamentos.crear(apartamento);
+
+        // Act
+        boolean resultado = recepcionista.anadirNovedadEnApartamento("A1", null);
+
+        // Assert
+        assertTrue(resultado, "El método retorna true porque el apartamento sí existe");
+        assertTrue(apartamento.getListNovedades().isEmpty(), "La lista de novedades debe permanecer vacía si se envía null");
     }
 }

@@ -4,6 +4,7 @@ import com.ApartaSuitesUQ.Apartamento.Apartamento;
 import com.ApartaSuitesUQ.Apartamento.Bloqueo;
 import com.ApartaSuitesUQ.Apartamento.EstadoOperativo;
 import com.ApartaSuitesUQ.Estancia.Estancia;
+import com.ApartaSuitesUQ.Estancia.Noche;
 import com.ApartaSuitesUQ.Gestores.GestorApartamentos;
 import com.ApartaSuitesUQ.Gestores.GestorGeneral;
 import com.ApartaSuitesUQ.Gestores.GestorHuespedes;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -756,4 +758,518 @@ public class GestorReservasTest {
     assertFalse(gestorReservas.existeCodigoExterno("   "),
         "Debería retornar false si codigoExterno solo tiene espacios");
   }
+
+  // ========== PRUEBAS PARA TAREA 7.1: confirmarReserva() ========== //
+
+  @Test
+  @DisplayName("Debe retornar true y cambiar el estado a CONFIRMADA cuando la reserva PORTAL tiene pago igual o mayor al 30% de anticipo")
+  void testConfirmarReservaPortalConAnticipoSuficiente() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(),gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    // Estancia de 2 noches (10 al 12 de diciembre). Ajustamos el precio de sus noches generadas a 100.0 c/u -> Total = 200.0
+    Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, new ArrayList<Huesped>());
+    estancia.getListHuespedes().add(titular);
+    for (Noche noche : estancia.getListNoches()) {
+      noche.setPrecio(100.0);
+    }
+
+    // 30% de 200.0 = 60.0 -> Registramos un pago exacto de 60.0 en el folio
+    Folio folio = new Folio();
+    Pago pagoAnticipo = new Pago(60.0, MedioDePago.TRANSFERENCIA, LocalDate.now(), folio);
+    folio.getListPagos().add(pagoAnticipo);
+
+    CanalReserva canalPortal = new CanalReserva(NombreCanal.PORTAL, "");
+    Reserva reserva = new Reserva("RES-100", titular, EstadoActual.PENDIENTE, folio, canalPortal, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean confirmada = gestorReservas.confirmarReserva("RES-100");
+
+    // Assert
+    assertTrue(confirmada, "Debería confirmar la reserva cuando el pago cubre al menos el 30% del valor de la estadía");
+    assertEquals(EstadoActual.CONFIRMADA, reserva.getEstadoActual(), "El estado de la reserva debe cambiar a CONFIRMADA");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false y mantener estado PENDIENTE cuando el pago en el folio es menor al 30% requerido")
+  void testConfirmarReservaPortalConAnticipoInsuficiente() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    // Tarifa individual = 100.0 -> 1 ocupante pagante * 2 noches * 100.0 (Temporada.BAJA = 1.0) = 200.0 total -> 30% = 60.0
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, ocupantes);
+
+    // Registramos un pago insuficiente de 50.0 (< 60.0)
+    Folio folio = new Folio();
+    Pago pagoInsuficiente = new Pago(50.0, MedioDePago.TARJETA, LocalDate.now(), folio);
+    folio.getListPagos().add(pagoInsuficiente);
+
+    CanalReserva canalPortal = new CanalReserva(NombreCanal.PORTAL, "");
+    Reserva reserva = new Reserva("RES-101", titular, EstadoActual.PENDIENTE, folio, canalPortal, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean confirmada = gestorReservas.confirmarReserva("RES-101");
+
+    // Assert
+    assertFalse(confirmada, "No debería confirmar la reserva si los pagos son menores al 30%");
+    assertEquals(EstadoActual.PENDIENTE, reserva.getEstadoActual(), "La reserva debe permanecer en estado PENDIENTE");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando la reserva no existe o no se encuentra en estado PENDIENTE")
+  void testConfirmarReservaInexistenteOEstadoInvalido() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(),gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 20.0, EstadoOperativo.PREPARADO, "Ninguno");
+    Estancia estancia = new Estancia(LocalDate.of(2026, 12, 10), LocalDate.of(2026, 12, 12), apartamento, new ArrayList<Huesped>());
+    Folio folio = new Folio();
+    CanalReserva canalPortal = new CanalReserva(NombreCanal.PORTAL, "");
+
+    // Reserva ya está CANCELADA (no está en PENDIENTE)
+    Reserva reservaCancelada = new Reserva("RES-102", titular, EstadoActual.CANCELADA, folio, canalPortal, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reservaCancelada);
+
+    // Act & Assert
+    assertFalse(gestorReservas.confirmarReserva("CODIGO-INEXISTENTE"), "Debe retornar false si el código de reserva no existe");
+    assertFalse(gestorReservas.confirmarReserva(null), "Debe retornar false si el código es null");
+    assertFalse(gestorReservas.confirmarReserva("RES-102"), "Debe retornar false si la reserva no está en estado PENDIENTE");
+    assertEquals(EstadoActual.CANCELADA, reservaCancelada.getEstadoActual(), "El estado CANCELADA no debe alterarse");
+  }
+
+  // ========== PRUEBAS PARA TAREA 7.2: cancelarReserva() ========== //
+
+  @Test
+  @DisplayName("Debe cancelar una reserva CONFIRMADA, registrar la devolución en el folio y liberar el apartamento")
+  void testCancelarReservaConfirmadaExitoso() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    // Fechas futuras con más de 7 días de anticipación para aplicar devolución del 100% según política
+    LocalDate entrada = LocalDate.now().plusDays(15);
+    LocalDate salida = LocalDate.now().plusDays(17);
+    Estancia estancia = new Estancia(entrada, salida, apartamento, ocupantes);
+
+    Folio folio = new Folio();
+    Pago pagoRealizado = new Pago(200.0, MedioDePago.TRANSFERENCIA, LocalDate.now(), folio);
+    folio.getListPagos().add(pagoRealizado);
+
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+    Reserva reserva = new Reserva("RES-200", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean cancelada = gestorReservas.cancelarReserva("RES-200");
+
+    // Assert
+    assertTrue(cancelada, "Debería retornar true al cancelar una reserva en estado CONFIRMADA");
+    assertEquals(EstadoActual.CANCELADA, reserva.getEstadoActual(), "El estado de la reserva debe cambiar a CANCELADA");
+    assertTrue(gestorReservas.validarSinDobleVenta(apartamento, entrada, salida, ""),
+            "Al cancelarse la reserva, el apartamento debe quedar disponible nuevamente en esas fechas");
+  }
+
+  @Test
+  @DisplayName("Debe cancelar una reserva en estado PENDIENTE correctamente")
+  void testCancelarReservaPendienteExitoso() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now().plusDays(10), LocalDate.now().plusDays(12), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalPortal = new CanalReserva(NombreCanal.PORTAL, "");
+
+    Reserva reserva = new Reserva("RES-201", titular, EstadoActual.PENDIENTE, folio, canalPortal, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean cancelada = gestorReservas.cancelarReserva("RES-201");
+
+    // Assert
+    assertTrue(cancelada, "Debería permitir cancelar una reserva en estado PENDIENTE");
+    assertEquals(EstadoActual.CANCELADA, reserva.getEstadoActual(), "El estado debe actualizarse a CANCELADA");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando la reserva está EN_CURSO, FINALIZADA, ya CANCELADA o no existe")
+  void testCancelarReservaEstadoNoPermitidoOInexistente() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now().plusDays(10), LocalDate.now().plusDays(12), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reservaEnCurso = new Reserva("RES-202", titular, EstadoActual.EN_CURSO, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reservaEnCurso);
+
+    // Act & Assert
+    assertFalse(gestorReservas.cancelarReserva("CODIGO-INEXISTENTE"), "Debe retornar false si el código no existe");
+    assertFalse(gestorReservas.cancelarReserva(null), "Debe retornar false si el código es null");
+    assertFalse(gestorReservas.cancelarReserva("RES-202"), "No debe permitir cancelar una reserva que ya está EN_CURSO");
+    assertEquals(EstadoActual.EN_CURSO, reservaEnCurso.getEstadoActual(), "El estado EN_CURSO no debe modificarse");
+  }
+
+  // ========== PRUEBAS PARA TAREA 7.3: realizarCheckIn() ========== //
+
+  @Test
+  @DisplayName("Debe realizar el check-in exitosamente cambiando la reserva a EN_CURSO y el apartamento a OCUPADO")
+  void testRealizarCheckInExitoso() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    // Fecha de entrada es hoy (LocalDate.now()), por lo que ya llegó la fecha
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(3), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reserva = new Reserva("RES-300", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean checkInRealizado = gestorReservas.realizarCheckIn("RES-300");
+
+    // Assert
+    assertTrue(checkInRealizado, "Debería retornar true cuando la reserva está CONFIRMADA, el apartamento PREPARADO y la fecha ya llegó");
+    assertEquals(EstadoActual.EN_CURSO, reserva.getEstadoActual(), "El estado de la reserva debe pasar a EN_CURSO");
+    assertEquals(EstadoOperativo.OCUPADO, apartamento.getEstadoOperativo(), "El estado operativo del apartamento debe cambiar a OCUPADO");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false y no modificar estados cuando aún no ha llegado la fecha de entrada")
+  void testRealizarCheckInAntesDeFechaEntrada() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    // Fecha de entrada futura (mañana)
+    Estancia estancia = new Estancia(LocalDate.now().plusDays(1), LocalDate.now().plusDays(4), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reserva = new Reserva("RES-301", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean checkInRealizado = gestorReservas.realizarCheckIn("RES-301");
+
+    // Assert
+    assertFalse(checkInRealizado, "No debería permitir check-in antes de la fecha de entrada");
+    assertEquals(EstadoActual.CONFIRMADA, reserva.getEstadoActual(), "La reserva debe mantenerse en CONFIRMADA");
+    assertEquals(EstadoOperativo.PREPARADO, apartamento.getEstadoOperativo(), "El apartamento debe mantenerse en PREPARADO");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando el apartamento NO está en estado PREPARADO")
+  void testRealizarCheckInApartamentoNoPreparado() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    // Apartamento en EN_ASEO (o cualquier estado distinto a PREPARADO)
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PENDIENTE_DE_PREPARACION, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(2), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reserva = new Reserva("RES-302", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean checkInRealizado = gestorReservas.realizarCheckIn("RES-302");
+
+    // Assert
+    assertFalse(checkInRealizado, "No debería permitir check-in si el apartamento no está PREPARADO");
+    assertEquals(EstadoActual.CONFIRMADA, reserva.getEstadoActual(), "La reserva debe mantenerse en CONFIRMADA");
+    assertEquals(EstadoOperativo.PENDIENTE_DE_PREPARACION, apartamento.getEstadoOperativo(), "El estado del apartamento no debe alterarse");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando la reserva no existe o no se encuentra en estado CONFIRMADA")
+  void testRealizarCheckInReservaInexistenteOEstadoInvalido() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(2), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalPortal = new CanalReserva(NombreCanal.PORTAL, "");
+
+    // Reserva aún en estado PENDIENTE (no ha sido confirmada)
+    Reserva reservaPendiente = new Reserva("RES-303", titular, EstadoActual.PENDIENTE, folio, canalPortal, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reservaPendiente);
+
+    // Act & Assert
+    assertFalse(gestorReservas.realizarCheckIn("CODIGO-INEXISTENTE"), "Debe retornar false si el código de reserva no existe");
+    assertFalse(gestorReservas.realizarCheckIn(null), "Debe retornar false si el código es null");
+    assertFalse(gestorReservas.realizarCheckIn("RES-303"), "No debería permitir check-in de una reserva en estado PENDIENTE");
+    assertEquals(EstadoActual.PENDIENTE, reservaPendiente.getEstadoActual(), "La reserva debe permanecer en PENDIENTE");
+    assertEquals(EstadoOperativo.PREPARADO, apartamento.getEstadoOperativo(), "El apartamento debe permanecer en PREPARADO");
+  }
+
+  // ========== PRUEBAS PARA TAREA 7.4: realizarCheckOut() ========== //
+
+  @Test
+  @DisplayName("Debe realizar el check-out exitosamente cambiando la reserva a FINALIZADA y el apartamento a PENDIENTE_DE_PREPARACION")
+  void testRealizarCheckOutExitoso() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.OCUPADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now().minusDays(2), LocalDate.now(), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reserva = new Reserva("RES-400", titular, EstadoActual.EN_CURSO, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean checkOutRealizado = gestorReservas.realizarCheckOut("RES-400");
+
+    // Assert
+    assertTrue(checkOutRealizado, "Debería retornar true cuando la reserva está EN_CURSO y tiene apartamento asociado");
+    assertEquals(EstadoActual.FINALIZADA, reserva.getEstadoActual(), "El estado de la reserva debe cambiar a FINALIZADA");
+    assertEquals(EstadoOperativo.PENDIENTE_DE_PREPARACION, apartamento.getEstadoOperativo(), "El estado operativo del apartamento debe cambiar a PENDIENTE_DE_PREPARACION");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false y no modificar estados cuando la reserva no existe o no está en estado EN_CURSO")
+  void testRealizarCheckOutReservaInexistenteOEstadoInvalido() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(2), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    // Reserva en estado CONFIRMADA (no ha hecho check-in, no está EN_CURSO)
+    Reserva reservaConfirmada = new Reserva("RES-401", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reservaConfirmada);
+
+    // Act & Assert
+    assertFalse(gestorReservas.realizarCheckOut("CODIGO-INEXISTENTE"), "Debe retornar false si el código de reserva no existe");
+    assertFalse(gestorReservas.realizarCheckOut(null), "Debe retornar false si el código es null");
+    assertFalse(gestorReservas.realizarCheckOut("RES-401"), "No debe permitir check-out de una reserva que no está EN_CURSO");
+    assertEquals(EstadoActual.CONFIRMADA, reservaConfirmada.getEstadoActual(), "El estado CONFIRMADA no debe modificarse");
+    assertEquals(EstadoOperativo.PREPARADO, apartamento.getEstadoOperativo(), "El estado del apartamento no debe modificarse");
+  }
+
+  // ========== PRUEBAS PARA TAREA 7.5: declararNoShow() ========== //
+
+  @Test
+  @DisplayName("Debe declarar NO_SHOWN y registrar 0% de devolución cuando es el día de entrada y son más de las 22:00")
+  void testDeclararNoShowExitosoDespuesDeLas22() {
+    // Este escenario depende de que la hora del sistema sea posterior a las 22:00
+    org.junit.jupiter.api.Assumptions.assumeTrue(
+            LocalTime.now().isAfter(LocalTime.of(22, 0)),
+            "Se omite porque la hora actual del sistema es anterior o igual a las 22:00"
+    );
+
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(2), apartamento, ocupantes);
+    Folio folio = new Folio();
+    Pago anticipo = new Pago(60.0, MedioDePago.TRANSFERENCIA, LocalDate.now().minusDays(3), folio);
+    folio.getListPagos().add(anticipo);
+
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+    Reserva reserva = new Reserva("RES-500", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean noShowDeclarado = gestorReservas.declararNoShow("RES-500");
+
+    // Assert
+    assertTrue(noShowDeclarado, "Debería retornar true cuando la reserva está CONFIRMADA, es el día de entrada y pasó las 22:00");
+    assertEquals(EstadoActual.NO_SHOWN, reserva.getEstadoActual(), "El estado de la reserva debe cambiar a NO_SHOWN");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando aún no son las 22:00 en el día de entrada")
+  void testDeclararNoShowAntesDeLas22() {
+    // Este escenario aplica cuando el reloj del sistema marca las 22:00 o antes
+    org.junit.jupiter.api.Assumptions.assumeTrue(
+            !LocalTime.now().isAfter(LocalTime.of(22, 0)),
+            "Se omite porque la hora actual del sistema ya superó las 22:00"
+    );
+
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(2), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reserva = new Reserva("RES-501", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean noShowDeclarado = gestorReservas.declararNoShow("RES-501");
+
+    // Assert
+    assertFalse(noShowDeclarado, "No debe permitir declarar no-show antes de las 22:00");
+    assertEquals(EstadoActual.CONFIRMADA, reserva.getEstadoActual(), "La reserva debe mantenerse en estado CONFIRMADA");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando aún no ha llegado la fecha de entrada")
+  void testDeclararNoShowFechaFutura() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    // Fecha de entrada futura (mañana)
+    Estancia estancia = new Estancia(LocalDate.now().plusDays(1), LocalDate.now().plusDays(3), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalDirecto = new CanalReserva(NombreCanal.DIRECTA, "");
+
+    Reserva reserva = new Reserva("RES-502", titular, EstadoActual.CONFIRMADA, folio, canalDirecto, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reserva);
+
+    // Act
+    boolean noShowDeclarado = gestorReservas.declararNoShow("RES-502");
+
+    // Assert
+    assertFalse(noShowDeclarado, "No debe declarar no-show si la fecha de entrada es futura");
+    assertEquals(EstadoActual.CONFIRMADA, reserva.getEstadoActual(), "La reserva debe mantenerse en CONFIRMADA");
+  }
+
+  @Test
+  @DisplayName("Debe retornar false cuando la reserva no existe o no está en estado CONFIRMADA")
+  void testDeclararNoShowInexistenteOEstadoInvalido() {
+    // Arrange
+    GestorGeneral gestorGeneral = new GestorGeneral();
+    GestorReservas gestorReservas = gestorGeneral.getTheGestorReservas();
+    GestorHuespedes gestorHuespedes = gestorGeneral.getTheGestorHuespedes();
+
+    Huesped titular = new Huesped("Kevin", "123", LocalDate.of(2007, 11, 5), "321", "kevin67@gmail.com", new ArrayList<Reserva>(), gestorHuespedes);
+    Apartamento apartamento = new Apartamento("A1", "Piso 1 apart 20", 2, 4, new ArrayList<String>(), 100.0, EstadoOperativo.PREPARADO, "Ninguno");
+
+    ArrayList<Huesped> ocupantes = new ArrayList<>();
+    ocupantes.add(titular);
+
+    Estancia estancia = new Estancia(LocalDate.now(), LocalDate.now().plusDays(2), apartamento, ocupantes);
+    Folio folio = new Folio();
+    CanalReserva canalPortal = new CanalReserva(NombreCanal.PORTAL, "");
+
+    // Reserva en estado PENDIENTE (no CONFIRMADA)
+    Reserva reservaPendiente = new Reserva("RES-503", titular, EstadoActual.PENDIENTE, folio, canalPortal, apartamento, estancia, gestorReservas);
+    gestorReservas.crear(reservaPendiente);
+
+    // Act & Assert
+    assertFalse(gestorReservas.declararNoShow("CODIGO-INEXISTENTE"), "Debe retornar false si el código no existe");
+    assertFalse(gestorReservas.declararNoShow(null), "Debe retornar false si el código es null");
+    assertFalse(gestorReservas.declararNoShow("RES-503"), "No debe permitir declarar no-show en una reserva PENDIENTE");
+    assertEquals(EstadoActual.PENDIENTE, reservaPendiente.getEstadoActual(), "El estado PENDIENTE no debe modificarse");
+  }
+
+
 }
